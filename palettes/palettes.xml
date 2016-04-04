@@ -1,0 +1,849 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<category enable="true" name="Config">
+    <node xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Category" enable="true" name="Palettes">
+        <node xsi:type="PreLoaded" enable="true" name="Commonly Used Blocks">
+            <block name="ANDBLK">
+                <icon variable="SCI" path="palettes/ANDBLK.png"/>
+            </block>
+            <block name="BIGSOM_f">
+                <icon variable="SCI" path="palettes/BIGSOM_f.png"/>
+            </block>
+            <block name="CMSCOPE">
+                <icon variable="SCI" path="palettes/CMSCOPE.png"/>
+            </block>
+            <block name="CONST_m">
+                <icon variable="SCI" path="palettes/CONST_m.png"/>
+            </block>
+            <block name="CONVERT">
+                <icon variable="SCI" path="palettes/CONVERT.png"/>
+            </block>
+            <block name="CSCOPXY">
+                <icon variable="SCI" path="palettes/CSCOPXY.png"/>
+            </block>
+            <block name="DEMUX">
+                <icon variable="SCI" path="palettes/DEMUX.png"/>
+            </block>
+            <block name="DOLLAR_f">
+                <icon variable="SCI" path="palettes/DOLLAR_f.png"/>
+            </block>
+            <block name="INTEGRAL_f">
+                <icon variable="SCI" path="palettes/INTEGRAL_f.png"/>
+            </block>
+            <block name="IN_f">
+                <icon variable="SCI" path="palettes/IN_f.png"/>
+            </block>
+            <block name="LOGICAL_OP">
+                <icon variable="SCI" path="palettes/LOGICAL_OP.png"/>
+            </block>
+            <block name="MUX">
+                <icon variable="SCI" path="palettes/MUX.png"/>
+            </block>
+            <block name="NRMSOM_f">
+                <icon variable="SCI" path="palettes/NRMSOM_f.png"/>
+            </block>
+            <block name="OUT_f">
+                <icon variable="SCI" path="palettes/OUT_f.png"/>
+            </block>
+            <block name="PRODUCT">
+                <icon variable="SCI" path="palettes/PRODUCT.png"/>
+            </block>
+            <block name="RELATIONALOP">
+                <icon variable="SCI" path="palettes/RELATIONALOP.png"/>
+            </block>
+            <block name="SATURATION">
+                <icon variable="SCI" path="palettes/SATURATION.png"/>
+            </block>
+            <block name="SWITCH2_m">
+                <icon variable="SCI" path="palettes/SWITCH2_m.png"/>
+            </block>
+            <block name="TEXT_f">
+                <icon variable="SCI" path="palettes/TEXT_f.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Continuous time systems">
+            <block name="CLINDUMMY_f">
+                <icon variable="SCI" path="palettes/CLINDUMMY_f.png"/>
+            </block>
+            <block name="CLR">
+                <icon variable="SCI" path="palettes/CLR.png"/>
+            </block>
+            <block name="CLSS">
+                <icon variable="SCI" path="palettes/CLSS.png"/>
+            </block>
+            <block name="DERIV">
+                <icon variable="SCI" path="palettes/DERIV.png"/>
+            </block>
+            <block name="INTEGRAL_f">
+                <icon variable="SCI" path="palettes/INTEGRAL_f.png"/>
+            </block>
+            <block name="INTEGRAL_m">
+                <icon variable="SCI" path="palettes/INTEGRAL_m.png"/>
+            </block>
+            <block name="PID">
+                <icon variable="SCI" path="palettes/PID.png"/>
+            </block>
+            <block name="TCLSS">
+                <icon variable="SCI" path="palettes/TCLSS.png"/>
+            </block>
+            <block name="TIME_DELAY">
+                <icon variable="SCI" path="palettes/TIME_DELAY.png"/>
+            </block>
+            <block name="VARIABLE_DELAY">
+                <icon variable="SCI" path="palettes/VARIABLE_DELAY.png"/>
+            </block>
+            <block name="PDE">
+                <icon variable="SCI" path="palettes/PDE.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Discontinuities">
+            <block name="BACKLASH">
+                <icon variable="SCI" path="palettes/BACKLASH.png"/>
+            </block>
+            <block name="DEADBAND">
+                <icon variable="SCI" path="palettes/DEADBAND.png"/>
+            </block>
+            <block name="DELAYV_f">
+                <icon variable="SCI" path="palettes/DELAYV_f.png"/>
+            </block>
+            <block name="HYSTHERESIS">
+                <icon variable="SCI" path="palettes/HYSTHERESIS.png"/>
+            </block>
+            <block name="RATELIMITER">
+                <icon variable="SCI" path="palettes/RATELIMITER.png"/>
+            </block>
+            <block name="QUANT_f">
+                <icon variable="SCI" path="palettes/QUANT_f.png"/>
+            </block>
+            <block name="SATURATION">
+                <icon variable="SCI" path="palettes/SATURATION.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Discrete time systems">
+            <block name="AUTOMAT">
+                <icon variable="SCI" path="palettes/AUTOMAT.png"/>
+            </block>
+            <block name="DELAYV_f">
+                <icon variable="SCI" path="palettes/DELAYV_f.png"/>
+            </block>
+            <block name="DELAY_f">
+                <icon variable="SCI" path="palettes/DELAY_f.png"/>
+            </block>
+            <block name="DLR">
+                <icon variable="SCI" path="palettes/DLR.png"/>
+            </block>
+            <block name="DLRADAPT_f">
+                <icon variable="SCI" path="palettes/DLRADAPT_f.png"/>
+            </block>
+            <block name="DLSS">
+                <icon variable="SCI" path="palettes/DLSS.png"/>
+            </block>
+            <block name="DOLLAR_f">
+                <icon variable="SCI" path="palettes/DOLLAR_f.png"/>
+            </block>
+            <block name="DOLLAR">
+                <icon variable="SCI" path="palettes/DOLLAR.png"/>
+            </block>
+            <block name="DOLLAR_m">
+                <icon variable="SCI" path="palettes/DOLLAR_m.png"/>
+            </block>
+            <block name="SAMPHOLD_m">
+                <icon variable="SCI" path="palettes/SAMPHOLD_m.png"/>
+            </block>
+            <block name="TCLSS">
+                <icon variable="SCI" path="palettes/TCLSS.png"/>
+            </block>
+            <block name="REGISTER">
+                <icon variable="SCI" path="palettes/REGISTER.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Lookup Tables">
+            <block name="INTRP2BLK_f">
+                <icon variable="SCI" path="palettes/INTRP2BLK_f.png"/>
+            </block>
+            <block name="INTRPLBLK_f">
+                <icon variable="SCI" path="palettes/INTRPLBLK_f.png"/>
+            </block>
+            <block name="LOOKUP_f">
+                <icon variable="SCI" path="palettes/LOOKUP_f.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Event handling">
+            <block name="CLOCK_c">
+                <icon variable="SCI" path="palettes/CLOCK_c.png"/>
+            </block>
+            <block name="SampleCLK">
+                <icon variable="SCI" path="palettes/SampleCLK.png"/>
+            </block>
+            <block name="VirtualCLK0">
+                <icon variable="SCI" path="palettes/VirtualCLK0.png"/>
+            </block>
+            <block name="ANDBLK">
+                <icon variable="SCI" path="palettes/ANDBLK.png"/>
+            </block>
+            <block name="ANDLOG_f">
+                <icon variable="SCI" path="palettes/ANDLOG_f.png"/>
+            </block>
+            <block name="CEVENTSCOPE">
+                <icon variable="SCI" path="palettes/CEVENTSCOPE.png"/>
+            </block>
+            <block name="CLKFROM">
+                <icon variable="SCI" path="palettes/CLKFROM.png"/>
+            </block>
+            <block name="CLKGOTO">
+                <icon variable="SCI" path="palettes/CLKGOTO.png"/>
+            </block>
+            <block name="CLKGotoTagVisibility">
+                <icon variable="SCI" path="palettes/CLKGotoTagVisibility.png"/>
+            </block>
+            <block name="CLKOUTV_f">
+                <icon variable="SCI" path="palettes/CLKOUTV_f.png"/>
+            </block>
+            <block name="CLKSOMV_f">
+                <icon variable="SCI" path="palettes/CLKSOMV_f.png"/>
+            </block>
+            <block name="EDGE_TRIGGER">
+                <icon variable="SCI" path="palettes/EDGE_TRIGGER.png"/>
+            </block>
+            <block name="ENDBLK">
+                <icon variable="SCI" path="palettes/ENDBLK.png"/>
+            </block>
+            <block name="END_c">
+                <icon variable="SCI" path="palettes/END_c.png"/>
+            </block>
+            <block name="ESELECT_f">
+                <icon variable="SCI" path="palettes/ESELECT_f.png"/>
+            </block>
+            <block name="EVTDLY_c">
+                <icon variable="SCI" path="palettes/EVTDLY_c.png"/>
+            </block>
+            <block name="EVTGEN_f">
+                <icon variable="SCI" path="palettes/EVTGEN_f.png"/>
+            </block>
+            <block name="EVTVARDLY">
+                <icon variable="SCI" path="palettes/EVTVARDLY.png"/>
+            </block>
+            <block name="Extract_Activation">
+                <icon variable="SCI" path="palettes/Extract_Activation.png"/>
+            </block>
+            <block name="HALT_f">
+                <icon variable="SCI" path="palettes/HALT_f.png"/>
+            </block>
+            <block name="IFTHEL_f">
+                <icon variable="SCI" path="palettes/IFTHEL_f.png"/>
+            </block>
+            <block name="M_freq">
+                <icon variable="SCI" path="palettes/M_freq.png"/>
+            </block>
+            <block name="MCLOCK_f">
+                <icon variable="SCI" path="palettes/MCLOCK_f.png"/>
+            </block>
+            <block name="MFCLCK_f">
+                <icon variable="SCI" path="palettes/MFCLCK_f.png"/>
+            </block>
+            <block name="freq_div">
+                <icon variable="SCI" path="palettes/freq_div.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Mathematical Operations">
+            <block name="ABS_VALUE">
+                <icon variable="SCI" path="palettes/ABS_VALUE.png"/>
+            </block>
+            <block name="BIGSOM_f">
+                <icon variable="SCI" path="palettes/BIGSOM_f.png"/>
+            </block>
+            <block name="COSBLK_f">
+                <icon variable="SCI" path="palettes/COSBLK_f.png"/>
+            </block>
+            <block name="EXPBLK_m">
+                <icon variable="SCI" path="palettes/EXPBLK_m.png"/>
+            </block>
+            <block name="GAINBLK_f">
+                <icon variable="SCI" path="palettes/GAINBLK_f.png"/>
+            </block>
+            <block name="GAINBLK">
+                <icon variable="SCI" path="palettes/GAINBLK.png"/>
+            </block>
+            <block name="GAIN_f">
+                <icon variable="SCI" path="palettes/GAIN_f.png"/>
+            </block>
+            <block name="INVBLK">
+                <icon variable="SCI" path="palettes/INVBLK.png"/>
+            </block>
+            <block name="LOGBLK_f">
+                <icon variable="SCI" path="palettes/LOGBLK_f.png"/>
+            </block>
+            <block name="MATMAGPHI">
+                <icon variable="SCI" path="palettes/MATMAGPHI.png"/>
+            </block>
+            <block name="MATZREIM">
+                <icon variable="SCI" path="palettes/MATZREIM.png"/>
+            </block>
+            <block name="MAXMIN">
+                <icon variable="SCI" path="palettes/MAXMIN.png"/>
+            </block>
+            <block name="MAX_f">
+                <icon variable="SCI" path="palettes/MAX_f.png"/>
+            </block>
+            <block name="MIN_f">
+                <icon variable="SCI" path="palettes/MIN_f.png"/>
+            </block>
+            <block name="POWBLK_f">
+                <icon variable="SCI" path="palettes/POWBLK_f.png"/>
+            </block>
+            <block name="PRODUCT">
+                <icon variable="SCI" path="palettes/PRODUCT.png"/>
+            </block>
+            <block name="PROD_f">
+                <icon variable="SCI" path="palettes/PROD_f.png"/>
+            </block>
+            <block name="SIGNUM">
+                <icon variable="SCI" path="palettes/SIGNUM.png"/>
+            </block>
+            <block name="SINBLK_f">
+                <icon variable="SCI" path="palettes/SINBLK_f.png"/>
+            </block>
+            <block name="SQRT">
+                <icon variable="SCI" path="palettes/SQRT.png"/>
+            </block>
+            <block name="SUMMATION">
+                <icon variable="SCI" path="palettes/SUMMATION.png"/>
+            </block>
+            <block name="SUM_f">
+                <icon variable="SCI" path="palettes/SUM_f.png"/>
+            </block>
+            <block name="SOM_f">
+                <icon variable="SCI" path="palettes/SOM_f.png"/>
+            </block>
+            <block name="TANBLK_f">
+                <icon variable="SCI" path="palettes/TANBLK_f.png"/>
+            </block>
+            <block name="TrigFun">
+                <icon variable="SCI" path="palettes/TrigFun.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Matrix">
+            <block name="CUMSUM">
+                <icon variable="SCI" path="palettes/CUMSUM.png"/>
+            </block>
+            <block name="EXTRACT">
+                <icon variable="SCI" path="palettes/EXTRACT.png"/>
+            </block>
+            <block name="EXTTRI">
+                <icon variable="SCI" path="palettes/EXTTRI.png"/>
+            </block>
+            <block name="MATBKSL">
+                <icon variable="SCI" path="palettes/MATBKSL.png"/>
+            </block>
+            <block name="MATCATH">
+                <icon variable="SCI" path="palettes/MATCATH.png"/>
+            </block>
+            <block name="MATCATV">
+                <icon variable="SCI" path="palettes/MATCATV.png"/>
+            </block>
+            <block name="MATDET">
+                <icon variable="SCI" path="palettes/MATDET.png"/>
+            </block>
+            <block name="MATDIAG">
+                <icon variable="SCI" path="palettes/MATDIAG.png"/>
+            </block>
+            <block name="MATDIV">
+                <icon variable="SCI" path="palettes/MATDIV.png"/>
+            </block>
+            <block name="MATEIG">
+                <icon variable="SCI" path="palettes/MATEIG.png"/>
+            </block>
+            <block name="MATEXPM">
+                <icon variable="SCI" path="palettes/MATEXPM.png"/>
+            </block>
+            <block name="MATINV">
+                <icon variable="SCI" path="palettes/MATINV.png"/>
+            </block>
+            <block name="MATLU">
+                <icon variable="SCI" path="palettes/MATLU.png"/>
+            </block>
+            <block name="MATMAGPHI">
+                <icon variable="SCI" path="palettes/MATMAGPHI.png"/>
+            </block>
+            <block name="MATMUL">
+                <icon variable="SCI" path="palettes/MATMUL.png"/>
+            </block>
+            <block name="MATPINV">
+                <icon variable="SCI" path="palettes/MATPINV.png"/>
+            </block>
+            <block name="MATRESH">
+                <icon variable="SCI" path="palettes/MATRESH.png"/>
+            </block>
+            <block name="MATSING">
+                <icon variable="SCI" path="palettes/MATSING.png"/>
+            </block>
+            <block name="MATSUM">
+                <icon variable="SCI" path="palettes/MATSUM.png"/>
+            </block>
+            <block name="MATTRAN">
+                <icon variable="SCI" path="palettes/MATTRAN.png"/>
+            </block>
+            <block name="MATZCONJ">
+                <icon variable="SCI" path="palettes/MATZCONJ.png"/>
+            </block>
+            <block name="MATZREIM">
+                <icon variable="SCI" path="palettes/MATZREIM.png"/>
+            </block>
+            <block name="RICC">
+                <icon variable="SCI" path="palettes/RICC.png"/>
+            </block>
+            <block name="ROOTCOEF">
+                <icon variable="SCI" path="palettes/ROOTCOEF.png"/>
+            </block>
+            <block name="SQRT">
+                <icon variable="SCI" path="palettes/SQRT.png"/>
+            </block>
+            <block name="SUBMAT">
+                <icon variable="SCI" path="palettes/SUBMAT.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Electrical">
+            <block name="CCS">
+                <icon variable="SCI" path="palettes/CCS.png"/>
+            </block>
+            <block name="CVS">
+                <icon variable="SCI" path="palettes/CVS.png"/>
+            </block>
+            <block name="Capacitor">
+                <icon variable="SCI" path="palettes/Capacitor.png"/>
+            </block>
+            <block name="ConstantVoltage">
+                <icon variable="SCI" path="palettes/ConstantVoltage.png"/>
+            </block>
+            <block name="CurrentSensor">
+                <icon variable="SCI" path="palettes/CurrentSensor.png"/>
+            </block>
+            <block name="Diode">
+                <icon variable="SCI" path="palettes/Diode.png"/>
+            </block>
+            <block name="Ground">
+                <icon variable="SCI" path="palettes/Ground.png"/>
+            </block>
+            <block name="Gyrator">
+                <icon variable="SCI" path="palettes/Gyrator.png"/>
+            </block>
+            <block name="IdealTransformer">
+                <icon variable="SCI" path="palettes/IdealTransformer.png"/>
+            </block>
+            <block name="Inductor">
+                <icon variable="SCI" path="palettes/Inductor.png"/>
+            </block>
+            <block name="NMOS">
+                <icon variable="SCI" path="palettes/NMOS.png"/>
+            </block>
+            <block name="NPN">
+                <icon variable="SCI" path="palettes/NPN.png"/>
+            </block>
+            <block name="OpAmp">
+                <icon variable="SCI" path="palettes/OpAmp.png"/>
+            </block>
+            <block name="PMOS">
+                <icon variable="SCI" path="palettes/PMOS.png"/>
+            </block>
+            <block name="PNP">
+                <icon variable="SCI" path="palettes/PNP.png"/>
+            </block>
+            <block name="PotentialSensor">
+                <icon variable="SCI" path="palettes/PotentialSensor.png"/>
+            </block>
+            <block name="Resistor">
+                <icon variable="SCI" path="palettes/Resistor.png"/>
+            </block>
+            <block name="SineVoltage">
+                <icon variable="SCI" path="palettes/SineVoltage.png"/>
+            </block>
+            <block name="Switch">
+                <icon variable="SCI" path="palettes/Switch.png"/>
+            </block>
+            <block name="VVsourceAC">
+                <icon variable="SCI" path="palettes/VVsourceAC.png"/>
+            </block>
+            <block name="VariableResistor">
+                <icon variable="SCI" path="palettes/VariableResistor.png"/>
+            </block>
+            <block name="VoltageSensor">
+                <icon variable="SCI" path="palettes/VoltageSensor.png"/>
+            </block>
+            <block name="VsourceAC">
+                <icon variable="SCI" path="palettes/VsourceAC.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Integer">
+            <block name="BITCLEAR">
+                <icon variable="SCI" path="palettes/BITCLEAR.png"/>
+            </block>
+            <block name="BITSET">
+                <icon variable="SCI" path="palettes/BITSET.png"/>
+            </block>
+            <block name="CONVERT">
+                <icon variable="SCI" path="palettes/CONVERT.png"/>
+            </block>
+            <block name="DFLIPFLOP">
+                <icon variable="SCI" path="palettes/DFLIPFLOP.png"/>
+            </block>
+            <block name="DLATCH">
+                <icon variable="SCI" path="palettes/DLATCH.png"/>
+            </block>
+            <block name="EXTRACTBITS">
+                <icon variable="SCI" path="palettes/EXTRACTBITS.png"/>
+            </block>
+            <block name="INTMUL">
+                <icon variable="SCI" path="palettes/INTMUL.png"/>
+            </block>
+            <block name="JKFLIPFLOP">
+                <icon variable="SCI" path="palettes/JKFLIPFLOP.png"/>
+            </block>
+            <block name="LOGIC">
+                <icon variable="SCI" path="palettes/LOGIC.png"/>
+            </block>
+            <block name="SHIFT">
+                <icon variable="SCI" path="palettes/SHIFT.png"/>
+            </block>
+            <block name="SRFLIPFLOP">
+                <icon variable="SCI" path="palettes/SRFLIPFLOP.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Port &amp; Subsystem">
+            <block name="CLKINV_f">
+                <icon variable="SCI" path="palettes/CLKINV_f.png"/>
+            </block>
+            <block name="CLKOUTV_f">
+                <icon variable="SCI" path="palettes/CLKOUTV_f.png"/>
+            </block>
+            <block name="IN_f">
+                <icon variable="SCI" path="palettes/IN_f.png"/>
+            </block>
+            <block name="INIMPL_f">
+                <icon variable="SCI" path="palettes/INIMPL_f.png"/>
+            </block>
+            <block name="OUTIMPL_f">
+                <icon variable="SCI" path="palettes/OUTIMPL_f.png"/>
+            </block>
+            <block name="OUT_f">
+                <icon variable="SCI" path="palettes/OUT_f.png"/>
+            </block>
+            <block name="SUPER_f">
+                <icon variable="SCI" path="palettes/SUPER_f.png"/>
+                
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Zero crossing detection">
+            <block name="GENERAL_f">
+                <icon variable="SCI" path="palettes/GENERAL_f.png"/>
+            </block>
+            <block name="NEGTOPOS_f">
+                <icon variable="SCI" path="palettes/NEGTOPOS_f.png"/>
+            </block>
+            <block name="POSTONEG_f">
+                <icon variable="SCI" path="palettes/POSTONEG_f.png"/>
+            </block>
+            <block name="ZCROSS_f">
+                <icon variable="SCI" path="palettes/ZCROSS_f.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Signal Routing">
+            <block name="DEMUX">
+                <icon variable="SCI" path="palettes/DEMUX.png"/>
+            </block>
+            <block name="DEMUX_f">
+                <icon variable="SCI" path="palettes/DEMUX_f.png"/>
+            </block>
+            <block name="EXTRACTOR">
+                <icon variable="SCI" path="palettes/EXTRACTOR.png"/>
+            </block>
+            <block name="SCALAR2VECTOR">
+                <icon variable="SCI" path="palettes/SCALAR2VECTOR.png"/>
+            </block>
+            <block name="FROM">
+                <icon variable="SCI" path="palettes/FROM.png"/>
+            </block>
+            <block name="FROMMO">
+                <icon variable="SCI" path="palettes/FROMMO.png"/>
+            </block>
+            <block name="GOTO">
+                <icon variable="SCI" path="palettes/GOTO.png"/>
+            </block>
+            <block name="GOTOMO">
+                <icon variable="SCI" path="palettes/GOTOMO.png"/>
+            </block>
+            <block name="CLKFROM">
+                <icon variable="SCI" path="palettes/CLKFROM.png"/>
+            </block>
+            <block name="CLKGOTO">
+                <icon variable="SCI" path="palettes/CLKGOTO.png"/>
+            </block>
+            <block name="GotoTagVisibility">
+                <icon variable="SCI" path="palettes/GotoTagVisibility.png"/>
+            </block>
+            <block name="GotoTagVisibilityMO">
+                <icon variable="SCI" path="palettes/GotoTagVisibilityMO.png"/>
+            </block>
+            <block name="ISELECT_m">
+                <icon variable="SCI" path="palettes/ISELECT_m.png"/>
+            </block>
+            <block name="MUX">
+                <icon variable="SCI" path="palettes/MUX.png"/>
+            </block>
+            <block name="MUX_f">
+                <icon variable="SCI" path="palettes/MUX_f.png"/>
+            </block>
+            <block name="M_SWITCH">
+                <icon variable="SCI" path="palettes/M_SWITCH.png"/>
+            </block>
+            <block name="NRMSOM_f">
+                <icon variable="SCI" path="palettes/NRMSOM_f.png"/>
+            </block>
+            <block name="RELAY_f">
+                <icon variable="SCI" path="palettes/RELAY_f.png"/>
+            </block>
+            <block name="SELECT_m">
+                <icon variable="SCI" path="palettes/SELECT_m.png"/>
+            </block>
+            <block name="SWITCH2_m">
+                <icon variable="SCI" path="palettes/SWITCH2_m.png"/>
+            </block>
+            <block name="SWITCH_f">
+                <icon variable="SCI" path="palettes/SWITCH_f.png"/>
+            </block>
+            <block name="SELF_SWITCH">
+                <icon variable="SCI" path="palettes/SELF_SWITCH.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Signal Processing">
+            <block name="QUANT_f">
+                <icon variable="SCI" path="palettes/QUANT_f.png"/>
+            </block>
+            <block name="SAMPHOLD_m">
+                <icon variable="SCI" path="palettes/SAMPHOLD_m.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Implicit">
+            <block name="CONSTRAINT_c">
+                <icon variable="SCI" path="palettes/CONSTRAINT_c.png"/>
+            </block>
+            <block name="CONSTRAINT2_c">
+                <icon variable="SCI" path="palettes/CONSTRAINT2_c.png"/>
+            </block>
+            <block name="DIFF_f">
+                <icon variable="SCI" path="palettes/DIFF_f.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Annotations">
+            <block name="TEXT_f">
+                <icon variable="SCI" path="palettes/TEXT_f.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Sinks">
+            <block name="AFFICH_m">
+                <icon variable="SCI" path="palettes/AFFICH_m.png"/>
+            </block>
+            <block name="BARXY">
+                <icon variable="SCI" path="palettes/BARXY.png"/>
+            </block>
+            <block name="CANIMXY">
+                <icon variable="SCI" path="palettes/CANIMXY.png"/>
+            </block>
+            <block name="CANIMXY3D">
+                <icon variable="SCI" path="palettes/CANIMXY3D.png"/>
+            </block>
+            <block name="CFSCOPE">
+                <icon variable="SCI" path="palettes/CFSCOPE.png"/>
+            </block>
+            <block name="CLKOUTV_f">
+                <icon variable="SCI" path="palettes/CLKOUTV_f.png"/>
+            </block>
+            <block name="CMAT3D">
+                <icon variable="SCI" path="palettes/CMAT3D.png"/>
+            </block>
+            <block name="CMATVIEW">
+                <icon variable="SCI" path="palettes/CMATVIEW.png"/>
+            </block>
+            <block name="CMSCOPE">
+                <icon variable="SCI" path="palettes/CMSCOPE.png"/>
+            </block>
+            <block name="CSCOPE">
+                <icon variable="SCI" path="palettes/CSCOPE.png"/>
+            </block>
+            <block name="CSCOPXY">
+                <icon variable="SCI" path="palettes/CSCOPXY.png"/>
+            </block>
+            <block name="CSCOPXY3D">
+                <icon variable="SCI" path="palettes/CSCOPXY3D.png"/>
+            </block>
+            <block name="ENDBLK">
+                <icon variable="SCI" path="palettes/ENDBLK.png"/>
+            </block>
+            <block name="END_c">
+                <icon variable="SCI" path="palettes/END_c.png"/>
+            </block>
+            <block name="HALT_f">
+                <icon variable="SCI" path="palettes/HALT_f.png"/>
+            </block>
+            <block name="OUTIMPL_f">
+                <icon variable="SCI" path="palettes/OUTIMPL_f.png"/>
+            </block>
+            <block name="OUT_f">
+                <icon variable="SCI" path="palettes/OUT_f.png"/>
+            </block>
+            <block name="TOWS_c">
+                <icon variable="SCI" path="palettes/TOWS_c.png"/>
+            </block>
+            <block name="TRASH_f">
+                <icon variable="SCI" path="palettes/TRASH_f.png"/>
+            </block>
+            <block name="WRITEAU_f">
+                <icon variable="SCI" path="palettes/WRITEAU_f.png"/>
+            </block>
+            <block name="WRITEC_f">
+                <icon variable="SCI" path="palettes/WRITEC_f.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Sources">
+            <block name="CLKINV_f">
+                <icon variable="SCI" path="palettes/CLKINV_f.png"/>
+            </block>
+            <block name="CLOCK_c">
+                <icon variable="SCI" path="palettes/CLOCK_c.png"/>
+            </block>
+            <block name="CONST_m">
+                <icon variable="SCI" path="palettes/CONST_m.png"/>
+            </block>
+            <block name="CONST">
+                <icon variable="SCI" path="palettes/CONST.png"/>
+            </block>
+            <block name="CONST_f">
+                <icon variable="SCI" path="palettes/CONST_f.png"/>
+            </block>
+            <block name="CURV_f">
+                <icon variable="SCI" path="palettes/CURV_f.png"/>
+            </block>
+            <block name="Counter">
+                <icon variable="SCI" path="palettes/Counter.png"/>
+            </block>
+            <block name="FROMWSB">
+                <icon variable="SCI" path="palettes/FROMWSB.png"/>
+            </block>
+            <block name="GENSIN_f">
+                <icon variable="SCI" path="palettes/GENSIN_f.png"/>
+            </block>
+            <block name="GENSQR_f">
+                <icon variable="SCI" path="palettes/GENSQR_f.png"/>
+            </block>
+            <block name="INIMPL_f">
+                <icon variable="SCI" path="palettes/INIMPL_f.png"/>
+            </block>
+            <block name="IN_f">
+                <icon variable="SCI" path="palettes/IN_f.png"/>
+            </block>
+            <block name="Modulo_Count">
+                <icon variable="SCI" path="palettes/Modulo_Count.png"/>
+            </block>
+            <block name="RAMP">
+                <icon variable="SCI" path="palettes/RAMP.png"/>
+            </block>
+            <block name="RAND_m">
+                <icon variable="SCI" path="palettes/RAND_m.png"/>
+            </block>
+            <block name="READAU_f">
+                <icon variable="SCI" path="palettes/READAU_f.png"/>
+            </block>
+            <block name="READC_f">
+                <icon variable="SCI" path="palettes/READC_f.png"/>
+            </block>
+            <block name="RFILE_f">
+                <icon variable="SCI" path="palettes/RFILE_f.png"/>
+            </block>
+            <block name="SAWTOOTH_f">
+                <icon variable="SCI" path="palettes/SAWTOOTH_f.png"/>
+            </block>
+            <block name="STEP_FUNCTION">
+                <icon variable="SCI" path="palettes/STEP_FUNCTION.png"/>
+            </block>
+            <block name="PULSE_SC">
+                <icon variable="SCI" path="palettes/PULSE_SC.png"/>
+            </block>
+            <block name="SampleCLK">
+                <icon variable="SCI" path="palettes/SampleCLK.png"/>
+            </block>
+            <block name="Sigbuilder">
+                <icon variable="SCI" path="palettes/Sigbuilder.png"/>
+            </block>
+            <block name="TIME_f">
+                <icon variable="SCI" path="palettes/TIME_f.png"/>
+            </block>
+            <block name="TKSCALE">
+                <icon variable="SCI" path="palettes/TKSCALE.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Thermo-Hydraulics">
+            <block name="Bache">
+                <icon variable="SCI" path="palettes/Bache.png"/>
+            </block>
+            <block name="PerteDP">
+                <icon variable="SCI" path="palettes/PerteDP.png"/>
+            </block>
+            <block name="PuitsP">
+                <icon variable="SCI" path="palettes/PuitsP.png"/>
+            </block>
+            <block name="SourceP">
+                <icon variable="SCI" path="palettes/SourceP.png"/>
+            </block>
+            <block name="VanneReglante">
+                <icon variable="SCI" path="palettes/VanneReglante.png"/>
+            </block>
+            <block name="Flowmeter">
+                <icon variable="SCI" path="palettes/Flowmeter.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="Demonstrations Blocks">
+            <block name="BOUNCE">
+                <icon variable="SCI" path="palettes/BOUNCE.png"/>
+            </block>
+            <block name="BOUNCEXY">
+                <icon variable="SCI" path="palettes/BOUNCEXY.png"/>
+            </block>
+            <block name="BPLATFORM">
+                <icon variable="SCI" path="palettes/BPLATFORM.png"/>
+            </block>
+        </node>
+        <node xsi:type="PreLoaded" enable="true" name="User-Defined Functions">
+            <block name="CBLOCK">
+                <icon variable="SCI" path="palettes/CBLOCK.png"/>
+            </block>
+            <block name="CBLOCK4">
+                <icon variable="SCI" path="palettes/CBLOCK4.png"/>
+            </block>
+            <block name="DEBUG">
+                <icon variable="SCI" path="palettes/DEBUG.png"/>
+            </block>
+            <block name="EXPRESSION">
+                <icon variable="SCI" path="palettes/EXPRESSION.png"/>
+            </block>
+            <block name="MBLOCK">
+                <icon variable="SCI" path="palettes/MBLOCK.png"/>
+            </block>
+            <block name="PDE">
+                <icon variable="SCI" path="palettes/PDE.png"/>
+            </block>
+            <block name="SUPER_f">
+                <icon variable="SCI" path="palettes/SUPER_f.png"/>
+            </block>
+            <block name="c_block">
+                <icon variable="SCI" path="palettes/c_block.png"/>
+            </block>
+            <block name="fortran_block">
+                <icon variable="SCI" path="palettes/fortran_block.png"/>
+            </block>
+            <block name="generic_block3">
+                <icon variable="SCI" path="palettes/generic_block3.png"/>
+            </block>
+            <block name="scifunc_block_m">
+                <icon variable="SCI" path="palettes/scifunc_block_m.png"/>
+            </block>
+        </node>
+    </node>
+</category>
