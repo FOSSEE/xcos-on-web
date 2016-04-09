@@ -176,8 +176,7 @@
 						cell != null &&
 						this.isCellEditable(cell))
 					{
-						if (this.model.isEdge(cell) ||
-							!this.isHtmlLabel(cell))
+						if (!this.isHtmlLabel(cell))
 						{
 							this.startEditingAtCell(cell);
 						}
@@ -191,6 +190,30 @@
 
 					// Disables any default behaviour for the double click
 					mxEvent.consume(evt);
+				};
+				
+				graph.getTooltipForCell = function(cell){
+					console.log(cell);
+					var text = null;
+					// If cell is a block or port
+					if(cell.source == null && cell.target == null) {
+						if(cell.connectable) { // Cell is a port
+							// @ToDo: Port Number
+							text = 'Style : '+ cell.style + "\n";
+						}
+						else{ //Cell is a block
+							// @ToDo: Block Name, Simulation, Flip, Mirror
+							// @ToDo: Number of Input, Output, Control, Command Ports
+							var geometry = cell.getGeometry();
+							text =  'UID : '+ cell.id + "\n" + 
+									'Style : '+ cell.style + "\n" +
+									'x : '+ geometry.x + "\n" +
+									'y : '+ geometry.y + "\n" +
+									'w : '+ geometry.width + "\n" +
+									'h : '+ geometry.height + "\n";	
+						}
+					}
+					return text;
 				};
 
 				// Enables new connections
@@ -215,13 +238,12 @@
 					var toggle = document.getElementById("toggleBlocks");
 					var button = document.getElementById("toggle");
 					toggle.click();
-					console.log(toggle.innerHTML);
 					button.innerHTML = '';
 					if(toggle.innerHTML == 'Expand All'){
-						createButtonImage(button, 'images/navigate_plus.png')
+						createButtonImage(button, 'images/navigate_plus.png');
 					}
 					else if(toggle.innerHTML == 'Collapse All'){
-						createButtonImage(button, 'images/navigate_minus.png')
+						createButtonImage(button, 'images/navigate_minus.png');
 					}
 					var titleName = document.createTextNode(toggle.innerHTML);  
 					button.appendChild(titleName);
@@ -442,7 +464,7 @@
 				model.beginUpdate();
 				try
 				{
-					var label = getImgHTML(name); //will not exist for all blocks
+					var label = getImgHTML(name); // Will not exist for all blocks
 					if(name == 'CMSCOPE'){
 						v1 = graph.insertVertex(parent, null, label, x, y, 80, 80,'CMSCOPE');
 						createPorts(graph, v1, ['EXPLICIT','EXPLICIT'], ['CONTROL'], [], []);
@@ -925,16 +947,16 @@
 		function createInputPort(graph, block, x, y, portType, position){
 			var port = null;
 			if(portType == 'COMMAND'){
-				port = graph.insertVertex(block, null, 'INPUT_COMMAND', x, y, 10, 10,'CommandPort', true);
+				port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10,'CommandPort', true);
 			}
 			else if(portType == 'CONTROL'){
-				port = graph.insertVertex(block, null, 'INPUT_CONTROL', x, y, 10, 10, 'ControlPort', true);
+				port = graph.insertVertex(block, null, 'ControlPort', x, y, 10, 10, 'ControlPort', true);
 			}
 			else if(portType == 'IMPLICIT'){
-				port = graph.insertVertex(block, null, 'INPUT_IMPLICIT', x, y, 10, 10, 'ImplicitInputPort', true);
+				port = graph.insertVertex(block, null, 'ImplicitInputPort', x, y, 10, 10, 'ImplicitInputPort', true);
 			}
 			else if(portType == 'EXPLICIT'){
-				port = graph.insertVertex(block, null, 'INPUT_EXPLICIT', x, y, 10, 10,'ExplicitInputPort', true);
+				port = graph.insertVertex(block, null, 'ExplicitInputPort', x, y, 10, 10,'ExplicitInputPort', true);
 			}
 			if(port != null){
 				if(position == 'top'){
@@ -949,16 +971,16 @@
 		function createOutputPort(graph, block, x, y, portType, position){
 			var port = null;
 			if(portType == 'COMMAND'){
-				port = graph.insertVertex(block, null, 'OUTPUT_COMMAND', x, y, 10, 10, 'CommandPort', true);
+				port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
 			}
 			else if(portType == 'CONTROL'){
-				port = graph.insertVertex(block, null, 'OUTPUT_CONTROL', x, y, 10, 10, 'ControlPort', true);
+				port = graph.insertVertex(block, null, 'ControlPort', x, y, 10, 10, 'ControlPort', true);
 			}
 			else if(portType == 'IMPLICIT'){
-				port = graph.insertVertex(block, null, 'OUTPUT_IMPLICIT', x, y, 10, 10,'ImplicitOutputPort',true);
+				port = graph.insertVertex(block, null, 'ImplicitOutputPort', x, y, 10, 10,'ImplicitOutputPort',true);
 			}
 			else if(portType == 'EXPLICIT'){
-				port = graph.insertVertex(block, null, 'OUTPUT_EXPLICIT', x, y, 10, 10, 'ExplicitOutputPort', true);
+				port = graph.insertVertex(block, null, 'ExplicitOutputPort', x, y, 10, 10, 'ExplicitOutputPort', true);
 			}
 			if(port != null){
 				if(position == 'bottom'){
