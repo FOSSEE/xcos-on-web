@@ -96,9 +96,8 @@
 
 				// Sets the graph container and configures the editor
 				editor.setGraphContainer(container);
-				var config = mxUtils.load(
-					'config/keyhandler-commons.xml').
-						getDocumentElement();
+				//var config = mxUtils.load('config/editor-commons.xml').getDocumentElement();
+				var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
 				editor.configure(config);
 
 				// Disables drag-and-drop into non-swimlanes.
@@ -298,7 +297,37 @@
 					}
 				}
 			}
-		};
+			
+			// Preload all images
+			
+			var dir = ["blocks","images","images/icons48"];
+			var fileextension = ".";
+			var blockImages = [];
+			$.each(dir, function (index, value) {
+				$.ajax({ // http://stackoverflow.com/a/18480589
+				    url: value,
+				    success: function (data) {
+				        $(data).find("a:contains(" + fileextension + ")").each(function () { 
+				            var filename = this.href.replace(window.location.host, "");
+				            filename = filename.replace("https://", value);
+				            filename = filename.replace("http://", value);
+				            blockImages.push(filename);
+				        });
+				        // Prevent multi-threading and have function within call!
+				        function preload(sources) {
+				        	var images = [];
+						  	for (var i = 0, length = sources.length; i < length; ++i) {
+						    	images[i] = new Image();
+						    	images[i].src = sources[i];
+						  	}
+						}
+						preload(blockImages);
+				    }
+				});
+			});
+			
+			
+		}
 		
 		function createButtonImage(button, image){
 			if (image != null)
@@ -805,6 +834,12 @@
 						v1 = graph.insertVertex(parent, null, '<table><tr><td>+</td><td></td></tr><tr><td></td><td>OP</td></tr><tr><td>-</td><td></td></tr></table>', x, y, 80, 80,'OpAmp');
 						createPorts(graph, v1, ['IMPLICIT','IMPLICIT'], [], ['IMPLICIT'], []);
 					}
+					
+					else if(name == 'TEXT_f'){
+						v1 = graph.insertVertex(parent, null, '', x, y, 80, 80,'TEXT_f');
+						createPorts(graph, v1, [], [], [], []);
+					}
+					
 					v1.setConnectable(false);
 					
 				}

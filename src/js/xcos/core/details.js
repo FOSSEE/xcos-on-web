@@ -59,6 +59,7 @@ function scicos_model() {
 	this.uid = options.uid || '';	
 }
 
+// This might also have to be overloaded
 function scicos_diagram() {
 	this.props = new scicos_params();
 	this.objs = [];
@@ -66,6 +67,7 @@ function scicos_diagram() {
 	this.contrib = [];
 }
 
+// This might also have to be overloaded
 function scicos_params() {
 	this.props = new scicos_params();
 	this.wpar = [600, 450, 0, 0, 600, 450];
@@ -80,6 +82,7 @@ function scicos_params() {
 	this.doc = [];
 }
 
+// This might also have to be overloaded
 function default_options() {
 	var options = new Object();
     var col3d = [0.8, 0.8, 0.8];
@@ -147,18 +150,32 @@ function standard_define() {
 	return new scicos_block(block_options);
 }
 
+function scicos_link (){
+	this.xx = [];
+	this.yy = [];
+	this.id = '';
+	this.thick = [0, 0];
+	this.ct = [1, 1];
+	this.from = [];
+	this.to = [];
+}
+
 function ANDLOG_f(){
     var model = new scicos_model();
     model.sim = "andlog";
     model.out = [1];
-    model.out2 = [1];
-    model.evtin = [-1,-1];
+    model.out2 = [1]; // null -> 1
+    model.evtin = [-1,-1]; // 1, 1 -> -1, -1
     model.blocktype = "d";
     model.firing = [];
     model.dep_ut = [false, false];
     var gr_i = "xstringb(orig(1),orig(2),txt,sz(1),sz(2),'fill');";
-    var block = new standard_define([80,80], model, '', gr_i);
+    var block = new standard_define([80,80], model, 'LOGICAL<BR>AND', gr_i); // 3 -> 80
+    
+    // Style
     block.graphics.out_implicit = "E";
+    block.graphics.out_style = "ExplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0";
+    block.graphics.style = "ANDLOG_f";
     return block;
 }
 
