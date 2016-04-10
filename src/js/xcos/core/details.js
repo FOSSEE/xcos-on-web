@@ -69,7 +69,6 @@ function scicos_diagram() {
 
 // This might also have to be overloaded
 function scicos_params() {
-	this.props = new scicos_params();
 	this.wpar = [600, 450, 0, 0, 600, 450];
 	this.titlex = 'Untitled';
 	this.tf = 100000;
