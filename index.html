@@ -25,6 +25,8 @@
 
   <link rel="stylesheet" href="jquery/jquery-ui.css">
   <script src="jquery/jquery-1.8.2.js"></script>
+  <script type="text/javascript" src="src/js/xcos/core/details.js"></script>
+  <script type="text/javascript" src="json2.js"></script>
 	<!-- Example code -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
@@ -193,7 +195,6 @@
 				};
 				
 				graph.getTooltipForCell = function(cell){
-					console.log(cell);
 					var text = null;
 					// If cell is a block or port
 					if(cell.source == null && cell.target == null) {
@@ -214,6 +215,32 @@
 						}
 					}
 					return text;
+				};
+				
+				// Create XML tags!
+				// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+				// https://jgraph.github.io/mxgraph/docs/js-api/files/model/mxCell-js.html
+				// Uncomment this block to see XML tags work
+				/*graph.convertValueToString = function(cell)
+				{
+				  if (mxUtils.isNode(cell.value))
+				  {
+				    return cell.getAttribute('label', '');
+				  }
+				};*/
+				
+				var cellLabelChanged = graph.cellLabelChanged;
+				graph.cellLabelChanged = function(cell, newValue, autoSize)
+				{
+				  if (mxUtils.isNode(cell.value))
+				  {
+				    // Clones the value for correct undo/redo
+				    var elt = cell.value.cloneNode(true);
+				    elt.setAttribute('label', newValue);
+				    newValue = elt;
+				  }
+				
+				  cellLabelChanged.apply(this, arguments);
 				};
 
 				// Enables new connections
@@ -461,6 +488,7 @@
 				var parent = graph.getDefaultParent();
 				var model = graph.getModel();
 				var v1 = null;
+				var doc = mxUtils.createXmlDocument();
 				model.beginUpdate();
 				try
 				{
@@ -648,7 +676,16 @@
 						createPorts(graph, v1, [], ['CONTROL'], [], []);
 					}
 					else if(name == 'ANDBLK'){
-						v1 = graph.insertVertex(parent, null, label, x, y, 80, 80,'ANDBLK');
+						var details = doc.createElement('BasicBlock');
+						details.setAttribute('label', label);
+						var obj = ANDLOG_f();
+						var encoder = new mxCodec();
+						var result = encoder.encode(obj);
+						var xml = mxUtils.getXml(result);
+						var blockName = document.createTextNode(xml);
+						details.appendChild(blockName);
+						console.log(details);
+						v1 = graph.insertVertex(parent, null, details, x, y, 80, 80, 'ANDBLK');
 						createPorts(graph, v1, [], ['CONTROL','CONTROL'], [], ['COMMAND']);
 					}
 					else if(name == 'ANDLOG_f'){
