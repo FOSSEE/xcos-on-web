@@ -14,12 +14,18 @@
 			font-size: 16px;
 		}
 	</style>
+
+	<!-- Sets the basepath for the library if not in same directory -->
+	<script type="text/javascript">
+		mxBasePath = 'src';
+	</script>
+
 	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="mxClient.min.js"></script>
+	<script type="text/javascript" src="src/js/mxClient.js"></script>
 
   <link rel="stylesheet" href="jquery/jquery-ui.css">
   <script src="jquery/jquery-1.8.2.js"></script>
-  <script type="text/javascript" src="details.js"></script>
+  <script type="text/javascript" src="src/js/xcos/core/details.js"></script>
   <script type="text/javascript" src="json2.js"></script>
 	<!-- Example code -->
 	<script type="text/javascript">
@@ -343,7 +349,7 @@
 			
 			// Preload all images
 			
-			var dir = ["blocks","images"];
+			var dir = ["blocks","images","images/icons48"];
 			var fileextension = ".";
 			var blockImages = [];
 			$.each(dir, function (index, value) {
