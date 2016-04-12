@@ -173,7 +173,7 @@ function ANDLOG_f(){
     
     // Style
     block.graphics.out_implicit = "E";
-    block.graphics.out_style = "ExplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0";
+    //block.graphics.out_style = "ExplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0";
     block.graphics.style = "ANDLOG_f";
     return block;
 }

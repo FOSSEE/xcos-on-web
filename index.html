@@ -17,6 +17,8 @@
 
 	<!-- Loads and initializes the library -->
 	<script type="text/javascript" src="mxClient.min.js"></script>
+	<script type="text/javascript" src="editor/mxDefaultKeyHandler.js"></script>
+	<script type="text/javascript" src="handler/mxKeyHandler.js"></script>
 	
 	<link rel="stylesheet" href="jquery/jquery-ui.css">
 	<script src="jquery/jquery-1.8.2.js"></script>
@@ -496,7 +498,22 @@
 				try
 				{
 					var label = getImgHTML(name); // Will not exist for all blocks
-					if(name == 'CMSCOPE'){
+					
+					if(name == 'ANDBLK'){
+						var details = doc.createElement('BasicBlock');
+						details.setAttribute('name', name);
+						details.setAttribute('label', label);
+						var obj = ANDLOG_f(); // This isn't even the right function!
+						var encoder = new mxCodec();
+						var result = encoder.encode(obj);
+						var xml = mxUtils.getPrettyXml(result);
+						var blockName = document.createTextNode(xml);
+						details.appendChild(blockName);
+						console.log(details);
+						v1 = graph.insertVertex(parent, null, details, x, y, 80, 80, 'ANDBLK');
+						createPorts(graph, v1, [], ['CONTROL','CONTROL'], [], ['COMMAND']);
+					}
+					else if(name == 'CMSCOPE'){
 						v1 = graph.insertVertex(parent, null, label, x, y, 80, 80,'CMSCOPE');
 						createPorts(graph, v1, ['EXPLICIT','EXPLICIT'], ['CONTROL'], [], []);
 					}
@@ -678,19 +695,8 @@
 						v1 = graph.insertVertex(parent, null, label, x, y, 80, 80,'VirtualCLK0');
 						createPorts(graph, v1, [], ['CONTROL'], [], []);
 					}
-					else if(name == 'ANDBLK'){
-						var details = doc.createElement('BasicBlock');
-						details.setAttribute('label', label);
-						var obj = ANDLOG_f(); // This isn't even the right function!
-						var encoder = new mxCodec();
-						var result = encoder.encode(obj);
-						var xml = mxUtils.getPrettyXml(result);
-						var blockName = document.createTextNode(xml);
-						details.appendChild(blockName);
-						console.log(details);
-						v1 = graph.insertVertex(parent, null, details, x, y, 80, 80, 'ANDBLK');
-						createPorts(graph, v1, [], ['CONTROL','CONTROL'], [], ['COMMAND']);
-					}
+					// ANDBLK to come here
+					
 					else if(name == 'ANDLOG_f'){
 						v1 = graph.insertVertex(parent, null, 'LOGICAL<BR>AND', x, y, 80, 80,'ANDLOG_f');
 						createPorts(graph, v1, [], ['CONTROL','CONTROL'], ['EXPLICIT'], []);
