@@ -15,18 +15,13 @@
 		}
 	</style>
 
-	<!-- Sets the basepath for the library if not in same directory -->
-	<script type="text/javascript">
-		mxBasePath = 'src';
-	</script>
-
 	<!-- Loads and initializes the library -->
-	<script type="text/javascript" src="src/js/mxClient.js"></script>
-
-  <link rel="stylesheet" href="jquery/jquery-ui.css">
-  <script src="jquery/jquery-1.8.2.js"></script>
-  <script type="text/javascript" src="src/js/xcos/core/details.js"></script>
-  <script type="text/javascript" src="json2.js"></script>
+	<script type="text/javascript" src="mxClient.min.js"></script>
+	
+	<link rel="stylesheet" href="jquery/jquery-ui.css">
+	<script src="jquery/jquery-1.8.2.js"></script>
+	<script type="text/javascript" src="details.js"></script>
+	<script type="text/javascript" src="json2.js"></script>
 	<!-- Example code -->
 	<script type="text/javascript">
 		// Program starts here. Creates a sample graph in the
@@ -345,37 +340,45 @@
 						splash.parentNode.removeChild(splash);
 					}
 				}
-			}
-			
-			// Preload all images
-			
-			var dir = ["blocks","images","images/icons48"];
-			var fileextension = ".";
-			var blockImages = [];
-			$.each(dir, function (index, value) {
-				$.ajax({ // http://stackoverflow.com/a/18480589
-				    url: value,
-				    success: function (data) {
-				        $(data).find("a:contains(" + fileextension + ")").each(function () { 
-				            var filename = this.href.replace(window.location.host, "");
-				            filename = filename.replace("https://", value);
-				            filename = filename.replace("http://", value);
-				            blockImages.push(filename);
-				        });
-				        // Prevent multi-threading and have function within call!
-				        function preload(sources) {
-				        	var images = [];
-						  	for (var i = 0, length = sources.length; i < length; ++i) {
-						    	images[i] = new Image();
-						    	images[i].src = sources[i];
-						  	}
+				
+				// Handles cursor keys - guides.html
+			    var nudge = function(keyCode){
+			    	graph.container.focus();
+			    	if (!graph.isSelectionEmpty()){
+			    		var dx = 0;
+			    		var dy = 0;
+			    		if (keyCode == 37){
+			    			dx = -1;
 						}
-						preload(blockImages);
-				    }
+			    		else if (keyCode == 38){
+			    			dy = -1;
+			    		}
+			    		else if (keyCode == 39){
+			    			dx = 1;
+			    		}
+			    		else if (keyCode == 40){
+			    			dy = 1;
+			    		}
+			    		graph.moveCells(graph.getSelectionCells(), dx, dy);
+					}
+			    };
+				// Transfer initial focus to graph container for keystroke handling
+				//graph.container.focus();
+			    // Handles keystroke events
+			    var keyHandler = new mxKeyHandler(graph);
+			    keyHandler.bindKey(37, function(){
+					nudge(37);
 				});
-			});
-			
-			
+			    keyHandler.bindKey(38, function(){
+			    	nudge(38);
+			    });
+			    keyHandler.bindKey(39, function(){
+			    	nudge(39);
+			    });
+			    keyHandler.bindKey(40, function(){
+			    	nudge(40);
+			    });
+			}
 		}
 		
 		function createButtonImage(button, image){
@@ -1090,6 +1093,32 @@
 </body>
   <!-- It's good if this part happens after the entire page has loaded-->
   <script type="text/javascript">
+		// Preload all images
+		var dir = ["blocks","images"];
+		var fileextension = ".";
+		var blockImages = [];
+		$.each(dir, function (index, value) {
+			$.ajax({ // http://stackoverflow.com/a/18480589
+			    url: value,
+			    success: function (data) {
+			        $(data).find("a:contains(" + fileextension + ")").each(function () { 
+			            var filename = this.href.replace(window.location.host, "");
+			            filename = filename.replace("https://", value);
+			            filename = filename.replace("http://", value);
+			            blockImages.push(filename);
+			        });
+			        // Prevent multi-threading and have function within call!
+			        function preload(sources) {
+			        	var images = [];
+					  	for (var i = 0, length = sources.length; i < length; ++i) {
+					    	images[i] = new Image();
+					    	images[i].src = sources[i];
+					  	}
+					}
+					preload(blockImages);
+			    }
+			});
+		});
 		//Find out more here: http://stackoverflow.com/questions/12843418/jquery-ui-accordion-expand-collapse-all
         $(window).load(function(){
 			var headers = $('#sidebarContainer .accordion-header');

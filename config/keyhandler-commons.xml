@@ -6,10 +6,11 @@
 		<add as="34" action="enterGroup"/>
 		<add as="35" action="refresh"/>
 		<add as="36" action="home"/>
-		<add as="37" action="selectPrevious"/>
+		<!-- Up, Down, Left, Right arrows perform moving instead of toggling -->
+		<!--<add as="37" action="selectPrevious"/>
 		<add as="38" action="selectParent"/>
 		<add as="40" action="selectChild"/>
-		<add as="39" action="selectNext"/>
+		<add as="39" action="selectNext"/> -->
 		<add as="46" action="delete"/>
 		<add as="65" control="1" action="selectAll"/>
 		<add as="90" control="1" action="undo"/>
