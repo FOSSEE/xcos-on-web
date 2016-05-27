@@ -29,6 +29,27 @@
 		// Program starts here. Creates a sample graph in the
 		// DOM node with the specified ID. This function is invoked
 		// from the onLoad event handler of the document (see below).
+
+		// If connect preview is not moved away then getCellAt is used to detect the cell under
+		// the mouse if the mouse is over the preview shape in IE (no event transparency), ie.
+		// the built-in hit-detection of the HTML document will not be used in this case.
+		mxConnectionHandler.prototype.movePreviewAway = false;
+		mxConnectionHandler.prototype.waypointsEnabled = true;
+		mxGraph.prototype.resetEdgesOnConnect = false;
+		mxConstants.SHADOWCOLOR = '#C0C0C0';
+
+		// Enables guides
+		mxGraphHandler.prototype.guidesEnabled = true;
+
+	    // Alt disables guides
+	    mxGuide.prototype.isEnabledForEvent = function(evt)
+	    {
+	    	return !mxEvent.isAltDown(evt);
+	    };
+
+		// Enables snapping waypoints to terminals
+		mxEdgeHandler.prototype.snapToTerminals = true;
+
 		function main(container, outline, toolbar, sidebar, status)
 		{
 			// Checks if the browser is supported
@@ -46,18 +67,6 @@
 				// windows and the rubberband selection.
 				mxConstants.MIN_HOTSPOT_SIZE = 16;
 				mxConstants.DEFAULT_HOTSPOT = 1;
-				
-				// Enables guides
-				mxGraphHandler.prototype.guidesEnabled = true;
-
-			    // Alt disables guides
-			    mxGuide.prototype.isEnabledForEvent = function(evt)
-				{
-					return !mxEvent.isAltDown(evt);
-				};
-
-				// Enables snapping waypoints to terminals
-				mxEdgeHandler.prototype.snapToTerminals = true;
 
 				// Workaround for Internet Explorer ignoring certain CSS directives
 				if (mxClient.IS_QUIRKS)
@@ -75,17 +84,43 @@
 				// graph, such as the rubberband selection, but most parts
 				// of the UI are custom in this example.
 				var editor = new mxEditor();
+
+				// Add Container to the mxEditor.
+				//editor.setGraphContainer(container);
 				var graph = editor.graph;
 				var model = graph.getModel();
+				console.log(graph);
+				graph.view.scale = 1;
+				graph.setPanning(true);
+				graph.setConnectable(true);
+				graph.setConnectableEdges(true);
+				graph.setDisconnectOnMove(false);
+				graph.foldingEnabled = false;
 
 				// Disable highlight of cells when dragging from toolbar
 				graph.setDropEnabled(false);
 
+				graph.getAllConnectionConstraints = function(terminal)
+				{
+				   var geo = (terminal != null) ? this.getCellGeometry(terminal.cell) : null;
+
+				   if ((geo != null ? !geo.relative : false) &&
+					   this.getModel().isVertex(terminal.cell) &&
+					   this.getModel().getChildCount(terminal.cell) == 0)
+				   {
+						return [new mxConnectionConstraint(new mxPoint(0, 0.5), false),
+					    	new mxConnectionConstraint(new mxPoint(1, 0.5), false)];
+				    }
+
+					return null;
+				};
+
+
 				// Uses the port icon while connections are previewed
-				graph.connectionHandler.getConnectImage = function(state)
+				/*graph.connectionHandler.getConnectImage = function(state)
 				{
 					return new mxImage(state.style[mxConstants.STYLE_IMAGE], 16, 16);
-				};
+				};*/
 
 				// Centers the port icon on the target port
 				graph.connectionHandler.targetConnectImage = true;
@@ -95,6 +130,13 @@
 
 				// Sets the graph container and configures the editor
 				editor.setGraphContainer(container);
+				var config = mxUtils.load(
+					'editors/config/keyhandler-commons.xml').
+						getDocumentElement();
+				editor.configure(config);
+
+				// Sets the graph container and configures the editor
+				// editor.setGraphContainer(container);
 				//var config = mxUtils.load('config/editor-commons.xml').getDocumentElement();
 				var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
 				editor.configure(config);
@@ -380,6 +422,45 @@
 			    keyHandler.bindKey(40, function(){
 			    	nudge(40);
 			    });
+
+			    // Starts connections on the background in wire-mode
+				var connectionHandlerIsStartEvent = graph.connectionHandler.isStartEvent;
+				graph.connectionHandler.isStartEvent = function(me)
+				{
+					return connectionHandlerIsStartEvent.apply(this, arguments);
+				};
+
+				// Avoids any connections for gestures within tolerance except when in wire-mode
+				// or when over a port
+				var connectionHandlerMouseUp = graph.connectionHandler.mouseUp;
+				graph.connectionHandler.mouseUp = function(sender, me)
+				{
+					if (this.first != null && this.previous != null)
+					{
+						var point = mxUtils.convertPoint(this.graph.container, me.getX(), me.getY());
+						var dx = Math.abs(point.x - this.first.x);
+						var dy = Math.abs(point.y - this.first.y);
+
+						if (dx < this.graph.tolerance && dy < this.graph.tolerance)
+						{
+							// Selects edges in non-wire mode for single clicks, but starts
+							// connecting for non-edges regardless of wire-mode
+							if (this.graph.getModel().isEdge(this.previous.cell))
+							{
+								this.reset();
+							}
+
+							return;
+						}
+					}
+
+					connectionHandlerMouseUp.apply(this, arguments);
+				};
+
+
+				mxEvent.disableContextMenu(container);
+			
+
 			}
 		}
 		
@@ -1045,6 +1126,205 @@
 			var dec = new mxCodec(root.ownerDocument);
 			dec.decode(root, graph.stylesheet);
 		};
+
+
+	</script>
+
+	<!--
+	Overrides methods to preview and create new edges.
+-->
+	<script type="text/javascript">
+		// Sets source terminal point for edge-to-edge connections.
+		mxConnectionHandler.prototype.createEdgeState = function(me)
+		{
+			var edge = this.graph.createEdge();
+
+			if (this.sourceConstraint != null && this.previous != null)
+			{
+				edge.style = mxConstants.STYLE_EXIT_X+'='+this.sourceConstraint.point.x+';'+
+					mxConstants.STYLE_EXIT_Y+'='+this.sourceConstraint.point.y+';';
+			}
+			else if (this.graph.model.isEdge(me.getCell()))
+			{
+				var scale = this.graph.view.scale;
+				var tr = this.graph.view.translate;
+				var pt = new mxPoint(this.graph.snap(me.getGraphX() / scale) - tr.x,
+						this.graph.snap(me.getGraphY() / scale) - tr.y);
+				edge.geometry.setTerminalPoint(pt, true);
+			}
+
+			return this.graph.view.createState(edge);
+		};
+
+		// Uses right mouse button to create edges on background (see also: lines 67 ff)
+		mxConnectionHandler.prototype.isStopEvent = function(me)
+		{
+			return me.getState() != null || mxEvent.isRightMouseButton(me.getEvent());
+		};
+
+		// Updates target terminal point for edge-to-edge connections.
+		mxConnectionHandlerUpdateCurrentState = mxConnectionHandler.prototype.updateCurrentState;
+		mxConnectionHandler.prototype.updateCurrentState = function(me)
+		{
+			mxConnectionHandlerUpdateCurrentState.apply(this, arguments);
+
+			if (this.edgeState != null)
+			{
+				this.edgeState.cell.geometry.setTerminalPoint(null, false);
+
+				if (this.shape != null && this.currentState != null &&
+					this.currentState.view.graph.model.isEdge(this.currentState.cell))
+				{
+					var scale = this.graph.view.scale;
+					var tr = this.graph.view.translate;
+					var pt = new mxPoint(this.graph.snap(me.getGraphX() / scale) - tr.x,
+							this.graph.snap(me.getGraphY() / scale) - tr.y);
+					this.edgeState.cell.geometry.setTerminalPoint(pt, false);
+				}
+			}
+		};
+
+		// Updates the terminal and control points in the cloned preview.
+		mxEdgeSegmentHandler.prototype.clonePreviewState = function(point, terminal)
+		{
+			var clone = mxEdgeHandler.prototype.clonePreviewState.apply(this, arguments);
+			clone.cell = clone.cell.clone();
+
+			if (this.isSource || this.isTarget)
+			{
+				clone.cell.geometry = clone.cell.geometry.clone();
+
+				// Sets the terminal point of an edge if we're moving one of the endpoints
+				if (this.graph.getModel().isEdge(clone.cell))
+				{
+					// TODO: Only set this if the target or source terminal is an edge
+					clone.cell.geometry.setTerminalPoint(point, this.isSource);
+				}
+				else
+				{
+					clone.cell.geometry.setTerminalPoint(null, this.isSource);
+				}
+			}
+
+			return clone;
+		};
+
+		var mxEdgeHandlerConnect = mxEdgeHandler.prototype.connect;
+		mxEdgeHandler.prototype.connect = function(edge, terminal, isSource, isClone, me)
+		{
+			var result = null;
+			var model = this.graph.getModel();
+			var parent = model.getParent(edge);
+
+			model.beginUpdate();
+			try
+			{
+				result = mxEdgeHandlerConnect.apply(this, arguments);
+				var geo = model.getGeometry(result);
+
+				if (geo != null)
+				{
+					geo = geo.clone();
+					var pt = null;
+
+					if (model.isEdge(terminal))
+					{
+						pt = this.abspoints[(this.isSource) ? 0 : this.abspoints.length - 1];
+						pt.x = pt.x / this.graph.view.scale - this.graph.view.translate.x;
+						pt.y = pt.y / this.graph.view.scale - this.graph.view.translate.y;
+
+						var pstate = this.graph.getView().getState(
+								this.graph.getModel().getParent(edge));
+
+						if (pstate != null)
+						{
+							pt.x -= pstate.origin.x;
+							pt.y -= pstate.origin.y;
+						}
+
+						pt.x -= this.graph.panDx / this.graph.view.scale;
+						pt.y -= this.graph.panDy / this.graph.view.scale;
+					}
+
+					geo.setTerminalPoint(pt, isSource);
+					model.setGeometry(edge, geo);
+				}
+			}
+			finally
+			{
+				model.endUpdate();
+			}
+
+			return result;
+		};
+	</script>
+<!--
+	Adds in-place highlighting for complete cell area (no hotspot).
+-->
+	<script type="text/javascript">
+		mxConnectionHandlerCreateMarker = mxConnectionHandler.prototype.createMarker;
+		mxConnectionHandler.prototype.createMarker = function()
+		{
+			var marker = mxConnectionHandlerCreateMarker.apply(this, arguments);
+
+			// Uses complete area of cell for new connections (no hotspot)
+			marker.intersects = function(state, evt)
+			{
+				return true;
+			};
+
+			// Adds in-place highlighting
+			mxCellHighlightHighlight = mxCellHighlight.prototype.highlight;
+			marker.highlight.highlight = function(state)
+			{
+				if (this.state != state)
+				{
+					if (this.state != null)
+					{
+						this.state.style = this.lastStyle;
+
+						// Workaround for shape using current stroke width if no strokewidth defined
+						this.state.style['strokeWidth'] = this.state.style['strokeWidth'] || '1';
+						this.state.style['strokeColor'] = this.state.style['strokeColor'] || 'none';
+
+						if (this.state.shape != null)
+						{
+							this.state.view.graph.cellRenderer.configureShape(this.state);
+							this.state.shape.redraw();
+						}
+					}
+
+					if (state != null)
+					{
+						this.lastStyle = state.style;
+						state.style = mxUtils.clone(state.style);
+						state.style['strokeColor'] = '#00ff00';
+						state.style['strokeWidth'] = '3';
+
+						if (state.shape != null)
+						{
+							state.view.graph.cellRenderer.configureShape(state);
+							state.shape.redraw();
+						}
+					}
+
+					this.state = state;
+				}
+			};
+
+			return marker;
+		};
+
+		mxEdgeHandlerCreateMarker = mxEdgeHandler.prototype.createMarker;
+		mxEdgeHandler.prototype.createMarker = function()
+		{
+			var marker = mxEdgeHandlerCreateMarker.apply(this, arguments);
+
+			// Adds in-place highlighting when reconnecting existing edges
+			marker.highlight.highlight = this.graph.connectionHandler.marker.highlight.highlight;
+
+			return marker;
+		}
 	</script>
 </head>
 
