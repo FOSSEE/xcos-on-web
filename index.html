@@ -25,28 +25,7 @@
 	<script type="text/javascript" src="details.js"></script>
 	<script type="text/javascript" src="json2.js"></script>
 	<script type="text/javascript">
-		// If connect preview is not moved away then getCellAt is used to detect the cell under
-		// the mouse if the mouse is over the preview shape in IE (no event transparency), ie.
-		// the built-in hit-detection of the HTML document will not be used in this case.
-		mxConnectionHandler.prototype.movePreviewAway = false;
-		mxConnectionHandler.prototype.waypointsEnabled = true;
-		mxGraph.prototype.resetEdgesOnConnect = false;
-		mxConstants.SHADOWCOLOR = '#C0C0C0';
-
-
-
-		// Enables guides
-		mxGraphHandler.prototype.guidesEnabled = true;
-
-	    // Alt disables guides
-	    mxGuide.prototype.isEnabledForEvent = function(evt)
-	    {
-	    	return !mxEvent.isAltDown(evt);
-	    };
-
-		// Enables snapping waypoints to terminals
-		mxEdgeHandler.prototype.snapToTerminals = true;
-
+		
 		function main(container, outline, toolbar, sidebar, status)
 		{
 			// Checks if the browser is supported
@@ -57,6 +36,25 @@
 			}
 			else
 			{
+				// If connect preview is not moved away then getCellAt is used to detect the cell under
+				// the mouse if the mouse is over the preview shape in IE (no event transparency), ie.
+				// the built-in hit-detection of the HTML document will not be used in this case.
+				mxConnectionHandler.prototype.movePreviewAway = false;
+				mxConnectionHandler.prototype.waypointsEnabled = true;
+				mxGraph.prototype.resetEdgesOnConnect = false;
+
+				// Enables guides
+				mxGraphHandler.prototype.guidesEnabled = true;
+
+			    // Alt disables guides
+			    mxGuide.prototype.isEnabledForEvent = function(evt)
+			    {
+			    	return !mxEvent.isAltDown(evt);
+			    };
+
+				// Enables snapping waypoints to terminals
+				mxEdgeHandler.prototype.snapToTerminals = true;
+
 				// Assigns some global constants for general behaviour, eg. minimum
 				// size (in pixels) of the active region for triggering creation of
 				// new connections, the portion (100%) of the cell area to be used
@@ -84,7 +82,6 @@
 				var graph = editor.graph;
 				var model = graph.getModel();
 
-				graph.view.scale = 1;
 				graph.setPanning(true);
 				graph.setConnectable(true);
 				graph.setConnectableEdges(true);
@@ -151,7 +148,6 @@
 					return tmp;
 				}
 				
-
 				// Disables HTML labels for swimlanes to avoid conflict
 				// for the event processing on the child cells. HTML
 				// labels consume events before underlying cells get the
@@ -198,7 +194,6 @@
 					// Disables any default behaviour for the double click
 					mxEvent.consume(evt);
 				};
-
 
 				graph.getTooltipForCell = function(cell){
 					var text = null;
@@ -257,17 +252,12 @@
 
 				// Adds sidebar icons.
 				addIcons(graph,sidebar);
-
-				var style = graph.getStylesheet().getDefaultEdgeStyle();			
-
-				style['edgeStyle'] = 'wireEdgeStyle';
 				
 				// Creates a new DIV that is used as a toolbar and adds
 				// toolbar buttons.
 				var spacer = document.createElement('div');
 				spacer.style.display = 'inline';
 				spacer.style.padding = '8px';
-
 
 				// Defines a new export action
 				editor.addAction('toggle', function(editor, cell)
@@ -288,7 +278,6 @@
 
 				addToolbarButton(editor, toolbar, 'toggle', 'Expand All', 'images/navigate_plus.png');
 				toolbar.appendChild(spacer.cloneNode(true));
-				
 				
 				addToolbarButton(editor, toolbar, 'delete', 'Delete', 'images/delete2.png');
 				toolbar.appendChild(spacer.cloneNode(true));
@@ -433,7 +422,6 @@
 			}
 		};
 
-
 		function createButtonImage(button, image){
 			if (image != null)
 			{
@@ -532,7 +520,6 @@
 			graph.tooltipHandler.hide();
 			wnd.setVisible(true);
 		};
-
 
 		function addSidebarIcon(graph, sidebar, name, image)
 		{
@@ -949,7 +936,6 @@
 					}
 					// MATRIX
 					
-					
 					else if(name == 'OpAmp'){
 						v1 = graph.insertVertex(parent, null, '<table><tr><td>+</td><td></td></tr><tr><td></td><td>OP</td></tr><tr><td>-</td><td></td></tr></table>', x, y, 80, 80,'OpAmp');
 						createPorts(graph, v1, ['IMPLICIT','IMPLICIT'], [], ['IMPLICIT'], []);
@@ -992,7 +978,6 @@
 			var ds = mxUtils.makeDraggable(img, graph, funct, dragElt, 0, 0, true, true);
 			ds.setGuidesEnabled(true);
 		};
-		
 		
 		// Create ports
 		function createPorts(graph, block, left, top, right, bottom){
@@ -1096,6 +1081,8 @@
 			var root = req.getDocumentElement();
 			var dec = new mxCodec(root.ownerDocument);
 			dec.decode(root, graph.stylesheet);
+			var style = graph.getStylesheet().getDefaultEdgeStyle();			
+			style['edgeStyle'] = 'wireEdgeStyle';
 		};
 	</script>
 <!--
@@ -1479,7 +1466,6 @@
 	};
 	</script>
 
-
 </head>
 
 <!-- Page passes the container for the graph to the program -->
@@ -1488,6 +1474,14 @@
 		 	document.getElementById('toolbarContainer'),
 			document.getElementById('sidebarContainer'),
 			document.getElementById('statusContainer'));" style="margin:0px;">
+
+	<!-- Creates a container for the splash screen -->
+	<div id="splash"
+		style="position:absolute;top:0px;left:0px;width:100%;height:100%;background:white;z-index:1;">
+		<center id="splash" style="padding-top:230px;">
+			<img src="editors/images/loading.gif">
+		</center>
+	</div>
 	
 	<!-- Creates a container for the sidebar -->
 	<div id="toolbarContainer"
