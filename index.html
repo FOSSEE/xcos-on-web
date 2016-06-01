@@ -8,11 +8,11 @@
         BODY {
             font-family: Arial;
         }
-        
+
         H1 {
             font-size: 18px;
         }
-        
+
         H2 {
             font-size: 16px;
         }
@@ -166,9 +166,7 @@
                         if (!this.isHtmlLabel(cell)) {
                             this.startEditingAtCell(cell);
                         } else {
-                            var content = document.createElement('div');
-                            content.innerHTML = this.convertValueToString(cell);
-                            showModalWindow(this, 'Properties', content, 400, 300);
+                            showPropertiesWindow(graph);
                         }
                     }
 
@@ -384,6 +382,103 @@
                 mxEvent.disableContextMenu(container);
             }
         };
+
+
+        function showPropertiesWindow(graph) {
+
+            var array = ["Number of curves",
+                "color (>0) or mark (<0)",
+                "line or mark size",
+                "Output window number (-1 for automatic)",
+                "Output window position",
+                "Output window sizes",
+                "Xmin and Xmax",
+                "Ymin and Ymax",
+                "Zmin and Zmax",
+                "Alpha and Theta",
+                "Buffer size"
+            ];
+
+            // Create basic structure for the form.
+            var content = document.createElement('div');
+            //content.id = "contentProperties";
+            content.setAttribute("id", "contentProperties");
+
+            // Heading of content.
+            var heading = document.createElement('h2');
+            heading.innerHTML = "Set Scope Parameters";
+            heading.id = "headingProperties"
+            content.appendChild(heading);
+
+            // Add Form.
+            var myform = document.createElement("form");
+            myform.method = "post";
+            myform.id = "formProperties";
+
+            // Line break.
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            for (field in array) {
+                // Input Title.
+                var fieldName = array[field];
+                var namelabel = document.createElement('label');
+                namelabel.innerHTML = fieldName;
+                myform.appendChild(namelabel);
+
+
+                // Input.
+                var input = document.createElement("input");
+                input.name = fieldName;
+                input.style.cssText = 'float: right;';
+                input.id = fieldName;
+                myform.appendChild(input);
+
+                // Line break.
+                var linebreak = document.createElement('br');
+                myform.appendChild(linebreak);
+
+                // Line break.
+                var linebreak = document.createElement('br');
+                myform.appendChild(linebreak);
+
+            }
+            // Line break.
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Button - Submit.
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Submit';
+            btn.type = "button";
+            btn.name = "submit";
+
+            // Executes when button 'btn' is clicked.
+            btn.onclick = function() {
+
+            };
+            myform.appendChild(btn);
+
+            // Button - Reset.
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Reset';
+            btn.type = "button";
+            btn.name = "submit";
+            btn.id = "resetButtonProperties"
+                //btn.style.cssText='float:right;';
+            btn.onclick = function() {
+                // Only removes the content div, not the modal window.
+            };
+
+
+            myform.appendChild(btn);
+            // Base height without fields : 135 px
+            height = 135 + 26 * array.length + 15;
+
+            content.appendChild(myform);
+            showModalWindow(graph, 'Properties', content, 450, height);
+        };
+
 
         function createButtonImage(button, image) {
             if (image != null) {
@@ -998,16 +1093,6 @@
                     pt = new mxPoint(this.getRoutingCenterX(terminal),
                         this.getRoutingCenterY(terminal));
                 }
-
-                // Snaps point to grid
-                /*if (pt != null)
-                {
-                	var tr = this.graph.view.translate;
-                	var s = this.graph.view.scale;
-
-                	pt.x = (this.graph.snap(pt.x / s - tr.x) + tr.x) * s;
-                	pt.y = (this.graph.snap(pt.y / s - tr.y) + tr.y) * s;
-                }*/
             }
 
             edge.setAbsoluteTerminalPoint(pt, source);
@@ -1186,22 +1271,6 @@
 
             // Adds the waypoints
             if (hints != null && hints.length > 0) {
-                // FIXME: First segment not movable
-                /*hint = state.view.transformControlPoint(state, hints[0]);
-                mxLog.show();
-                mxLog.debug(hints.length,'hints0.y='+hint.y, pt.y)
-
-                if (horizontal && Math.floor(hint.y) != Math.floor(pt.y))
-                {
-                	mxLog.show();
-                	mxLog.debug('add waypoint');
-
-                	pt = new mxPoint(pt.x, hint.y);
-                	result.push(pt);
-                	pt = pt.clone();
-                	//horizontal = !horizontal;
-                }*/
-
                 for (var i = 0; i < hints.length; i++) {
                     horizontal = !horizontal;
                     hint = state.view.transformControlPoint(state, hints[i]);
@@ -1271,7 +1340,7 @@
     <!-- Creates a container for the splash screen -->
     <div id="splash" style="position:absolute;top:0px;left:0px;width:100%;height:100%;background:white;z-index:1;">
         <center id="splash" style="padding-top:230px;">
-            <img src="editors/images/loading.gif">
+            <img src="images/loading.gif">
         </center>
     </div>
 
