@@ -8,11 +8,11 @@
         BODY {
             font-family: Arial;
         }
-
+        
         H1 {
             font-size: 18px;
         }
-
+        
         H2 {
             font-size: 16px;
         }
@@ -321,7 +321,6 @@
 
                 // Handles cursor keys - guides.html
                 var nudge = function(keyCode) {
-                    graph.container.focus();
                     if (!graph.isSelectionEmpty()) {
                         var dx = 0;
                         var dy = 0;
@@ -383,8 +382,18 @@
                     connectionHandlerMouseUp.apply(this, arguments);
                 };
 
-
                 mxEvent.disableContextMenu(container);
+
+                // @Adhitya: Add focus to a mxCell
+                if (mxClient.IS_NS) {
+                    mxEvent.addListener(graph.container, 'mousedown', function(evt) {
+                        if (!graph.isEditing()) {
+                            graph.container.setAttribute('tabindex', '-1');
+                            graph.container.focus();
+                        }
+                    });
+                }
+
             }
         };
 
@@ -570,7 +579,6 @@
             wnd.addListener(mxEvent.DESTROY, function(evt) {
                 graph.setEnabled(true);
                 mxEffects.fadeOut(background, 50, true, 10, 30, true);
-                //alert("jitesh");
             });
 
             graph.setEnabled(false);
