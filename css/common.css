@@ -150,3 +150,25 @@ td.mxPopupMenuIcon {
 	background-color: #D0D0D0;
 	padding: 2px 4px 2px 4px;
 }
+
+/* Properties window - Start */
+
+#contentProperties {
+	border-style: solid;
+	border-width: 1px;
+	margin:10px 10px 10px 10px;
+}
+
+#headingProperties {
+	padding-left:2pc;
+}
+
+#resetButtonProperties{
+	float:right;
+}
+
+#formProperties {
+	margin-right:2pc;
+	margin-left:2pc;
+	margin-bottom:2pc;
+}
