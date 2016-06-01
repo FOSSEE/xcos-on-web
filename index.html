@@ -1155,7 +1155,6 @@
 
                 // Sets the terminal point of an edge if we're moving one of the endpoints
                 if (this.graph.getModel().isEdge(clone.cell)) {
-                    // TODO: Only set this if the target or source terminal is an edge
                     clone.cell.geometry.setTerminalPoint(point, this.isSource);
                 } else {
                     clone.cell.geometry.setTerminalPoint(null, this.isSource);
@@ -1258,7 +1257,6 @@
             }
 
             // Adds the first point
-            // TODO: Should move along connected segment
             var pt = pts[0];
 
             if (pt == null && source != null) {
@@ -1292,7 +1290,6 @@
             // Adds the last point
             pt = pts[pts.length - 1];
 
-            // TODO: Should move along connected segment
             if (pt == null && target != null) {
                 pt = new mxPoint(state.view.getRoutingCenterX(target), state.view.getRoutingCenterY(target));
             }
