@@ -166,6 +166,11 @@
                         if (!this.isHtmlLabel(cell)) {
                             this.startEditingAtCell(cell);
                         } else {
+                            /*
+                            var content = document.createElement('div');
+                            content.innerHTML = this.convertValueToString(cell);
+                            showModalWindow(this, 'Properties', content, 400, 300);
+                            */
                             showPropertiesWindow(graph);
                         }
                     }
@@ -565,6 +570,7 @@
             wnd.addListener(mxEvent.DESTROY, function(evt) {
                 graph.setEnabled(true);
                 mxEffects.fadeOut(background, 50, true, 10, 30, true);
+                //alert("jitesh");
             });
 
             graph.setEnabled(false);
