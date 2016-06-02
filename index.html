@@ -166,11 +166,11 @@
                         if (!this.isHtmlLabel(cell)) {
                             this.startEditingAtCell(cell);
                         } else {
-                            /*
+                           /* 
                             var content = document.createElement('div');
                             content.innerHTML = this.convertValueToString(cell);
-                            showModalWindow(this, 'Properties', content, 400, 300);
-                            */
+                            showModalWindow(this, 'Properties', content, 400, 300);*/
+                            
                             showPropertiesWindow(graph);
                         }
                     }
@@ -205,13 +205,13 @@
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 // https://jgraph.github.io/mxgraph/docs/js-api/files/model/mxCell-js.html
                 // Uncomment this block to see XML tags work
-                /*graph.convertValueToString = function(cell)
+                graph.convertValueToString = function(cell)
                 {
                   if (mxUtils.isNode(cell.value))
                   {
                     return cell.getAttribute('label', '');
                   }
-                };*/
+                };
 
                 var cellLabelChanged = graph.cellLabelChanged;
                 graph.cellLabelChanged = function(cell, newValue, autoSize) {
@@ -400,7 +400,7 @@
 
         function showPropertiesWindow(graph) {
 
-            var array = ["Number of curves",
+            /*var array = ["Number of curves",
                 "color (>0) or mark (<0)",
                 "line or mark size",
                 "Output window number (-1 for automatic)",
@@ -411,7 +411,8 @@
                 "Zmin and Zmax",
                 "Alpha and Theta",
                 "Buffer size"
-            ];
+            ];*/
+            var arr=CONST_m("get");
 
             // Create basic structure for the form.
             var content = document.createElement('div');
@@ -600,24 +601,33 @@
                 try {
                     var label = getImgHTML(name); // Will not exist for all blocks
 
-                    if (name == 'ANDBLK') {
-                        var details = doc.createElement('BasicBlock');
-                        details.setAttribute('name', name);
-                        details.setAttribute('label', label);
-                        var obj = ANDLOG_f(); // This isn't even the right function!
+                    if(name == 'ANDBLK'){
+                        
+                        var details = new BasicBlock(name);
                         var encoder = new mxCodec();
-                        var result = encoder.encode(obj);
-                        var xml = mxUtils.getPrettyXml(result);
-                        var blockName = document.createTextNode(xml);
-                        details.appendChild(blockName);
-                        console.log(details);
-                        v1 = graph.insertVertex(parent, null, details, x, y, 80, 80, 'ANDBLK');
-                        createPorts(graph, v1, [], ['CONTROL', 'CONTROL'], [], ['COMMAND']);
+                        var result = encoder.encode(details);
+                        result.setAttribute('label',label);
+                        //var xml = mxUtils.getPrettyXml(result);
+                        //var blockName = document.createTextNode(xml);
+                        //alert(blockName);
+                        //details.appendChild(blockName);
+                        //alert(details);
+                        //console.log(details);*/
+                        var temp=encoder.encode(parent);
+                        result.setAttribute('parent',temp.getAttribute('id')); //@ASP1234 to get id in Basic Block
+                        v1 = graph.insertVertex(parent, null,result, x, y, 80, 80, 'ANDBLK'); 
+                        createPorts(graph, v1, [], ['CONTROL','CONTROL'], [], ['COMMAND']);
+                
                     } else if (name == 'CMSCOPE') {
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'CMSCOPE');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], [], []);
                     } else if (name == 'CONST_m') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'CONST_m');
+                        var details = new BasicBlock(name); // This isn't even the right function!
+                        var encoder = new mxCodec();
+                        var result = encoder.encode(details);
+                        result.setAttribute('label',"1");
+                        
+                        v1 = graph.insertVertex(parent, null,result, x, y, 80, 80,'CONST_m');
                         createPorts(graph, v1, [], [], ['EXPLICIT'], []);
                     } else if (name == 'CONVERT') {
                         v1 = graph.insertVertex(parent, null, 'Convert to', x, y, 80, 80, 'CONVERT');
@@ -1047,7 +1057,7 @@
         };
     </script>
     <!--
-		Updates connection points before the routing is called.
+        Updates connection points before the routing is called.
 -->
     <script type="text/javascript">
         // Computes the position of edge to edge connection points.
@@ -1114,7 +1124,7 @@
     </script>
 
     <!--
-	Overrides methods to preview and create new edges.
+    Overrides methods to preview and create new edges.
 -->
     <script type="text/javascript">
         // Sets source terminal point for edge-to-edge connections.
@@ -1221,7 +1231,7 @@
         };
     </script>
     <!--
-	Adds in-place highlighting for complete cell area (no hotspot).
+    Adds in-place highlighting for complete cell area (no hotspot).
 -->
     <script type="text/javascript">
         mxConnectionHandlerCreateMarker = mxConnectionHandler.prototype.createMarker;
@@ -1247,7 +1257,7 @@
         }
     </script>
     <!--
-	Imlements a custom resistor shape. Direction currently ignored here.
+    Imlements a custom resistor shape. Direction currently ignored here.
 -->
     <script type="text/javascript">
         mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
@@ -1343,10 +1353,10 @@
 <!-- Page passes the container for the graph to the program -->
 
 <body onload="main(document.getElementById('graphContainer'),
-			document.getElementById('outlineContainer'),
-		 	document.getElementById('toolbarContainer'),
-			document.getElementById('sidebarContainer'),
-			document.getElementById('statusContainer'));" style="margin:0px;">
+            document.getElementById('outlineContainer'),
+            document.getElementById('toolbarContainer'),
+            document.getElementById('sidebarContainer'),
+            document.getElementById('statusContainer'));" style="margin:0px;">
 
     <!-- Creates a container for the splash screen -->
     <div id="splash" style="position:absolute;top:0px;left:0px;width:100%;height:100%;background:white;z-index:1;">
