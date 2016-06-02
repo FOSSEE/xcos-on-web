@@ -96,6 +96,129 @@
                 // Sets the graph container and configures the editor
                 editor.setGraphContainer(container);
 
+                // Disables built-in context menu
+                mxEvent.disableContextMenu(document.body);
+                
+                // Configures automatic expand on mouseover
+                graph.panningHandler.autoExpand = true;
+
+                // Installs context menu
+                graph.panningHandler.factoryMethod = function(menu, cell, evt)
+                {
+                    
+                        if (cell != null)
+                        {
+                            
+                            if( cell.value == "ExplicitInputPort" || cell.value == "ExplicitOutputPort" || cell.value == "CommandPort" || cell.value == "ControlPort")
+                            {
+                                
+                            }
+                            else if (cell.isEdge() == true)// @ToDo: Pooja: Different edge value cases.
+                            {
+                                
+                                menu.addItem('Delete', 'images/delete2.png', function()
+                                {
+                                    editor.execute('delete');
+                                });
+                                var edgeformat = menu.addItem('Format', null, null);
+                                
+                                menu.addItem('Border Color', 'images/draw-brush.png', function()
+                                {
+                                    alert('B C');
+                                }, edgeformat);
+                                menu.addItem('Edit...', 'images/edit.png', function()
+                                {
+                                    alert('Edit...');
+                                }, edgeformat);
+                                
+                            }
+                            else 
+                            {
+
+                                menu.addItem('Block Parameters...', 'images/gear.gif', function()
+                                {
+                                    
+                                });
+                                
+                                menu.addItem('Cut', 'images/cut.png', function()
+                                {
+                                    editor.execute('cut');
+                                });
+
+                                menu.addItem('Copy', 'images/copy.png', function()
+                                {
+                                    editor.execute('copy');
+                                });
+
+                                menu.addItem('Delete', 'images/delete2.png', function()
+                                {
+                                    editor.execute('delete');
+                                });
+                                
+                                menu.addItem('Selection to superblock', 'images/superblock.png', function()
+                                {
+                                    
+                                });
+                                var format = menu.addItem('Format', null, null);
+                                
+                                menu.addItem('Rotate', 'images/rotate.png', function()
+                                {
+                                    alert('Rotate');
+                                }, format);
+                                menu.addItem('Edit...', 'images/edit.png', function()
+                                {
+                                    alert('Edit...');
+                                }, format);
+
+                                menu.addItem('Details', null, function()
+                                {
+                                    
+                                });
+                            }
+
+                        }
+                        else {
+                            menu.addItem('Undo', 'images/undo.png', function()
+                            {
+                                editor.execute('undo');
+                            });
+                            menu.addItem('Redo', 'images/redo.png', function()
+                            {
+                                editor.execute('redo');
+                            });
+                            menu.addItem('Paste', 'images/paste.png', function()
+                            {
+                                editor.execute('paste');
+                            });
+                            menu.addItem('Select all', 'images/selectall.png', function()
+                            {
+                                editor.execute('selectAll');
+                            });
+                            menu.addItem('Set Context', null, function()
+                            {
+                               
+                            });
+                            menu.addItem('Setup', 'images/setup.png', function()
+                            {
+                                
+                            });
+
+                            menu.addItem('Zoom In', 'images/zoom_in.png', function()
+                            {
+                                editor.execute('zoomIn');
+                            });
+                            menu.addItem('Zoom Out', 'images/zoom_out.png', function()
+                            {
+                                editor.execute('zoomOut');
+                            });
+                            menu.addItem('Diagram background...', null, function()
+                            {
+                                
+                            });
+                        }                    
+                   
+                };
+
                 //var config = mxUtils.load('config/editor-commons.xml').getDocumentElement();
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
                 editor.configure(config);
@@ -444,6 +567,7 @@
                 // Input.
                 var input = document.createElement("input");
                 input.name = fieldName;
+                input.value = 0;
                 input.style.cssText = 'float: right;';
                 input.id = fieldName;
                 myform.appendChild(input);
