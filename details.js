@@ -545,7 +545,28 @@ function ANDLOG_f() {
 
 function BasicBlock()
 {
-	var options = arguments[0] || new Object();
+	switch(arguments[0])
+	{
+		case "ANDBLK":
+			var attributes = {
+				style: "ANDBLK",
+				simulationFunctionName: "csuper",
+				simulationFunctionType: "DEFAULT",
+				blockType: "h",
+				interfaceFunctionName: "ANDBLK"
+			};
+			break;
+		case "CONST_m":
+			var attributes = {
+				style: "CONST_m",
+				simulationFunctionName: "cstblk4",
+				simulationFunctionType: "C_OR_FORTRAN",
+				blockType: "d",
+				interfaceFunctionName: "CONST_m"
+			};
+			break;
+	}
+	var options = attributes || new Object();
 	
 	this.angle=options.angle||"";
 	this.blockType=options.blockType||"";
@@ -563,9 +584,15 @@ function BasicBlock()
 	this.vertex=options.vertex||"";
 	this.visible=options.visible||"";
 	
-	if(this.style=="ANDBLK")
-		this.realParameters=ANDBLK();
-		
+	switch(arguments[0])
+	{
+		case "ANDBLK":
+			this.realParameters=ANDBLK();
+			break;
+		case "CONST_m":
+			this.realParameters=CONST_m();
+			break;
+	}
 }
 
 function ANDBLK() {
@@ -678,5 +705,53 @@ function ANDBLK() {
 	x[model][firing]= new ScilabBoolean(new data("false",0,0));
 	x[model][dep_ut]= new ScilabBoolean(new data("false",0,0),new data("false",1,0));
 	x[model][rpar]=diagram;
-	return diagram;
+	return x;
+}
+
+function sci2exp(c)
+{
+	if(c.length==1)
+	return new ScilabString(new data(c.toString(),0,0));
+	else
+	return new ScilabString(new data("["+c.toString()+"]",0,0));
+}
+
+
+function C()
+{
+	var i=0;
+	var arr=[]
+	for(i=0;i<arguments[0].length;i++)
+	{
+		arr.push(new data(arguments[0][i],i,0));
+	}
+	return new ScilabDouble(...arr);
+}
+
+function CONST_m()
+{
+	switch(arguments[0])
+	{
+		case "get":
+			var array=["Constant Value"];
+			return array;
+		case "define":
+			var c=[1];
+			var model = scicos_model();
+			model[sim] = list(new ScilabString(new data('cstblk4', 0, 0)),new ScilabDouble(new data(4,0,0)));
+			model[in1]=new ScilabDouble();
+			model[out]=new ScilabDouble(new data(c.length,0,0));
+			model[in2]=new ScilabDouble();
+			model[out2]=new ScilabDouble(new data(c.length,0,0));
+			model[rpar]=C(c);
+			model[opar]=list();
+			model[blocktype] = new ScilabString(new data('d', 0, 0));
+			model[dep_ut] = new ScilabBoolean(new data('false', 0, 0), new data('false', 1, 0));
+			
+			var gr_i = new ScilabString(new data("xstringb(orig(1),orig(2),\"CONST_m\",sz(1),sz(2));", 0, 0));
+			var exprs=sci2exp(c);
+			var block = new standard_define(new ScilabDouble(new data(80, 0, 0), new data(80, 1, 0)), model, exprs, gr_i); // 1 -> 80
+			block[graphics][style] = new ScilabString(new data("CONST_m", 0, 0));
+			return block;
+	}
 }
