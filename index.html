@@ -98,6 +98,7 @@
 
                 // Disables built-in context menu
                 mxEvent.disableContextMenu(document.body);
+                
                 // Configures automatic expand on mouseover
                 graph.panningHandler.autoExpand = true;
 
@@ -112,7 +113,7 @@
                             {
                                 
                             }
-                            else if (cell.value =="")// @ToDo: Pooja: Different edge value cases.
+                            else if (cell.isEdge() == true)// @ToDo: Pooja: Different edge value cases.
                             {
                                 
                                 menu.addItem('Delete', 'images/delete2.png', function()
@@ -154,7 +155,6 @@
                                     editor.execute('delete');
                                 });
                                 
-                                //menu.addSeparator();
                                 menu.addItem('Selection to superblock', 'images/superblock.png', function()
                                 {
                                     
@@ -215,8 +215,7 @@
                             {
                                 
                             });
-                        }
-                    
+                        }                    
                    
                 };
 
