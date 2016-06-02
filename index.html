@@ -166,12 +166,12 @@
                         if (!this.isHtmlLabel(cell)) {
                             this.startEditingAtCell(cell);
                         } else {
-                            /*
+                           /* 
                             var content = document.createElement('div');
                             content.innerHTML = this.convertValueToString(cell);
-                            showModalWindow(this, 'Properties', content, 400, 300);
-                            */
-                            showPropertiesWindow(graph);
+                            showModalWindow(this, 'Properties', content, 400, 300);*/
+                            
+                        	showPropertiesWindow(graph);
                         }
                     }
 
@@ -205,13 +205,13 @@
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 // https://jgraph.github.io/mxgraph/docs/js-api/files/model/mxCell-js.html
                 // Uncomment this block to see XML tags work
-                /*graph.convertValueToString = function(cell)
+                graph.convertValueToString = function(cell)
                 {
                   if (mxUtils.isNode(cell.value))
                   {
                     return cell.getAttribute('label', '');
                   }
-                };*/
+                };
 
                 var cellLabelChanged = graph.cellLabelChanged;
                 graph.cellLabelChanged = function(cell, newValue, autoSize) {
@@ -400,7 +400,7 @@
 
         function showPropertiesWindow(graph) {
 
-            var array = ["Number of curves",
+            /*var array = ["Number of curves",
                 "color (>0) or mark (<0)",
                 "line or mark size",
                 "Output window number (-1 for automatic)",
@@ -411,7 +411,9 @@
                 "Zmin and Zmax",
                 "Alpha and Theta",
                 "Buffer size"
-            ];
+            ];*/
+            var array=CONST_m("get");
+            //console.log(array);
 
             // Create basic structure for the form.
             var content = document.createElement('div');
@@ -469,7 +471,12 @@
 
             // Executes when button 'btn' is clicked.
             btn.onclick = function() {
-
+                var params = {};
+                var i=0;
+                for(i=0;i<array.length;i++)
+                    params[array[i]] = document.getElementById(array[i]).value;
+                console.log(params);
+                CONST_m("set",params);
             };
             myform.appendChild(btn);
 
@@ -600,25 +607,34 @@
                 try {
                     var label = getImgHTML(name); // Will not exist for all blocks
 
-                    if (name == 'ANDBLK') {
-                        var details = doc.createElement('BasicBlock');
-                        details.setAttribute('name', name);
-                        details.setAttribute('label', label);
-                        var obj = ANDLOG_f(); // This isn't even the right function!
-                        var encoder = new mxCodec();
-                        var result = encoder.encode(obj);
-                        var xml = mxUtils.getPrettyXml(result);
-                        var blockName = document.createTextNode(xml);
-                        details.appendChild(blockName);
-                        console.log(details);
-                        v1 = graph.insertVertex(parent, null, details, x, y, 80, 80, 'ANDBLK');
-                        createPorts(graph, v1, [], ['CONTROL', 'CONTROL'], [], ['COMMAND']);
+                    if(name == 'ANDBLK'){
+						
+						var details = new BasicBlock(name);
+						var encoder = new mxCodec();
+						var result = encoder.encode(details);
+						result.setAttribute('label',label);
+						//var xml = mxUtils.getPrettyXml(result);
+						//var blockName = document.createTextNode(xml);
+						//alert(blockName);
+						//details.appendChild(blockName);
+						//alert(details);
+						//console.log(details);*/
+						var temp=encoder.encode(parent);
+						result.setAttribute('parent',temp.getAttribute('id')); //@ASP1234 to get id in Basic Block
+						v1 = graph.insertVertex(parent, null,result, x, y, 80, 80, 'ANDBLK'); 
+						createPorts(graph, v1, [], ['CONTROL','CONTROL'], [], ['COMMAND']);
+				
                     } else if (name == 'CMSCOPE') {
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'CMSCOPE');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], [], []);
                     } else if (name == 'CONST_m') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'CONST_m');
-                        createPorts(graph, v1, [], [], ['EXPLICIT'], []);
+                        var details = new BasicBlock(name); // This isn't even the right function!
+						var encoder = new mxCodec();
+						var result = encoder.encode(details);
+						result.setAttribute('label',"1");
+						
+						v1 = graph.insertVertex(parent, null,result, x, y, 80, 80,'CONST_m');
+						createPorts(graph, v1, [], [], ['EXPLICIT'], []);
                     } else if (name == 'CONVERT') {
                         v1 = graph.insertVertex(parent, null, 'Convert to', x, y, 80, 80, 'CONVERT');
                         createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
