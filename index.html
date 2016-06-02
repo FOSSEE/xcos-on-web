@@ -8,11 +8,11 @@
         BODY {
             font-family: Arial;
         }
-        
+
         H1 {
             font-size: 18px;
         }
-        
+
         H2 {
             font-size: 16px;
         }
@@ -255,10 +255,43 @@
                     button.appendChild(titleName);
                 });
 
+                editor.addAction('deleteBlock', function(editor, cell) {
+                    var array = [];
+                    var portCount = graph.getSelectionCell().getChildCount();
+                    array.push(graph.getSelectionCell());
+
+                    for(var i = 0; i < portCount; i++) {
+                      var edgeCount = graph.getSelectionCell().getChildAt(i).getEdgeCount();
+                      if(edgeCount != 0) {
+                        getEdgeId(graph.getSelectionCell().getChildAt(i));
+
+                        for(var j = 0; j < edgeCount; j++) {
+                            var edgeObject = graph.getSelectionCell().getChildAt(i).getEdgeAt(j);
+                            getEdgeId(edgeObject);
+                        }
+                      }
+                    }
+                    function getEdgeId(eObject)
+                    {
+                      if(eObject != null && eObject.isEdge()) {
+                        for(var j = 0; j < eObject.getEdgeCount(); j++)
+                        {
+                          getEdgeId(eObject.getEdgeAt(j));
+                        }
+                        if(eObject.edge == true && (array.indexOf(eObject) == -1)) {
+                          array.push(eObject);
+                        }
+                      }
+                    }
+
+                    graph.getSelectionModel().setCells(array);
+                    editor.execute('delete');
+                });
+
                 addToolbarButton(editor, toolbar, 'toggle', 'Expand All', 'images/navigate_plus.png');
                 toolbar.appendChild(spacer.cloneNode(true));
 
-                addToolbarButton(editor, toolbar, 'delete', 'Delete', 'images/delete2.png');
+                addToolbarButton(editor, toolbar, 'deleteBlock', 'Delete', 'images/delete2.png');
                 toolbar.appendChild(spacer.cloneNode(true));
 
                 addToolbarButton(editor, toolbar, 'cut', 'Cut', 'images/cut.png');
