@@ -264,44 +264,42 @@
                 editor.addAction('deleteBlock', function(editor, cell) {
                     var cells = [];
                     var selectionCells = graph.getSelectionCells();
-                    for(var k = 0; k < selectionCells.length; k++) {
-                      var portCount = selectionCells[k].getChildCount();
-                      cells.push(selectionCells[k]);
-                      // Finds all the port with edges of the selected cell, and calls getEdgeId() for
-                      // each edge object of that port.
-                      for(var i = 0; i < portCount; i++) {
-                        var edgeCount = selectionCells[k].getChildAt(i).getEdgeCount();
-                        if(edgeCount != 0) {
-                          getEdgeId(selectionCells[k].getChildAt(i));
+                    for (var k = 0; k < selectionCells.length; k++) {
+                        var portCount = selectionCells[k].getChildCount();
+                        cells.push(selectionCells[k]);
+                        // Finds all the port with edges of the selected cell, and calls getEdgeId() for
+                        // each edge object of that port.
+                        for (var i = 0; i < portCount; i++) {
+                            var edgeCount = selectionCells[k].getChildAt(i).getEdgeCount();
+                            if (edgeCount != 0) {
+                                getEdgeId(selectionCells[k].getChildAt(i));
 
-                          for(var j = 0; j < edgeCount; j++) {
-                              var edgeObject = selectionCells[k].getChildAt(i).getEdgeAt(j);
-                              getEdgeId(edgeObject);
-                          }
+                                for (var j = 0; j < edgeCount; j++) {
+                                    var edgeObject = selectionCells[k].getChildAt(i).getEdgeAt(j);
+                                    getEdgeId(edgeObject);
+                                }
+                            }
                         }
-                      }
                     }
 
 
                     /* getEdgeId() find all the associated edges from an edge.
                      Pushes the object of that edge into an array of mxCell objects.
                      */
-                    function getEdgeId(edgeObject)
-                    {
-                      var cellStack = [];
-                      if(edgeObject != null && edgeObject.isEdge() == true) {
-                        cellStack.push(edgeObject);
-                        while(cellStack.length != 0) {
-                          var tempEdgeObject = cellStack.pop();
-                          if(tempEdgeObject.edge == true && (cells.indexOf(tempEdgeObject) == -1)) {
-                            cells.push(tempEdgeObject);
-                          }
-                          for(var j = 0; j < tempEdgeObject.getEdgeCount(); j++)
-                          {
-                            cellStack.push(tempEdgeObject.getEdgeAt(j));
-                          }
+                    function getEdgeId(edgeObject) {
+                        var cellStack = [];
+                        if (edgeObject != null && edgeObject.isEdge() == true) {
+                            cellStack.push(edgeObject);
+                            while (cellStack.length != 0) {
+                                var tempEdgeObject = cellStack.pop();
+                                if (tempEdgeObject.edge == true && (cells.indexOf(tempEdgeObject) == -1)) {
+                                    cells.push(tempEdgeObject);
+                                }
+                                for (var j = 0; j < tempEdgeObject.getEdgeCount(); j++) {
+                                    cellStack.push(tempEdgeObject.getEdgeAt(j));
+                                }
+                            }
                         }
-                      }
                     }
 
                     // The mxCells to be deleted are first highlighted,
@@ -455,32 +453,19 @@
 
         function showPropertiesWindow(graph, cell) {
 
-            var array = ["numberOfCurves",
-                "colorOrMark",
-                "line or mark size",
-                "lineOrMarkSize",
-                "outputWindowNumber",
-                "outputWindowPosition",
-                "outputWindowSize",
-                "xminAndXmax",
-                "yminAndYmax",
-                "zminAndZmax",
-                "alphaAndTheta",
-                "bufferSize"
-            ];
-
-            var completeNameArray = {};
-            completeNameArray["numberOfCurves"] = "Number of Curves";
-            completeNameArray["colorOrMark"] = "color (>0) or mark (<0)";
-            completeNameArray["lineOrMarkSize"] = "line or mark size";
-            completeNameArray["outputWindowNumber"] = "Output window number (-1 for automatic)";
-            completeNameArray["outputWindowPosition"] = "Output window position";
-            completeNameArray["outputWindowSize"] = "Output window sizes";
-            completeNameArray["xminAndXmax"] = "Xmin and Xmax";
-            completeNameArray["yminAndYmax"] = "Ymin and Ymax";
-            completeNameArray["zminAndZmax"] = "Zmin and Zmax";
-            completeNameArray["alphaAndTheta"] = "Alpha and Theta";
-            completeNameArray["bufferSize"] = "Buffer size";
+            var defaultProperties = {
+                nbr_curves: ["Number of curves", 1],
+                clrs: ["color (>0) or mark (<0)", [1, 2, 3, 4, 5, 6, 7, 13]],
+                siz: ["line or mark size", [1, 1, 1, 1, 1, 1, 1, 1]],
+                win: ["Output window number (-1 for automatic)", -1],
+                wpos: ["Output window position", [-1, -1]],
+                wdim: ["Output window sizes", [-1, -1]],
+                vec_x: ["Xmin and Xmax", [-15, 15]],
+                vec_y: ["Ymin and Ymax", [-15, 15]],
+                vec_z: ["Zmin and Zmax", [-15, 15]],
+                param3ds: ["Alpha and Theta", [50, 280]],
+                N: ["Buffer size", 2]
+            };
 
             // Create basic structure for the form.
             var content = document.createElement('div');
@@ -502,31 +487,33 @@
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
-            for (field in array) {
-                // Input Title.
-                var fieldName = array[field];
-                var namelabel = document.createElement('label');
-                namelabel.innerHTML = completeNameArray[fieldName.toString()];
-                myform.appendChild(namelabel);
+            for (var key in defaultProperties) {
+                if (defaultProperties.hasOwnProperty(key)) {
 
+                    // Input Title.
+                    var fieldName = defaultProperties[key];
+                    var namelabel = document.createElement('label');
+                    namelabel.innerHTML = defaultProperties[key][0];
+                    myform.appendChild(namelabel);
 
-                // Input.
-                var input = document.createElement("input");
-                input.name = fieldName.toString();
-                input.value = 0;
-                input.style.cssText = 'float: right;';
-                input.id = fieldName.toString();
-                myform.appendChild(input);
+                    // Input.
+                    var input = document.createElement("input");
+                    input.name = key;
+                    input.value = defaultProperties[key][1];
+                    input.setAttribute("id", key.toString());
+                    input.setAttribute("class", "fieldInput");
+                    myform.appendChild(input);
 
-                // Line break.
-                var linebreak = document.createElement('br');
-                myform.appendChild(linebreak);
+                    // Line break.
+                    var linebreak = document.createElement('br');
+                    myform.appendChild(linebreak);
 
-                // Line break.
-                var linebreak = document.createElement('br');
-                myform.appendChild(linebreak);
-
+                    // Line break.
+                    var linebreak = document.createElement('br');
+                    myform.appendChild(linebreak);
+                }
             }
+
             // Line break.
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
@@ -539,22 +526,15 @@
 
             // Executes when button 'btn' is clicked.
             btn.onclick = function() {
-              var propertiesObject = {
-                xyz : document.querySelector('#xyz').value,
-                id : cell.id,
-                numberOfCurves : document.querySelector('#numberOfCurves').value,
-								colorOrMark : document.querySelector('#colorOrMark').value,
-								lineOrMarkSize : document.querySelector('#lineOrMarkSize').value,
-								outputWindowNumber : document.querySelector('#outputWindowNumber').value,
-								outputWindowPosition : document.querySelector('#outputWindowPosition').value,
-								outputWindowSize : document.querySelector('#outputWindowSize').value,
-								xminAndXmax : document.querySelector('#xminAndXmax').value,
-								yminAndYmax : document.querySelector('#yminAndYmax').value,
-                zminAndZmax : document.querySelector('#zminAndZmax').value,
-								alphaAndTheta : document.querySelector('#alphaAndTheta').value,
-								bufferSize : document.querySelector('#bufferSize').value
-              };
-              console.log(propertiesObject);
+                var propertiesObject = {
+                    id: cell.id
+                };
+
+                for (var key in defaultProperties) {
+                    if (defaultProperties.hasOwnProperty(key)) {
+                        propertiesObject[key] = document.getElementById(key.toString()).value;
+                    }
+                }
             };
             myform.appendChild(btn);
 
@@ -563,17 +543,20 @@
             btn.innerHTML = 'Reset';
             btn.type = "button";
             btn.name = "submit";
-            btn.id = "resetButtonProperties"
-                //btn.style.cssText='float:right;';
+            btn.id = "resetButtonProperties";
             btn.onclick = function() {
-                // Only removes the content div, not the modal window.
-
+                // Reset
+                for (var key in defaultProperties) {
+                    if (defaultProperties.hasOwnProperty(key)) {
+                        var element = document.getElementById(key.toString());
+                        element.value = defaultProperties[key][1];
+                    }
+                }
             };
-
 
             myform.appendChild(btn);
             // Base height without fields : 135 px
-            height = 135 + 26 * array.length + 15;
+            height = 135 + 26 * defaultProperties.length + 15;
 
             content.appendChild(myform);
             showModalWindow(graph, 'Properties', content, 450, height);

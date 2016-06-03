@@ -172,3 +172,7 @@ td.mxPopupMenuIcon {
 	margin-left:2pc;
 	margin-bottom:2pc;
 }
+
+.fieldInput {
+	float: right;
+}
