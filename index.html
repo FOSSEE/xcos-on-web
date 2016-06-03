@@ -390,7 +390,7 @@
                     }
                 };
                 // Transfer initial focus to graph container for keystroke handling
-                //graph.container.focus();
+                // graph.container.focus();
                 // Handles keystroke events
                 var keyHandler = new mxKeyHandler(graph);
                 keyHandler.bindKey(37, function() {
@@ -467,36 +467,36 @@
                 N: ["Buffer size", 2]
             };
 
-            // Create basic structure for the form.
+            // Create basic structure for the form
             var content = document.createElement('div');
             //content.id = "contentProperties";
             content.setAttribute("id", "contentProperties");
 
-            // Heading of content.
+            // Heading of content
             var heading = document.createElement('h2');
             heading.innerHTML = "Set Scope Parameters";
             heading.id = "headingProperties"
             content.appendChild(heading);
 
-            // Add Form.
+            // Add Form
             var myform = document.createElement("form");
             myform.method = "post";
             myform.id = "formProperties";
 
-            // Line break.
+            // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
             for (var key in defaultProperties) {
                 if (defaultProperties.hasOwnProperty(key)) {
 
-                    // Input Title.
+                    // Input Title
                     var fieldName = defaultProperties[key];
                     var namelabel = document.createElement('label');
                     namelabel.innerHTML = defaultProperties[key][0];
                     myform.appendChild(namelabel);
 
-                    // Input.
+                    // Input
                     var input = document.createElement("input");
                     input.name = key;
                     input.value = defaultProperties[key][1];
@@ -504,27 +504,27 @@
                     input.setAttribute("class", "fieldInput");
                     myform.appendChild(input);
 
-                    // Line break.
+                    // Line break
                     var linebreak = document.createElement('br');
                     myform.appendChild(linebreak);
 
-                    // Line break.
+                    // Line break
                     var linebreak = document.createElement('br');
                     myform.appendChild(linebreak);
                 }
             }
 
-            // Line break.
+            // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
-            // Button - Submit.
+            // Button - Submit
             var btn = document.createElement("button");
             btn.innerHTML = 'Submit';
             btn.type = "button";
             btn.name = "submit";
 
-            // Executes when button 'btn' is clicked.
+            // Executes when button 'btn' is clicked
             btn.onclick = function() {
                 var propertiesObject = {
                     id: cell.id
@@ -538,7 +538,7 @@
             };
             myform.appendChild(btn);
 
-            // Button - Reset.
+            // Button - Reset
             var btn = document.createElement("button");
             btn.innerHTML = 'Reset';
             btn.type = "button";
@@ -1116,8 +1116,8 @@
         };
     </script>
     <!--
-		Updates connection points before the routing is called.
--->
+    	Updates connection points before the routing is called.
+    -->
     <script type="text/javascript">
         // Computes the position of edge to edge connection points.
         mxGraphView.prototype.updateFixedTerminalPoint = function(edge, terminal, source, constraint) {
@@ -1183,8 +1183,8 @@
     </script>
 
     <!--
-	Overrides methods to preview and create new edges.
--->
+      Overrides methods to preview and create new edges.
+    -->
     <script type="text/javascript">
         // Sets source terminal point for edge-to-edge connections.
         mxConnectionHandler.prototype.createEdgeState = function(me) {
@@ -1290,8 +1290,8 @@
         };
     </script>
     <!--
-	Adds in-place highlighting for complete cell area (no hotspot).
--->
+	    Adds in-place highlighting for complete cell area (no hotspot).
+    -->
     <script type="text/javascript">
         mxConnectionHandlerCreateMarker = mxConnectionHandler.prototype.createMarker;
         mxConnectionHandler.prototype.createMarker = function() {
@@ -1316,8 +1316,8 @@
         }
     </script>
     <!--
-	Imlements a custom resistor shape. Direction currently ignored here.
--->
+	   Implements a custom resistor shape. Direction currently ignored here.
+    -->
     <script type="text/javascript">
         mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
             // Creates array of all way- and terminalpoints
@@ -1428,7 +1428,7 @@
     <div id="toolbarContainer" style="position:absolute;white-space:nowrap;overflow:hidden;top:0px;left:0px;max-height:24px;height:36px;right:0px;padding:6px;background-image:url('images/toolbar_bg.gif');">
     </div>
 
-    <!-- Creates a container for the toolboox -->
+    <!-- Creates a container for the toolbox -->
     <div id="sidebarContainer" class="ui-accordion ui-widget ui-helper-reset" style="position:absolute;overflow:scroll;top:36px;left:0px;bottom:36px;max-width:266px;width:270px;padding-top:10px;padding-left:4px;">
     </div>
 
