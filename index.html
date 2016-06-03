@@ -171,7 +171,7 @@
                             content.innerHTML = this.convertValueToString(cell);
                             showModalWindow(this, 'Properties', content, 400, 300);
                             */
-                            showPropertiesWindow(graph);
+                            showPropertiesWindow(graph, cell);
                         }
                     }
 
@@ -255,36 +255,58 @@
                     button.appendChild(titleName);
                 });
 
+                // @jiteshjha, @pooja
+                /*
+                   On selection and deletion of any block, 'deleteBlock'
+                   function deletes all the associated edges with that block.
+                   Used Preorder traversal for edges.
+                */
                 editor.addAction('deleteBlock', function(editor, cell) {
-                    var array = [];
-                    var portCount = graph.getSelectionCell().getChildCount();
-                    array.push(graph.getSelectionCell());
+                    var cells = [];
+                    var selectionCells = graph.getSelectionCells();
+                    for(var k = 0; k < selectionCells.length; k++) {
+                      var portCount = selectionCells[k].getChildCount();
+                      cells.push(selectionCells[k]);
+                      // Finds all the port with edges of the selected cell, and calls getEdgeId() for
+                      // each edge object of that port.
+                      for(var i = 0; i < portCount; i++) {
+                        var edgeCount = selectionCells[k].getChildAt(i).getEdgeCount();
+                        if(edgeCount != 0) {
+                          getEdgeId(selectionCells[k].getChildAt(i));
 
-                    for(var i = 0; i < portCount; i++) {
-                      var edgeCount = graph.getSelectionCell().getChildAt(i).getEdgeCount();
-                      if(edgeCount != 0) {
-                        getEdgeId(graph.getSelectionCell().getChildAt(i));
-
-                        for(var j = 0; j < edgeCount; j++) {
-                            var edgeObject = graph.getSelectionCell().getChildAt(i).getEdgeAt(j);
-                            getEdgeId(edgeObject);
+                          for(var j = 0; j < edgeCount; j++) {
+                              var edgeObject = selectionCells[k].getChildAt(i).getEdgeAt(j);
+                              getEdgeId(edgeObject);
+                          }
                         }
                       }
                     }
-                    function getEdgeId(eObject)
+
+
+                    /* getEdgeId() find all the associated edges from an edge.
+                     Pushes the object of that edge into an array of mxCell objects.
+                     */
+                    function getEdgeId(edgeObject)
                     {
-                      if(eObject != null && eObject.isEdge()) {
-                        for(var j = 0; j < eObject.getEdgeCount(); j++)
-                        {
-                          getEdgeId(eObject.getEdgeAt(j));
-                        }
-                        if(eObject.edge == true && (array.indexOf(eObject) == -1)) {
-                          array.push(eObject);
+                      var cellStack = [];
+                      if(edgeObject != null && edgeObject.isEdge() == true) {
+                        cellStack.push(edgeObject);
+                        while(cellStack.length != 0) {
+                          var tempEdgeObject = cellStack.pop();
+                          if(tempEdgeObject.edge == true && (cells.indexOf(tempEdgeObject) == -1)) {
+                            cells.push(tempEdgeObject);
+                          }
+                          for(var j = 0; j < tempEdgeObject.getEdgeCount(); j++)
+                          {
+                            cellStack.push(tempEdgeObject.getEdgeAt(j));
+                          }
                         }
                       }
                     }
 
-                    graph.getSelectionModel().setCells(array);
+                    // The mxCells to be deleted are first highlighted,
+                    // and then the selection is deleted in a single go.
+                    graph.getSelectionModel().setCells(cells);
                     editor.execute('delete');
                 });
 
@@ -431,20 +453,34 @@
         };
 
 
-        function showPropertiesWindow(graph) {
+        function showPropertiesWindow(graph, cell) {
 
-            var array = ["Number of curves",
-                "color (>0) or mark (<0)",
+            var array = ["numberOfCurves",
+                "colorOrMark",
                 "line or mark size",
-                "Output window number (-1 for automatic)",
-                "Output window position",
-                "Output window sizes",
-                "Xmin and Xmax",
-                "Ymin and Ymax",
-                "Zmin and Zmax",
-                "Alpha and Theta",
-                "Buffer size"
+                "lineOrMarkSize",
+                "outputWindowNumber",
+                "outputWindowPosition",
+                "outputWindowSize",
+                "xminAndXmax",
+                "yminAndYmax",
+                "zminAndZmax",
+                "alphaAndTheta",
+                "bufferSize"
             ];
+
+            var completeNameArray = {};
+            completeNameArray["numberOfCurves"] = "Number of Curves";
+            completeNameArray["colorOrMark"] = "color (>0) or mark (<0)";
+            completeNameArray["lineOrMarkSize"] = "line or mark size";
+            completeNameArray["outputWindowNumber"] = "Output window number (-1 for automatic)";
+            completeNameArray["outputWindowPosition"] = "Output window position";
+            completeNameArray["outputWindowSize"] = "Output window sizes";
+            completeNameArray["xminAndXmax"] = "Xmin and Xmax";
+            completeNameArray["yminAndYmax"] = "Ymin and Ymax";
+            completeNameArray["zminAndZmax"] = "Zmin and Zmax";
+            completeNameArray["alphaAndTheta"] = "Alpha and Theta";
+            completeNameArray["bufferSize"] = "Buffer size";
 
             // Create basic structure for the form.
             var content = document.createElement('div');
@@ -470,15 +506,16 @@
                 // Input Title.
                 var fieldName = array[field];
                 var namelabel = document.createElement('label');
-                namelabel.innerHTML = fieldName;
+                namelabel.innerHTML = completeNameArray[fieldName.toString()];
                 myform.appendChild(namelabel);
 
 
                 // Input.
                 var input = document.createElement("input");
-                input.name = fieldName;
+                input.name = fieldName.toString();
+                input.value = 0;
                 input.style.cssText = 'float: right;';
-                input.id = fieldName;
+                input.id = fieldName.toString();
                 myform.appendChild(input);
 
                 // Line break.
@@ -502,7 +539,22 @@
 
             // Executes when button 'btn' is clicked.
             btn.onclick = function() {
-
+              var propertiesObject = {
+                xyz : document.querySelector('#xyz').value,
+                id : cell.id,
+                numberOfCurves : document.querySelector('#numberOfCurves').value,
+								colorOrMark : document.querySelector('#colorOrMark').value,
+								lineOrMarkSize : document.querySelector('#lineOrMarkSize').value,
+								outputWindowNumber : document.querySelector('#outputWindowNumber').value,
+								outputWindowPosition : document.querySelector('#outputWindowPosition').value,
+								outputWindowSize : document.querySelector('#outputWindowSize').value,
+								xminAndXmax : document.querySelector('#xminAndXmax').value,
+								yminAndYmax : document.querySelector('#yminAndYmax').value,
+                zminAndZmax : document.querySelector('#zminAndZmax').value,
+								alphaAndTheta : document.querySelector('#alphaAndTheta').value,
+								bufferSize : document.querySelector('#bufferSize').value
+              };
+              console.log(propertiesObject);
             };
             myform.appendChild(btn);
 
@@ -515,6 +567,7 @@
                 //btn.style.cssText='float:right;';
             btn.onclick = function() {
                 // Only removes the content div, not the modal window.
+
             };
 
 
