@@ -72,7 +72,7 @@ function standard_define() {
     return new scicos_block(block_options);
 }
 
-//Returns ScilabDouble which contains a list with size =n and all values=0
+// Returns ScilabDouble which contains a list with size = n and all values = 0
 function zeros(n) {
     var arg = new Array(n + 1).join("0").split("").map(parseFloat);
     var port = new ScilabDouble();
@@ -90,7 +90,7 @@ function scicos_graphics() {
     var graphics_type = ["graphics", "orig", "sz", "flip", "theta", "exprs", "pin", "pout", "pein", "peout", "gr_i", "id", "in_implicit", "out_implicit", "in_style", "out_style", "in_label", "out_label", "style"];
     this.graphics = new ScilabString(graphics_type);
     this.orig = options.orig || new ScilabDouble([0, 0]);
-    this.sz = options.sz || new ScilabDouble([80, 80]);
+    this.sz = options.sz || new ScilabDouble([80, 80]); // Space and comma works the same!
     this.flip = options.flip || new ScilabBoolean([true]);
     this.theta = options.theta || new ScilabDouble([0]);
     this.exprs = options.exprs || new ScilabDouble();
@@ -101,7 +101,7 @@ function scicos_graphics() {
     this.gr_i = options.gr_i || new ScilabString();
     this.id = options.id || new ScilabString([""]);
     this.in_implicit = options.in_implicit || new ScilabDouble();
-    this.out_implicit = options.out_implicit || new ScilabDouble();
+    this.out_implicit = options.out_implicit || new ScilabDouble(); // There is only one!
     this.in_style = options.in_style || new ScilabDouble();
     this.out_style = options.out_style || new ScilabDouble();
     this.in_label = options.in_label || new ScilabDouble();
@@ -109,7 +109,6 @@ function scicos_graphics() {
     this.style = options.style || new ScilabString();
 
     return mlist(graphics_type, this.graphics, this.orig, this.sz, this.flip, this.theta, this.exprs, this.pin, this.pout, this.pein, this.peout, this.gr_i, this.id, this.in_implicit, this.out_implicit, this.in_style, this.out_style, this.in_label, this.out_label, this.style);
-
 }
 
 function scicos_model() {
@@ -119,7 +118,7 @@ function scicos_model() {
     this.sim = options.sim || new ScilabString();
     this.in = options.in || new ScilabDouble();
     this.in2 = options.in2 || new ScilabDouble();
-    this.intyp = options.intyp || new ScilabDouble(); //[1]
+    this.intyp = options.intyp || new ScilabDouble(); // [1]
     this.out = options.out || new ScilabDouble();
     this.out2 = options.out2 || new ScilabDouble();
     this.outtyp = options.outtyp || new ScilabDouble([1]);
@@ -130,7 +129,7 @@ function scicos_model() {
     this.odstate = options.odstate || list();
     this.ipar = options.ipar || new ScilabDouble();
     this.rpar = options.rpar || new ScilabDouble();
-    this.opar = options.opar || list(); //new ScilabDouble();
+    this.opar = options.opar || list(); // new ScilabDouble();
     this.blocktype = options.blocktype || new ScilabString(["c"]);
     this.firing = options.firing || new ScilabDouble();
     this.dep_ut = options.dep_ut || new ScilabBoolean([false, false]);
@@ -146,7 +145,6 @@ function scicos_model() {
 
 
 function scicos_diagram() {
-
     var options = arguments[0] || new Object();
     var diagram_type = ["diagram", "props", "objs", "version", "contrib"];
     this.diagram = new ScilabString(diagram_type);
@@ -160,7 +158,6 @@ function scicos_diagram() {
 
 
 function scicos_params() {
-
     var options = arguments[0] || new Object();
     var params_type = ["params", "wpar", "title", "tol", "tf", "context", "void1", "options", "void2", "void3", "doc"];
     this.params = new ScilabString(params_type);
@@ -175,13 +172,10 @@ function scicos_params() {
     this.void3 = new ScilabDouble();
     this.doc = options.doc || list();
 
-
     return tlist(params_type, this.params, this.wpar, this.titlex, this.tol, this.tf, this.context, this.void1, this.options, this.void2, this.void3, this.doc);
-
 }
 
 function default_options() {
-
     var options_type = ["scsopt", "3D", "Background", "Link", "ID", "Cmap"];
     this.scsopt = new ScilabString(options_type);
     this.D3 = list(new ScilabBoolean([true]), new ScilabDouble([33]));
@@ -212,35 +206,33 @@ function scicos_link() {
 
 function list() {
     this.ScilabList = [];
-    for (var i = 0; i < arguments.length; i++)
+    for (var i = 0; i < arguments.length; i++) {
         this.ScilabList.push(arguments[i]);
-
-    this.ScilabList.scilabClass = "ScilabList";
+    }
+	this.ScilabList.scilabClass = "ScilabList";
 
     return this.ScilabList;
-
 }
 
 function mlist() {
     this.ScilabMList = {};
-    for (var i = 1, j = 0; i < arguments.length; i++, j++)
+    for (var i = 1, j = 0; i < arguments.length; i++, j++) {
         this.ScilabMList[arguments[0][j]] = arguments[i];
-
+	}
     this.ScilabMList.varName = "";
     this.ScilabMList.scilabClass = "ScilabMList";
-    return this.ScilabMList;
-
+    
+	return this.ScilabMList;
 }
 
 function tlist() {
     this.ScilabTList = {};
-    for (var i = 1, j = 0; i < arguments.length; i++, j++)
+    for (var i = 1, j = 0; i < arguments.length; i++, j++) {
         this.ScilabTList[arguments[0][j]] = arguments[i];
-
+	}
     this.ScilabTList.scilabClass = "ScilabTList";
 
     return this.ScilabTList;
-
 }
 
 
@@ -308,14 +300,13 @@ function data() {
 function CONST_m() {
     var c = [1];
     switch (arguments[0]) {
-
         /*case "get":
             var array = ["Constant_Value"];
             return array;
         case "set":
             c = new Array(arguments[1].Constant_Value);
             break;
-			*/
+		*/
         case "define":
             var model = scicos_model();
             model.sim = list(new ScilabString(["cstblk4"]), new ScilabDouble([4]));
@@ -364,7 +355,6 @@ function ANDLOG_f() {
 }
 
 function ANDBLK() {
-
     var andlog = ANDLOG_f("define");
     andlog.graphics.orig = new ScilabDouble([194, 133]);
     andlog.graphics.sz = new ScilabDouble([60]);
@@ -551,7 +541,8 @@ function IFTHEL_f() {
     model.nzcross = new ScilabDouble([1]);
 
     var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"IFTHEL_f\",sz(1),sz(2));"]);
-    var exprs = new ScilabString(["1"], ["1"]); //value model.in, model.nmode inverse
+    var exprs = new ScilabString(["1"], ["1"]); // value model.in, model.nmode inverse
+	
     var block = new standard_define(new ScilabDouble([80, 80]), model, exprs, gr_i); // 3 -> 80
     block.graphics.style = new ScilabString(["IFTHEL_f"]);
     return block;
