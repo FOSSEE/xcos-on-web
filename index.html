@@ -654,7 +654,7 @@
             graph.tooltipHandler.hide();
             wnd.setVisible(true);
         };
-		
+
         function addSidebarIcon(graph, sidebar, name, image) {
 
             // Function that is executed when the image is dropped on
@@ -670,7 +670,7 @@
                     var label = getImgHTML(name); // Will not exist for all blocks
 
                     if (name == 'ANDBLK') {
-						var details = ANDBLK("define");
+                        var details = ANDBLK("define");
 						var enc = new mxCodec(mxUtils.createXmlDocument());
 						var node = enc.encode(details);
 						//node.setAttribute('label',label);
@@ -680,7 +680,7 @@
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'CMSCOPE');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], [], []);
                     } else if (name == 'CONST_m') {
-						var details = CONST_m("define");
+                        var details = CONST_m("define");
 						var enc = new mxCodec(mxUtils.createXmlDocument());
 						var node = enc.encode(details);
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CONST_m');
