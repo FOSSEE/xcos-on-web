@@ -2,7 +2,7 @@
 // Only during printing, their nomenclature will change
 // Good read: http://javascript.info/tutorial/arguments#keyword-arguments
 /*
-Author name: ASP1234, Chhavi2208
+Author name: Adhitya, Nimish, Chhavi
 */
 
 function scicos_block() {
