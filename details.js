@@ -106,7 +106,7 @@ const Cmap = 5;
 */
 function scicos_block() {
     var options = arguments[0] || new Object();
-	var block_type = ["block", "graphics", "model", "gui", "docs"];
+    var block_type = ["block", "graphics", "model", "gui", "docs"];
     this.block = new ScilabString(block_type);
     this.graphics = options.graphics || new scicos_graphics();
     this.model = options.model || new scicos_model();
@@ -186,7 +186,7 @@ function zeros(n) {
 
 function scicos_graphics() {
     var options = arguments[0] || new Object();
-	var graphics_type = ["graphics", "orig", "sz", "flip", "theta", "exprs", "pin", "pout", "pein", "peout", "gr_i", "id", "in_implicit", "out_implicit", "in_style", "out_style", "in_label", "out_label", "style"];
+    var graphics_type = ["graphics", "orig", "sz", "flip", "theta", "exprs", "pin", "pout", "pein", "peout", "gr_i", "id", "in_implicit", "out_implicit", "in_style", "out_style", "in_label", "out_label", "style"];
     this.graphics = new ScilabString(graphics_type);
     this.orig = options.orig || new ScilabDouble([0, 0]);
     this.sz = options.sz || new ScilabDouble([80, 80]);
@@ -213,7 +213,7 @@ function scicos_graphics() {
 
 function scicos_model() {
     var options = arguments[0] || new Object();
-	var model_type = ["model", "sim", "in", "in2", "intyp", "out", "out2", "outtyp", "evtin", "evtout", "state", "dstate", "odstate", "rpar", "ipar", "opar", "blocktype", "firing", "dep_ut", "label", "nzcross", "nmode", "equations", "uid"];
+    var model_type = ["model", "sim", "in", "in2", "intyp", "out", "out2", "outtyp", "evtin", "evtout", "state", "dstate", "odstate", "rpar", "ipar", "opar", "blocktype", "firing", "dep_ut", "label", "nzcross", "nmode", "equations", "uid"];
     this.model = new ScilabString(model_type);
     this.sim = options.sim || new ScilabString();
     this.in = options.in || new ScilabDouble();
@@ -247,7 +247,7 @@ function scicos_model() {
 function scicos_diagram() {
 
     var options = arguments[0] || new Object();
-	var diagram_type = ["diagram", "props", "objs", "version", "contrib"];
+    var diagram_type = ["diagram", "props", "objs", "version", "contrib"];
     this.diagram = new ScilabString(diagram_type);
     this.props = options.props || scicos_params();
     this.objs = options.objs || list();
@@ -261,7 +261,7 @@ function scicos_diagram() {
 function scicos_params() {
 
     var options = arguments[0] || new Object();
-	var params_type = ["params", "wpar", "title", "tol", "tf", "context", "void1", "options", "void2", "void3", "doc"];
+    var params_type = ["params", "wpar", "title", "tol", "tf", "context", "void1", "options", "void2", "void3", "doc"];
     this.params = new ScilabString(params_type);
     this.wpar = options.wpar || new ScilabDouble([600, 450, 0, 0, 600, 450]);
     this.titlex = options.title || options.Title || new ScilabString(["Untitled"]);
@@ -280,8 +280,8 @@ function scicos_params() {
 }
 
 function default_options() {
-	
-	var options_type = ["scsopt", "3D", "Background", "Link", "ID", "Cmap"];
+
+    var options_type = ["scsopt", "3D", "Background", "Link", "ID", "Cmap"];
     this.scsopt = new ScilabString(options_type);
     this.D3 = list(new ScilabBoolean([true]), new ScilabDouble([33]));
     this.Background = new ScilabDouble([8.1]);
@@ -289,13 +289,13 @@ function default_options() {
     this.ID = list(new ScilabDouble([4, 1, 10, 1]), new ScilabDouble([4, 1, 2, 1]));
     this.Cmap = new ScilabDouble([0.8, 0.8, 0.8]);
 
-    return tlist(options_type,this.scsopt, this.D3, this.Background, this.Link, this.ID, this.Cmap);
+    return tlist(options_type, this.scsopt, this.D3, this.Background, this.Link, this.ID, this.Cmap);
 }
 
 
 function scicos_link() {
     var options = arguments[0];
-	var link_type = ["Link", "xx", "yy", "id", "thick", "ct", "from", "to"];
+    var link_type = ["Link", "xx", "yy", "id", "thick", "ct", "from", "to"];
     this.Link = new ScilabString(link_type);
     this.xx = options.xx || new ScilabDouble(); //inverse array
     this.yy = options.yy || new ScilabDouble(); //inverse array
@@ -323,7 +323,7 @@ function list() {
 function mlist() {
     this.ScilabMList = {};
     for (var i = 1, j = 0; i < arguments.length; i++, j++)
-        this.ScilabMList[arguments[0][j]]=arguments[i];
+        this.ScilabMList[arguments[0][j]] = arguments[i];
 
     this.ScilabMList.varName = "";
     this.ScilabMList.scilabClass = "ScilabMList";
@@ -334,7 +334,7 @@ function mlist() {
 function tlist() {
     this.ScilabTList = {};
     for (var i = 1, j = 0; i < arguments.length; i++, j++)
-        this.ScilabTList[arguments[0][j]]=arguments[i];
+        this.ScilabTList[arguments[0][j]] = arguments[i];
 
     this.ScilabTList.scilabClass = "ScilabTList";
 
