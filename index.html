@@ -670,23 +670,20 @@
                     var label = getImgHTML(name); // Will not exist for all blocks
 
                     if (name == 'ANDBLK') {
-                        var details = doc.createElement('BasicBlock');
-                        details.setAttribute('name', name);
-                        details.setAttribute('label', label);
-                        var obj = ANDLOG_f(); // This isn't even the right function!
-                        var encoder = new mxCodec();
-                        var result = encoder.encode(obj);
-                        var xml = mxUtils.getPrettyXml(result);
-                        var blockName = document.createTextNode(xml);
-                        details.appendChild(blockName);
-                        console.log(details);
-                        v1 = graph.insertVertex(parent, null, details, x, y, 80, 80, 'ANDBLK');
+                        var details = ANDBLK("define");
+						var enc = new mxCodec(mxUtils.createXmlDocument());
+						var node = enc.encode(details);
+						//node.setAttribute('label',label);
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
                         createPorts(graph, v1, [], ['CONTROL', 'CONTROL'], [], ['COMMAND']);
                     } else if (name == 'CMSCOPE') {
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'CMSCOPE');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], [], []);
                     } else if (name == 'CONST_m') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'CONST_m');
+                        var details = CONST_m("define");
+						var enc = new mxCodec(mxUtils.createXmlDocument());
+						var node = enc.encode(details);
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CONST_m');
                         createPorts(graph, v1, [], [], ['EXPLICIT'], []);
                     } else if (name == 'CONVERT') {
                         v1 = graph.insertVertex(parent, null, 'Convert to', x, y, 80, 80, 'CONVERT');
