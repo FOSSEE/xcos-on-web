@@ -166,12 +166,12 @@
                         if (!this.isHtmlLabel(cell)) {
                             this.startEditingAtCell(cell);
                         } else {
-                           /* 
+                            /*
                             var content = document.createElement('div');
                             content.innerHTML = this.convertValueToString(cell);
-                            showModalWindow(this, 'Properties', content, 400, 300);*/
-                            
-                        	showPropertiesWindow(graph);
+                            showModalWindow(this, 'Properties', content, 400, 300);
+                            */
+                            showPropertiesWindow(graph, cell);
                         }
                     }
 
@@ -205,13 +205,13 @@
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 // https://jgraph.github.io/mxgraph/docs/js-api/files/model/mxCell-js.html
                 // Uncomment this block to see XML tags work
-                graph.convertValueToString = function(cell)
+                /*graph.convertValueToString = function(cell)
                 {
                   if (mxUtils.isNode(cell.value))
                   {
                     return cell.getAttribute('label', '');
                   }
-                };
+                };*/
 
                 var cellLabelChanged = graph.cellLabelChanged;
                 graph.cellLabelChanged = function(cell, newValue, autoSize) {
@@ -255,10 +255,63 @@
                     button.appendChild(titleName);
                 });
 
+                // @jiteshjha, @pooja
+                /*
+                   On selection and deletion of any block, 'deleteBlock'
+                   function deletes all the associated edges with that block.
+                   Used Preorder traversal for edges.
+                */
+                editor.addAction('deleteBlock', function(editor, cell) {
+                    var cells = [];
+                    var selectionCells = graph.getSelectionCells();
+                    for (var k = 0; k < selectionCells.length; k++) {
+                        var portCount = selectionCells[k].getChildCount();
+                        cells.push(selectionCells[k]);
+                        // Finds all the port with edges of the selected cell, and calls getEdgeId() for
+                        // each edge object of that port.
+                        for (var i = 0; i < portCount; i++) {
+                            var edgeCount = selectionCells[k].getChildAt(i).getEdgeCount();
+                            if (edgeCount != 0) {
+                                getEdgeId(selectionCells[k].getChildAt(i));
+
+                                for (var j = 0; j < edgeCount; j++) {
+                                    var edgeObject = selectionCells[k].getChildAt(i).getEdgeAt(j);
+                                    getEdgeId(edgeObject);
+                                }
+                            }
+                        }
+                    }
+
+
+                    /* getEdgeId() find all the associated edges from an edge.
+                     Pushes the object of that edge into an array of mxCell objects.
+                     */
+                    function getEdgeId(edgeObject) {
+                        var cellStack = [];
+                        if (edgeObject != null && edgeObject.isEdge() == true) {
+                            cellStack.push(edgeObject);
+                            while (cellStack.length != 0) {
+                                var tempEdgeObject = cellStack.pop();
+                                if (tempEdgeObject.edge == true && (cells.indexOf(tempEdgeObject) == -1)) {
+                                    cells.push(tempEdgeObject);
+                                }
+                                for (var j = 0; j < tempEdgeObject.getEdgeCount(); j++) {
+                                    cellStack.push(tempEdgeObject.getEdgeAt(j));
+                                }
+                            }
+                        }
+                    }
+
+                    // The mxCells to be deleted are first highlighted,
+                    // and then the selection is deleted in a single go.
+                    graph.getSelectionModel().setCells(cells);
+                    editor.execute('delete');
+                });
+
                 addToolbarButton(editor, toolbar, 'toggle', 'Expand All', 'images/navigate_plus.png');
                 toolbar.appendChild(spacer.cloneNode(true));
 
-                addToolbarButton(editor, toolbar, 'delete', 'Delete', 'images/delete2.png');
+                addToolbarButton(editor, toolbar, 'deleteBlock', 'Delete', 'images/delete2.png');
                 toolbar.appendChild(spacer.cloneNode(true));
 
                 addToolbarButton(editor, toolbar, 'cut', 'Cut', 'images/cut.png');
@@ -321,7 +374,6 @@
 
                 // Handles cursor keys - guides.html
                 var nudge = function(keyCode) {
-                    graph.container.focus();
                     if (!graph.isSelectionEmpty()) {
                         var dx = 0;
                         var dy = 0;
@@ -338,7 +390,7 @@
                     }
                 };
                 // Transfer initial focus to graph container for keystroke handling
-                //graph.container.focus();
+                // graph.container.focus();
                 // Handles keystroke events
                 var keyHandler = new mxKeyHandler(graph);
                 keyHandler.bindKey(37, function() {
@@ -383,109 +435,128 @@
                     connectionHandlerMouseUp.apply(this, arguments);
                 };
 
-
                 mxEvent.disableContextMenu(container);
+
+                // @Adhitya: Add focus to a mxCell
+                if (mxClient.IS_NS) {
+                    mxEvent.addListener(graph.container, 'mousedown', function(evt) {
+                        if (!graph.isEditing()) {
+                            graph.container.setAttribute('tabindex', '-1');
+                            graph.container.focus();
+                        }
+                    });
+                }
+
             }
         };
 
 
-        function showPropertiesWindow(graph) {
+        function showPropertiesWindow(graph, cell) {
 
-            /*var array = ["Number of curves",
-                "color (>0) or mark (<0)",
-                "line or mark size",
-                "Output window number (-1 for automatic)",
-                "Output window position",
-                "Output window sizes",
-                "Xmin and Xmax",
-                "Ymin and Ymax",
-                "Zmin and Zmax",
-                "Alpha and Theta",
-                "Buffer size"
-            ];*/
-            var array=CONST_m("get");
-            //console.log(array);
+            var defaultProperties = {
+                nbr_curves: ["Number of curves", 1],
+                clrs: ["color (>0) or mark (<0)", [1, 2, 3, 4, 5, 6, 7, 13]],
+                siz: ["line or mark size", [1, 1, 1, 1, 1, 1, 1, 1]],
+                win: ["Output window number (-1 for automatic)", -1],
+                wpos: ["Output window position", [-1, -1]],
+                wdim: ["Output window sizes", [-1, -1]],
+                vec_x: ["Xmin and Xmax", [-15, 15]],
+                vec_y: ["Ymin and Ymax", [-15, 15]],
+                vec_z: ["Zmin and Zmax", [-15, 15]],
+                param3ds: ["Alpha and Theta", [50, 280]],
+                N: ["Buffer size", 2]
+            };
 
-            // Create basic structure for the form.
+            // Create basic structure for the form
             var content = document.createElement('div');
             //content.id = "contentProperties";
             content.setAttribute("id", "contentProperties");
 
-            // Heading of content.
+            // Heading of content
             var heading = document.createElement('h2');
             heading.innerHTML = "Set Scope Parameters";
             heading.id = "headingProperties"
             content.appendChild(heading);
 
-            // Add Form.
+            // Add Form
             var myform = document.createElement("form");
             myform.method = "post";
             myform.id = "formProperties";
 
-            // Line break.
+            // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
-            for (field in array) {
-                // Input Title.
-                var fieldName = array[field];
-                var namelabel = document.createElement('label');
-                namelabel.innerHTML = fieldName;
-                myform.appendChild(namelabel);
+            for (var key in defaultProperties) {
+                if (defaultProperties.hasOwnProperty(key)) {
 
+                    // Input Title
+                    var fieldName = defaultProperties[key];
+                    var namelabel = document.createElement('label');
+                    namelabel.innerHTML = defaultProperties[key][0];
+                    myform.appendChild(namelabel);
 
-                // Input.
-                var input = document.createElement("input");
-                input.name = fieldName;
-                input.style.cssText = 'float: right;';
-                input.id = fieldName;
-                myform.appendChild(input);
+                    // Input
+                    var input = document.createElement("input");
+                    input.name = key;
+                    input.value = defaultProperties[key][1];
+                    input.setAttribute("id", key.toString());
+                    input.setAttribute("class", "fieldInput");
+                    myform.appendChild(input);
 
-                // Line break.
-                var linebreak = document.createElement('br');
-                myform.appendChild(linebreak);
+                    // Line break
+                    var linebreak = document.createElement('br');
+                    myform.appendChild(linebreak);
 
-                // Line break.
-                var linebreak = document.createElement('br');
-                myform.appendChild(linebreak);
-
+                    // Line break
+                    var linebreak = document.createElement('br');
+                    myform.appendChild(linebreak);
+                }
             }
-            // Line break.
+
+            // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
-            // Button - Submit.
+            // Button - Submit
             var btn = document.createElement("button");
             btn.innerHTML = 'Submit';
             btn.type = "button";
             btn.name = "submit";
 
-            // Executes when button 'btn' is clicked.
+            // Executes when button 'btn' is clicked
             btn.onclick = function() {
-                var params = {};
-                var i=0;
-                for(i=0;i<array.length;i++)
-                    params[array[i]] = document.getElementById(array[i]).value;
-                console.log(params);
-                CONST_m("set",params);
+                var propertiesObject = {
+                    id: cell.id
+                };
+
+                for (var key in defaultProperties) {
+                    if (defaultProperties.hasOwnProperty(key)) {
+                        propertiesObject[key] = document.getElementById(key.toString()).value;
+                    }
+                }
             };
             myform.appendChild(btn);
 
-            // Button - Reset.
+            // Button - Reset
             var btn = document.createElement("button");
             btn.innerHTML = 'Reset';
             btn.type = "button";
             btn.name = "submit";
-            btn.id = "resetButtonProperties"
-                //btn.style.cssText='float:right;';
+            btn.id = "resetButtonProperties";
             btn.onclick = function() {
-                // Only removes the content div, not the modal window.
+                // Reset
+                for (var key in defaultProperties) {
+                    if (defaultProperties.hasOwnProperty(key)) {
+                        var element = document.getElementById(key.toString());
+                        element.value = defaultProperties[key][1];
+                    }
+                }
             };
-
 
             myform.appendChild(btn);
             // Base height without fields : 135 px
-            height = 135 + 26 * array.length + 15;
+            height = 135 + 26 * defaultProperties.length + 15;
 
             content.appendChild(myform);
             showModalWindow(graph, 'Properties', content, 450, height);
@@ -577,14 +648,13 @@
             wnd.addListener(mxEvent.DESTROY, function(evt) {
                 graph.setEnabled(true);
                 mxEffects.fadeOut(background, 50, true, 10, 30, true);
-                //alert("jitesh");
             });
 
             graph.setEnabled(false);
             graph.tooltipHandler.hide();
             wnd.setVisible(true);
         };
-
+		
         function addSidebarIcon(graph, sidebar, name, image) {
 
             // Function that is executed when the image is dropped on
@@ -599,34 +669,22 @@
                 try {
                     var label = getImgHTML(name); // Will not exist for all blocks
 
-                    if(name == 'ANDBLK'){
-						
-						var details = new BasicBlock(name);
-						var encoder = new mxCodec();
-						var result = encoder.encode(details);
-						result.setAttribute('label',label);
-						//var xml = mxUtils.getPrettyXml(result);
-						//var blockName = document.createTextNode(xml);
-						//alert(blockName);
-						//details.appendChild(blockName);
-						//alert(details);
-						//console.log(details);*/
-						var temp=encoder.encode(parent);
-						result.setAttribute('parent',temp.getAttribute('id')); //@ASP1234 to get id in Basic Block
-						v1 = graph.insertVertex(parent, null,result, x, y, 80, 80, 'ANDBLK'); 
-						createPorts(graph, v1, [], ['CONTROL','CONTROL'], [], ['COMMAND']);
-				
+                    if (name == 'ANDBLK') {
+						var details = ANDBLK("define");
+						var enc = new mxCodec(mxUtils.createXmlDocument());
+						var node = enc.encode(details);
+						//node.setAttribute('label',label);
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
+                        createPorts(graph, v1, [], ['CONTROL', 'CONTROL'], [], ['COMMAND']);
                     } else if (name == 'CMSCOPE') {
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'CMSCOPE');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], [], []);
                     } else if (name == 'CONST_m') {
-                        var details = new BasicBlock(name); // This isn't even the right function!
-						var encoder = new mxCodec();
-						var result = encoder.encode(details);
-						result.setAttribute('label',"1");
-						
-						v1 = graph.insertVertex(parent, null,result, x, y, 80, 80,'CONST_m');
-						createPorts(graph, v1, [], [], ['EXPLICIT'], []);
+						var details = CONST_m("define");
+						var enc = new mxCodec(mxUtils.createXmlDocument());
+						var node = enc.encode(details);
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CONST_m');
+                        createPorts(graph, v1, [], [], ['EXPLICIT'], []);
                     } else if (name == 'CONVERT') {
                         v1 = graph.insertVertex(parent, null, 'Convert to', x, y, 80, 80, 'CONVERT');
                         createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
@@ -1055,8 +1113,8 @@
         };
     </script>
     <!--
-		Updates connection points before the routing is called.
--->
+    	Updates connection points before the routing is called.
+    -->
     <script type="text/javascript">
         // Computes the position of edge to edge connection points.
         mxGraphView.prototype.updateFixedTerminalPoint = function(edge, terminal, source, constraint) {
@@ -1122,8 +1180,8 @@
     </script>
 
     <!--
-	Overrides methods to preview and create new edges.
--->
+      Overrides methods to preview and create new edges.
+    -->
     <script type="text/javascript">
         // Sets source terminal point for edge-to-edge connections.
         mxConnectionHandler.prototype.createEdgeState = function(me) {
@@ -1229,8 +1287,8 @@
         };
     </script>
     <!--
-	Adds in-place highlighting for complete cell area (no hotspot).
--->
+	    Adds in-place highlighting for complete cell area (no hotspot).
+    -->
     <script type="text/javascript">
         mxConnectionHandlerCreateMarker = mxConnectionHandler.prototype.createMarker;
         mxConnectionHandler.prototype.createMarker = function() {
@@ -1255,8 +1313,8 @@
         }
     </script>
     <!--
-	Imlements a custom resistor shape. Direction currently ignored here.
--->
+	   Implements a custom resistor shape. Direction currently ignored here.
+    -->
     <script type="text/javascript">
         mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
             // Creates array of all way- and terminalpoints
@@ -1367,7 +1425,7 @@
     <div id="toolbarContainer" style="position:absolute;white-space:nowrap;overflow:hidden;top:0px;left:0px;max-height:24px;height:36px;right:0px;padding:6px;background-image:url('images/toolbar_bg.gif');">
     </div>
 
-    <!-- Creates a container for the toolboox -->
+    <!-- Creates a container for the toolbox -->
     <div id="sidebarContainer" class="ui-accordion ui-widget ui-helper-reset" style="position:absolute;overflow:scroll;top:36px;left:0px;bottom:36px;max-width:266px;width:270px;padding-top:10px;padding-left:4px;">
     </div>
 
