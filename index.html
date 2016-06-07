@@ -19,15 +19,19 @@
     </style>
 
     <!-- Loads and initializes the library -->
+    <script type="text/javascript" src="jquery/jquery-1.8.2.js"></script>
     <script type="text/javascript" src="mxClient.min.js"></script>
     <script type="text/javascript" src="editor/mxDefaultKeyHandler.js"></script>
     <script type="text/javascript" src="handler/mxKeyHandler.js"></script>
+    <script type="text/javascript" src="jquery/farbtastic.js"></script>
 
+    <link rel="stylesheet" href="jquery/farbtastic.css" type="text/css" />
     <link rel="stylesheet" href="jquery/jquery-ui.css">
-    <script src="jquery/jquery-1.8.2.js"></script>
+    
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="json2.js"></script>
     <script type="text/javascript">
+
         function main(container, outline, toolbar, sidebar, status) {
             // Checks if the browser is supported
             if (!mxClient.isBrowserSupported()) {
@@ -95,6 +99,134 @@
 
                 // Sets the graph container and configures the editor
                 editor.setGraphContainer(container);
+
+                 // Disables built-in context menu
+                mxEvent.disableContextMenu(document.body);
+                
+                // Configures automatic expand on mouseover
+                graph.panningHandler.autoExpand = true;
+
+                // Creates a right-click menu
+                graph.panningHandler.factoryMethod = function(menu, cell, evt)
+                {
+                        
+                        if (cell != null)
+                        {
+                            console.log(cell);
+                            
+                            if( cell.value == "ExplicitInputPort" || cell.value == "ExplicitOutputPort" || cell.value == "CommandPort" || cell.value == "ControlPort")
+                            {
+                                
+                            }
+                            else if (cell.isEdge() == true)// @ToDo: Pooja: Different edge value cases.
+                            {
+                                
+                                menu.addItem('Delete', 'images/delete2.png', function()
+                                {
+                                    editor.execute('delete');
+                                });
+                                var edgeformat = menu.addItem('Format', null, null);
+                                
+                                menu.addItem('Border Color', 'images/draw-brush.png', function()
+                                {
+                                    alert('B C');// @ToDo: Pooja: Functionality to be put.
+                                }, edgeformat);
+                                menu.addItem('Edit...', 'images/edit.png', function()
+                                {
+                                    alert('Edit...');// @ToDo: Pooja: Functionality to be put.
+                                }, edgeformat);
+                                
+                            }
+                            else 
+                            {
+
+                                menu.addItem('Block Parameters...', 'images/gear.gif', function()
+                                {
+                                    // @ToDo: Pooja: Functionality to be put.
+                                });
+                                
+                                menu.addItem('Cut', 'images/cut.png', function()
+                                {
+                                    editor.execute('cut');
+                                });
+
+                                menu.addItem('Copy', 'images/copy.png', function()
+                                {
+                                    editor.execute('copy');
+                                });
+
+                                menu.addItem('Delete', 'images/delete2.png', function()
+                                {
+                                    editor.execute('delete');
+                                });
+                                
+                                menu.addItem('Selection to superblock', 'images/superblock.png', function()
+                                {
+                                 // @ToDo: Pooja: Functionality to be put.   
+                                });
+                                var format = menu.addItem('Format', null, null);
+                                
+                                menu.addItem('Rotate', 'images/rotate.png', function()
+                                {
+                                    alert('Rotate');// @ToDo: Pooja: Functionality to be put.
+                                }, format);
+                                menu.addItem('Edit...', 'images/edit.png', function()
+                                {
+                                    alert('Edit...');// @ToDo: Pooja: Functionality to be put.
+                                }, format);
+
+                                menu.addItem('Details', null, function()
+                                {
+                                    // @ToDo: Pooja: Functionality to be put.
+                                });
+                            }
+
+                        }
+                        else {
+                            menu.addItem('Undo', 'images/undo.png', function()
+                            {
+                                editor.execute('undo');
+                            });
+                            menu.addItem('Redo', 'images/redo.png', function()
+                            {
+                                editor.execute('redo');
+                            });
+                            menu.addItem('Paste', 'images/paste.png', function()
+                            {
+                                editor.execute('paste');
+                            });
+                            menu.addItem('Select all', 'images/selectall.png', function()
+                            {
+                                editor.execute('selectAll');
+                            });
+                            menu.addItem('Set Context', null, function()
+                            {
+                               // @ToDo: Pooja: Functionality to be put.
+                            });
+                            menu.addItem('Setup', 'images/setup.png', function()
+                            {
+                                // @ToDo: Pooja: Functionality to be put.
+                            });
+
+                            menu.addItem('Zoom In', 'images/zoom_in.png', function()
+                            {
+                                editor.execute('zoomIn');
+                            });
+                            menu.addItem('Zoom Out', 'images/zoom_out.png', function()
+                            {
+                                editor.execute('zoomOut');
+                            });
+                            menu.addItem('Diagram background...', null, function()
+                            {
+                                
+                                showColorWheel(graph);
+                                 // graph.container.style.backgroundColor=showColorWheel(graph);
+                                //editor.execute('pageBackgroundColor');
+                                // @ToDo: Pooja: Functionality to be put.
+                            });
+                        }                    
+                   
+                };
 
                 //var config = mxUtils.load('config/editor-commons.xml').getDocumentElement();
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
@@ -469,7 +601,6 @@
 
             // Create basic structure for the form
             var content = document.createElement('div');
-            //content.id = "contentProperties";
             content.setAttribute("id", "contentProperties");
 
             // Heading of content
@@ -562,6 +693,85 @@
             showModalWindow(graph, 'Properties', content, 450, height);
         };
 
+         function showColorWheel(graph) {
+
+          
+            // Create basic structure for the form
+            var content = document.createElement('div');
+            content.setAttribute("id", "contentProperties");
+
+            // Add Form
+            var myform = document.createElement("form");
+            myform.method = "";
+            myform.setAttribute("id","formProperties");
+
+             // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            
+                // Input Title
+                var fieldName = 'Color';
+                var namelabel = document.createElement('label');
+                namelabel.innerHTML = fieldName;
+                myform.appendChild(namelabel);
+
+
+                // Input
+                var input = document.createElement("input");
+                input.name = fieldName;
+                input.value = 0;
+                input.style.cssText = 'float: right;';
+                input.setAttribute("id", "color");
+                myform.appendChild(input);
+
+                // Line break
+                var linebreak = document.createElement('br');
+                myform.appendChild(linebreak);
+
+                // Line break
+                var linebreak = document.createElement('br');
+                myform.appendChild(linebreak);
+
+            
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            var picker = document.createElement('div');
+            picker.setAttribute("id", "picker");
+            myform.appendChild(picker);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Button - Submit
+            
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Submit';
+            btn.type = "button";
+            btn.name = "submit";
+            btn.style.cssText = 'margin-left: 75px';
+
+            // Executes when button 'btn' is clicked
+            btn.onclick = function() {
+
+                var input=document.getElementById('color').value;
+               
+                graph.container.style.backgroundColor=input;
+                
+            };
+
+            myform.appendChild(btn);
+            
+            content.appendChild(myform);
+            showModalWindow(graph, 'Diagram background...', content,285,340);
+            // Invokes the farbtastic functionality 
+             $(document).ready(function() {
+                 $('#picker').farbtastic('#color');
+            });
+        };
 
         function createButtonImage(button, image) {
             if (image != null) {
