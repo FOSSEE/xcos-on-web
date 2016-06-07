@@ -112,7 +112,6 @@
                         
                         if (cell != null)
                         {
-                            console.log(cell);
                             
                             if( cell.value == "ExplicitInputPort" || cell.value == "ExplicitOutputPort" || cell.value == "CommandPort" || cell.value == "ControlPort")
                             {
@@ -129,7 +128,7 @@
                                 
                                 menu.addItem('Border Color', 'images/draw-brush.png', function()
                                 {
-                                    alert('B C');// @ToDo: Pooja: Functionality to be put.
+                                    alert('Border Color');// @ToDo: Pooja: Functionality to be put.
                                 }, edgeformat);
                                 menu.addItem('Edit...', 'images/edit.png', function()
                                 {
@@ -698,7 +697,7 @@
           
             // Create basic structure for the form
             var content = document.createElement('div');
-            content.setAttribute("id", "contentProperties");
+            content.setAttribute("id", "colorProperties");
 
             // Add Form
             var myform = document.createElement("form");
