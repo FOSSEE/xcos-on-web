@@ -99,11 +99,90 @@
                 //var config = mxUtils.load('config/editor-commons.xml').getDocumentElement();
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
                 editor.configure(config);
+                var undoManager = new mxUndoManager();
+                var listener = function(sender, evt)
+                {
+                  undoManager.undoableEditHappened(evt.getProperty('edit'));
+                };
+                graph.getModel().addListener(mxEvent.UNDO, listener);
+                graph.getModel().addListener(mxEvent.REDO, listener);
+                graph.getView().addListener(mxEvent.UNDO, listener);
+                graph.getView().addListener(mxEvent.REDO, listener);
+
+                editor.addAction('undoCustom', function(editor, cell) {
+                  undoManager.undo();
+                });
+
+                editor.addAction('redoCustom', function(editor, cell) {
+                  undoManager.redo();
+                });
+
+                graph.addListener(mxEvent.CLICK, function(sender, evt)
+                {
+                  console.log(undoManager.history);
+                  console.log(undoManager.canUndo());
+                  var selectedEdgeObject = graph.getSelectionCell();
+                  if (selectedEdgeObject != null && selectedEdgeObject.isEdge() == true)
+                  {
+
+                    var selectedEdgeObject = graph.getSelectionCell();
+                    var target = selectedEdgeObject.target;
+                    var source;
+
+                    if(selectedEdgeObject != null && selectedEdgeObject.isEdge() == true) {
+                      function getEdgeId(edgeObject) {
+                              while (edgeObject.source != null && edgeObject.source.isEdge() == true) {
+                                  edgeObject = edgeObject.source;
+                              }
+                              return edgeObject.source;
+                      }
+
+                      if(selectedEdgeObject.isEdge() == true) {
+                        source = getEdgeId(selectedEdgeObject);
+                      }
+
+                      if(source != null && (source.value != "ExplicitOutputPort" || target.value != "ExplicitInputPort")) {
+                        alert("Explicit data input port must be connected to explicit data output port");
+                        //var edges = graph.getModel().getEdges(source);
+                        //console.log(edges);
+                        //undoManager.history.shift();
+                        //graph.getModel().remove(selectedEdgeObject);
+                        //console.log(graph.getModel());
+                        //model.beginUpdate();
+                      	//model.parent = null; //null
+                      	//model.previous = null; //null
+                      	//model.child = selectedEdgeObject; //
+                        //model.endUpdate();
+                      	/*graph.getModel().parent = null;
+                      	graph.getModel().previous = null;
+                      	graph.getModel().child = selectedEdgeObject;*/
+                        editor.execute('undo');
+                        undoManager.history.splice(-1,1);
+                        //undoManager.history.pop();
+                        console.log(undoManager.history.length);
+                        var storage = [];
+                        for(i in undoManager.history) {
+                          if(undoManager.history[i] != null) {
+                          storage.push(undoManager.history[i])
+                        }
+                        }
+                        undoManager.clear();
+                        for(i in storage) {
+                          if(storage[i] != null) {
+                          undoManager.undoableEditHappened(storage[i]);
+                        }
+                        }
+                        //console.log(selectedEdgeObject);
+                      }
+                    }
+                  }
+                });
 
                 // Disables drag-and-drop into non-swimlanes.
                 graph.isValidDropTarget = function(cell, cells, evt) {
                     return this.isSwimlane(cell);
                 };
+
 
                 // Disables drilling into non-swimlanes.
                 graph.isValidRoot = function(cell) {
@@ -255,6 +334,8 @@
                     button.appendChild(titleName);
                 });
 
+
+
                 // @jiteshjha, @pooja
                 /*
                    On selection and deletion of any block, 'deleteBlock'
@@ -311,18 +392,14 @@
                 addToolbarButton(editor, toolbar, 'toggle', 'Expand All', 'images/navigate_plus.png');
                 toolbar.appendChild(spacer.cloneNode(true));
 
-                addToolbarButton(editor, toolbar, 'deleteBlock', 'Delete', 'images/delete2.png');
-                toolbar.appendChild(spacer.cloneNode(true));
-
                 addToolbarButton(editor, toolbar, 'cut', 'Cut', 'images/cut.png');
                 addToolbarButton(editor, toolbar, 'copy', 'Copy', 'images/copy.png');
                 addToolbarButton(editor, toolbar, 'paste', 'Paste', 'images/paste.png');
 
                 toolbar.appendChild(spacer.cloneNode(true));
 
-                addToolbarButton(editor, toolbar, 'undo', '', 'images/undo.png');
-                addToolbarButton(editor, toolbar, 'redo', '', 'images/redo.png');
-
+                addToolbarButton(editor, toolbar, 'undoCustom', '', 'images/undo.png');
+                addToolbarButton(editor, toolbar, 'redoCustom', '', 'images/redo.png');
                 toolbar.appendChild(spacer.cloneNode(true));
 
                 addToolbarButton(editor, toolbar, 'show', 'Show', 'images/camera.png');
@@ -1203,7 +1280,7 @@
 
         // Uses right mouse button to create edges on background (see also: lines 67 ff)
         mxConnectionHandler.prototype.isStopEvent = function(me) {
-            return me.getState() != null || mxEvent.isRightMouseButton(me.getEvent());
+            return me.getState() != null;
         };
 
         // Updates target terminal point for edge-to-edge connections.
