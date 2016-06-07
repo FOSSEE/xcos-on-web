@@ -173,6 +173,12 @@ td.mxPopupMenuIcon {
 	margin-bottom:2pc;
 }
 
+#colorProperties {
+	border-style: solid;
+	border-width: 1px;
+	margin:10px 10px 10px 10px;
+}
+
 .fieldInput {
 	float: right;
 }
