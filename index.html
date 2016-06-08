@@ -127,6 +127,7 @@
                 /*
                   For every click on the graph, check if the selected mxCell is the recently created edge,
                   and then check if that edge satisfies one of the port constraints.
+
                 */
                 graph.addListener(mxEvent.CLICK, function(sender, evt)
                 {
@@ -149,22 +150,53 @@
                       if(selectedEdgeObject.isEdge() == true) {
                         source = getEdgeId(selectedEdgeObject);
                       }
+                      if(source != null && target != null) {
+                        if(!(((source.value == "ExplicitOutputPort" && target.value == "ExplicitInputPort")
+                          || (source.value == "ExplicitInputPort" && target.value == "ExplicitOutputPort")
+                          || (source.value == "ImplicitOutputPort" && target.value == "ImplicitInputPort")
+                          || (source.value == "ImplicitInputPort" && target.value == "ImplicitOutputPort")
+                          || (source.value == "CommandPort" && target.value == "ControlPort")
+                          || (source.value == "ControlPort" && target.value == "CommandPort"))
+                          && (source.getEdgeCount() <= 1 && source.isVertex() == true
+                              && target.getEdgeCount() <=1 && target.isVertex() == true)
+                        )) {
 
-                      if(source != null && (source.value != "ExplicitOutputPort" || target.value != "ExplicitInputPort")) {
-                        alert("Explicit data input port must be connected to explicit data output port");
-                        editor.execute('undo');
-                        undoManager.history.splice(-1,1);
-                        var storage = [];
-                        for(i in undoManager.history) {
-                          if(undoManager.history[i] != null) {
-                          storage.push(undoManager.history[i])
-                        }
-                        }
-                        undoManager.clear();
-                        for(i in storage) {
-                          if(storage[i] != null) {
-                          undoManager.undoableEditHappened(storage[i]);
-                        }
+                          if(!(source.getEdgeCount() <= 1 && source.isVertex() == true
+                            && target.getEdgeCount() <=1 && target.isVertex() == true)) {
+                                alert("Port is already connected, please select an please select an unconnected port or a valid link");
+                          }
+                          else if(source.value == "ImplicitInputPort") {
+                            alert("Implicit data input port must be connected to implicit data output port");
+                          }
+                          else if(source.value == "ImplicitOutputPort") {
+                            alert("Implicit data output port must be connected to implicit data input port");
+                          }
+                          else if(source.value == "ExplicitOutputPort") {
+                            alert("Explicit data output port must be connected to explicit data input port");
+                          }
+                          else if(source.value == "ExplicitInputPort") {
+                            alert("Explicit data input port must be connected to explicit data output port");
+                          }
+                          else if(source.value = "ControlPort") {
+                            alert("Control port must be connected to command port");
+                          }
+                          else if(source.value = "CommandPort") {
+                            alert("Command port must be connected to control port");
+                          }
+                          editor.execute('undo');
+                          undoManager.history.splice(-1,1);
+                          var storage = [];
+                          for(i in undoManager.history) {
+                              if(undoManager.history[i] != null) {
+                              storage.push(undoManager.history[i])
+                            }
+                          }
+                          undoManager.clear();
+                          for(i in storage) {
+                              if(storage[i] != null) {
+                              undoManager.undoableEditHappened(storage[i]);
+                            }
+                          }
                         }
                       }
                     }
