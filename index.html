@@ -31,26 +31,7 @@
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="json2.js"></script>
     <script type="text/javascript">
-        /*
-                    Maverick
-                    This method is used for loading the stylesheet from the file.
-                    Reference: http://www.w3schools.com/xsl/xsl_client.asp
-                */
-
-        function loadXMLDoc(filename) {
-            if (window.ActiveXObject) {
-                xhttp = new ActiveXObject("Msxml2.XMLHTTP");
-            } else {
-                xhttp = new XMLHttpRequest();
-            }
-            xhttp.open("GET", filename, false);
-            try {
-                xhttp.responseType = "msxml-document"
-            } catch (err) {}
-            xhttp.send("");
-            return xhttp.responseXML;
-        }
-
+        
 
         function main(container, outline, toolbar, sidebar, status) {
             // Checks if the browser is supported
@@ -453,6 +434,28 @@
                 addToolbarButton(editor, toolbar, 'print', 'Print', 'images/printer.png');
 
                 toolbar.appendChild(spacer.cloneNode(true));
+
+
+		/*
+                    Maverick
+                    This method is used for loading the stylesheet from the file.
+                    Reference: http://www.w3schools.com/xsl/xsl_client.asp
+	        */
+	
+	        function loadXMLDoc(filename) {
+	            if (window.ActiveXObject) {
+	                xhttp = new ActiveXObject("Msxml2.XMLHTTP");
+	            } else {
+	                xhttp = new XMLHttpRequest();
+	            }
+	            xhttp.open("GET", filename, false);
+	            try {
+	                xhttp.responseType = "msxml-document"
+	            } catch (err) {}
+	            xhttp.send("");
+	            return xhttp.responseXML;
+	        }
+
 
                 /*              
 				Maverick
