@@ -8,11 +8,11 @@
         BODY {
             font-family: Arial;
         }
-
+        
         H1 {
             font-size: 18px;
         }
-
+        
         H2 {
             font-size: 16px;
         }
@@ -27,30 +27,29 @@
 
     <link rel="stylesheet" href="jquery/farbtastic.css" type="text/css" />
     <link rel="stylesheet" href="jquery/jquery-ui.css">
-    
+
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="json2.js"></script>
     <script type="text/javascript">
-
         /*
-            Maverick
-            This method is used for loading the stylesheet from the file.
-            Reference: http://www.w3schools.com/xsl/xsl_client.asp
-        */
+                    Maverick
+                    This method is used for loading the stylesheet from the file.
+                    Reference: http://www.w3schools.com/xsl/xsl_client.asp
+                */
 
         function loadXMLDoc(filename) {
-             if (window.ActiveXObject) {
-                 xhttp = new ActiveXObject("Msxml2.XMLHTTP");
-             } else {
-                 xhttp = new XMLHttpRequest();
-             }
-             xhttp.open("GET", filename, false);
-             try {
-                 xhttp.responseType = "msxml-document"
-             } catch (err) {}
-             xhttp.send("");
-             return xhttp.responseXML;
-         }
+            if (window.ActiveXObject) {
+                xhttp = new ActiveXObject("Msxml2.XMLHTTP");
+            } else {
+                xhttp = new XMLHttpRequest();
+            }
+            xhttp.open("GET", filename, false);
+            try {
+                xhttp.responseType = "msxml-document"
+            } catch (err) {}
+            xhttp.send("");
+            return xhttp.responseXML;
+        }
 
 
         function main(container, outline, toolbar, sidebar, status) {
@@ -121,131 +120,104 @@
                 // Sets the graph container and configures the editor
                 editor.setGraphContainer(container);
 
-                 // Disables built-in context menu
+                // Disables built-in context menu
                 mxEvent.disableContextMenu(document.body);
-                
+
                 // Configures automatic expand on mouseover
                 graph.panningHandler.autoExpand = true;
 
                 // Creates a right-click menu
-                graph.panningHandler.factoryMethod = function(menu, cell, evt)
-                {
-                        
-                        if (cell != null)
+                graph.panningHandler.factoryMethod = function(menu, cell, evt) {
+
+                    if (cell != null) {
+
+                        if (cell.value == "ExplicitInputPort" || cell.value == "ExplicitOutputPort" || cell.value == "CommandPort" || cell.value == "ControlPort") {
+
+                        } else if (cell.isEdge() == true) // @ToDo: Pooja: Different edge value cases.
                         {
-                            
-                            if( cell.value == "ExplicitInputPort" || cell.value == "ExplicitOutputPort" || cell.value == "CommandPort" || cell.value == "ControlPort")
-                            {
-                                
-                            }
-                            else if (cell.isEdge() == true)// @ToDo: Pooja: Different edge value cases.
-                            {
-                                
-                                menu.addItem('Delete', 'images/delete2.png', function()
-                                {
-                                    editor.execute('delete');
-                                });
-                                var edgeformat = menu.addItem('Format', null, null);
-                                
-                                menu.addItem('Border Color', 'images/draw-brush.png', function()
-                                {
-                                    alert('Border Color');// @ToDo: Pooja: Functionality to be put.
-                                }, edgeformat);
-                                menu.addItem('Edit...', 'images/edit.png', function()
-                                {
-                                    alert('Edit...');// @ToDo: Pooja: Functionality to be put.
-                                }, edgeformat);
-                                
-                            }
-                            else 
-                            {
 
-                                menu.addItem('Block Parameters...', 'images/gear.gif', function()
-                                {
-                                    // @ToDo: Pooja: Functionality to be put.
-                                });
-                                
-                                menu.addItem('Cut', 'images/cut.png', function()
-                                {
-                                    editor.execute('cut');
-                                });
+                            menu.addItem('Delete', 'images/delete2.png', function() {
+                                editor.execute('delete');
+                            });
+                            var edgeformat = menu.addItem('Format', null, null);
 
-                                menu.addItem('Copy', 'images/copy.png', function()
-                                {
-                                    editor.execute('copy');
-                                });
+                            menu.addItem('Border Color', 'images/draw-brush.png', function() {
+                                alert('Border Color'); // @ToDo: Pooja: Functionality to be put.
+                            }, edgeformat);
+                            menu.addItem('Edit...', 'images/edit.png', function() {
+                                alert('Edit...'); // @ToDo: Pooja: Functionality to be put.
+                            }, edgeformat);
 
-                                menu.addItem('Delete', 'images/delete2.png', function()
-                                {
-                                    editor.execute('delete');
-                                });
-                                
-                                menu.addItem('Selection to superblock', 'images/superblock.png', function()
-                                {
-                                 // @ToDo: Pooja: Functionality to be put.   
-                                });
-                                var format = menu.addItem('Format', null, null);
-                                
-                                menu.addItem('Rotate', 'images/rotate.png', function()
-                                {
-                                    alert('Rotate');// @ToDo: Pooja: Functionality to be put.
-                                }, format);
-                                menu.addItem('Edit...', 'images/edit.png', function()
-                                {
-                                    alert('Edit...');// @ToDo: Pooja: Functionality to be put.
-                                }, format);
+                        } else {
 
-                                menu.addItem('Details', null, function()
-                                {
-                                    // @ToDo: Pooja: Functionality to be put.
-                                });
-                            }
+                            menu.addItem('Block Parameters...', 'images/gear.gif', function() {
+                                // @ToDo: Pooja: Functionality to be put.
+                            });
 
+                            menu.addItem('Cut', 'images/cut.png', function() {
+                                editor.execute('cut');
+                            });
+
+                            menu.addItem('Copy', 'images/copy.png', function() {
+                                editor.execute('copy');
+                            });
+
+                            menu.addItem('Delete', 'images/delete2.png', function() {
+                                editor.execute('delete');
+                            });
+
+                            menu.addItem('Selection to superblock', 'images/superblock.png', function() {
+                                // @ToDo: Pooja: Functionality to be put.   
+                            });
+                            var format = menu.addItem('Format', null, null);
+
+                            menu.addItem('Rotate', 'images/rotate.png', function() {
+                                alert('Rotate'); // @ToDo: Pooja: Functionality to be put.
+                            }, format);
+                            menu.addItem('Edit...', 'images/edit.png', function() {
+                                alert('Edit...'); // @ToDo: Pooja: Functionality to be put.
+                            }, format);
+
+                            menu.addItem('Details', null, function() {
+                                // @ToDo: Pooja: Functionality to be put.
+                            });
                         }
-                        else {
-                            menu.addItem('Undo', 'images/undo.png', function()
-                            {
-                                editor.execute('undo');
-                            });
-                            menu.addItem('Redo', 'images/redo.png', function()
-                            {
-                                editor.execute('redo');
-                            });
-                            menu.addItem('Paste', 'images/paste.png', function()
-                            {
-                                editor.execute('paste');
-                            });
-                            menu.addItem('Select all', 'images/selectall.png', function()
-                            {
-                                editor.execute('selectAll');
-                            });
-                            menu.addItem('Set Context', null, function()
-                            {
-                               // @ToDo: Pooja: Functionality to be put.
-                            });
-                            menu.addItem('Setup', 'images/setup.png', function()
-                            {
-                                // @ToDo: Pooja: Functionality to be put.
-                            });
 
-                            menu.addItem('Zoom In', 'images/zoom_in.png', function()
-                            {
-                                editor.execute('zoomIn');
-                            });
-                            menu.addItem('Zoom Out', 'images/zoom_out.png', function()
-                            {
-                                editor.execute('zoomOut');
-                            });
-                            menu.addItem('Diagram background...', null, function()
-                            {
-                                
-                                showColorWheel(graph);
-                                 // graph.container.style.backgroundColor=showColorWheel(graph);
-                                //editor.execute('pageBackgroundColor');
-                                // @ToDo: Pooja: Functionality to be put.
-                            });
-                        }                    
-                   
+                    } else {
+                        menu.addItem('Undo', 'images/undo.png', function() {
+                            editor.execute('undo');
+                        });
+                        menu.addItem('Redo', 'images/redo.png', function() {
+                            editor.execute('redo');
+                        });
+                        menu.addItem('Paste', 'images/paste.png', function() {
+                            editor.execute('paste');
+                        });
+                        menu.addItem('Select all', 'images/selectall.png', function() {
+                            editor.execute('selectAll');
+                        });
+                        menu.addItem('Set Context', null, function() {
+                            // @ToDo: Pooja: Functionality to be put.
+                        });
+                        menu.addItem('Setup', 'images/setup.png', function() {
+                            // @ToDo: Pooja: Functionality to be put.
+                        });
+
+                        menu.addItem('Zoom In', 'images/zoom_in.png', function() {
+                            editor.execute('zoomIn');
+                        });
+                        menu.addItem('Zoom Out', 'images/zoom_out.png', function() {
+                            editor.execute('zoomOut');
+                        });
+                        menu.addItem('Diagram background...', null, function() {
+
+                            showColorWheel(graph);
+                            // graph.container.style.backgroundColor=showColorWheel(graph);
+                            //editor.execute('pageBackgroundColor');
+                            // @ToDo: Pooja: Functionality to be put.
+                        });
+                    }
+
                 };
 
                 //var config = mxUtils.load('config/editor-commons.xml').getDocumentElement();
@@ -481,8 +453,8 @@
                 addToolbarButton(editor, toolbar, 'print', 'Print', 'images/printer.png');
 
                 toolbar.appendChild(spacer.cloneNode(true));
-                
-				/*              
+
+                /*              
 				Maverick
                 The Export buttons in toolbar call this function with varying
                 arguments. 
@@ -491,55 +463,56 @@
 				exportXML : 2 arguments
 				exportXcos: 3 arguments
                 */
-                function displayXMLorXcos()
-                {
-                	var textarea = document.createElement('textarea');
+                function displayXMLorXcos() {
+                    var textarea = document.createElement('textarea');
                     textarea.style.width = '400px';
                     textarea.style.height = '400px';
 
                     var enc = new mxCodec(mxUtils.createXmlDocument());
                     var node = enc.encode(arguments[0].graph.getModel());
 
-                   
+
                     //console.log(mxUtils.getPrettyXml(node));
                     textarea.value = mxUtils.getPrettyXml(node);
-                    xmlFromExportXML=mxUtils.getXml(node);
-                    
-                   	if(arguments[2]==null)
-                    	showModalWindow(graph, 'XML', textarea, 410, 440);
-                	
+
+
+                    if (arguments[2] == null) {
+                        showModalWindow(graph, 'XML', textarea, 410, 440);
+                    } else {
+                        xmlFromExportXML = mxUtils.getXml(node);
+                        return xmlFromExportXML;
+                    }
                 }
 
                 // Defines a new export action
                 editor.addAction('exportXML', function(editor, cell) {
-                	//Only two parameters passed here.
-                    displayXMLorXcos(editor,cell);
+                    //Only two parameters passed here.
+                    displayXMLorXcos(editor, cell);
                 });
 
-               /* Maverick
-                Reference: http://www.w3schools.com/xsl/xsl_client.asp
-               */
+                /* Maverick
+                 Reference: http://www.w3schools.com/xsl/xsl_client.asp
+                */
 
-                editor.addAction('exportXcos', function(editor,cell) {
-                	//Mind the 3 parameters.
-                    displayXMLorXcos(editor,cell,true);
-                    if(xmlFromExportXML==null) alert('First create the XML file.');
-                    else
-                    {
+                editor.addAction('exportXcos', function(editor, cell) {
+                    //Mind the 3 parameters.
+                    var xmlFromExportXML = displayXMLorXcos(editor, cell, true);
+                    if (xmlFromExportXML == null) alert('First create the XML file.');
+                    else {
                         /* 
                          Maverick
                          Adding <mxGraphModel> tag to make up for the missing tag.
                         */
 
-                        var xml=mxUtils.parseXml("<mxGraphModel>"+xmlFromExportXML+"</mxGraphModel>");
+                        var xml = mxUtils.parseXml("<mxGraphModel>" + xmlFromExportXML + "</mxGraphModel>");
 
-                        var xsl=loadXMLDoc("finalmodsheet.xsl");
+                        var xsl = loadXMLDoc("finalmodsheet.xsl");
 
                         xsltProcessor = new XSLTProcessor();
                         xsltProcessor.importStylesheet(xsl);
                         resultDocument = xsltProcessor.transformToDocument(xml);
-                        
-                        
+
+
                         var textarea = document.createElement('textarea');
                         textarea.style.width = '400px';
                         textarea.style.height = '400px';
@@ -547,7 +520,7 @@
                             Maverick
                             Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
                         */
-                        textarea.value=mxUtils.getPrettyXml(resultDocument.documentElement);
+                        textarea.value = mxUtils.getPrettyXml(resultDocument.documentElement);
                         showModalWindow(graph, 'Xcos', textarea, 410, 440);
                     }
                 });
@@ -774,9 +747,9 @@
             showModalWindow(graph, 'Properties', content, 450, height);
         };
 
-         function showColorWheel(graph) {
+        function showColorWheel(graph) {
 
-          
+
             // Create basic structure for the form
             var content = document.createElement('div');
             content.setAttribute("id", "colorProperties");
@@ -784,37 +757,37 @@
             // Add Form
             var myform = document.createElement("form");
             myform.method = "";
-            myform.setAttribute("id","formProperties");
+            myform.setAttribute("id", "formProperties");
 
-             // Line break
+            // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
-            
-                // Input Title
-                var fieldName = 'Color';
-                var namelabel = document.createElement('label');
-                namelabel.innerHTML = fieldName;
-                myform.appendChild(namelabel);
+
+            // Input Title
+            var fieldName = 'Color';
+            var namelabel = document.createElement('label');
+            namelabel.innerHTML = fieldName;
+            myform.appendChild(namelabel);
 
 
-                // Input
-                var input = document.createElement("input");
-                input.name = fieldName;
-                input.value = 0;
-                input.style.cssText = 'float: right;';
-                input.setAttribute("id", "color");
-                myform.appendChild(input);
+            // Input
+            var input = document.createElement("input");
+            input.name = fieldName;
+            input.value = 0;
+            input.style.cssText = 'float: right;';
+            input.setAttribute("id", "color");
+            myform.appendChild(input);
 
-                // Line break
-                var linebreak = document.createElement('br');
-                myform.appendChild(linebreak);
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
 
-                // Line break
-                var linebreak = document.createElement('br');
-                myform.appendChild(linebreak);
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
 
-            
+
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
@@ -828,7 +801,7 @@
             myform.appendChild(linebreak);
 
             // Button - Submit
-            
+
             var btn = document.createElement("button");
             btn.innerHTML = 'Submit';
             btn.type = "button";
@@ -838,19 +811,19 @@
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
 
-                var input=document.getElementById('color').value;
-               
-                graph.container.style.backgroundColor=input;
-                
+                var input = document.getElementById('color').value;
+
+                graph.container.style.backgroundColor = input;
+
             };
 
             myform.appendChild(btn);
-            
+
             content.appendChild(myform);
-            showModalWindow(graph, 'Diagram background...', content,285,340);
+            showModalWindow(graph, 'Diagram background...', content, 285, 340);
             // Invokes the farbtastic functionality 
-             $(document).ready(function() {
-                 $('#picker').farbtastic('#color');
+            $(document).ready(function() {
+                $('#picker').farbtastic('#color');
             });
         };
 
@@ -962,9 +935,9 @@
 
                     if (name == 'ANDBLK') {
                         var details = ANDBLK("define");
-						var enc = new mxCodec(mxUtils.createXmlDocument());
-						var node = enc.encode(details);
-						//node.setAttribute('label',label);
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
+                        //node.setAttribute('label',label);
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
                         createPorts(graph, v1, [], ['CONTROL', 'CONTROL'], [], ['COMMAND']);
                     } else if (name == 'CMSCOPE') {
@@ -972,8 +945,8 @@
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], [], []);
                     } else if (name == 'CONST_m') {
                         var details = CONST_m("define");
-						var enc = new mxCodec(mxUtils.createXmlDocument());
-						var node = enc.encode(details);
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CONST_m');
                         createPorts(graph, v1, [], [], ['EXPLICIT'], []);
                     } else if (name == 'CONVERT') {
