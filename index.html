@@ -99,6 +99,13 @@
                 //var config = mxUtils.load('config/editor-commons.xml').getDocumentElement();
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
                 editor.configure(config);
+
+                // @jiteshjha, @pooja
+                /*
+                   The code creates a function that informs the undoManager of an undoable edit
+                   and binds it to the undo event of mxGraphModel and mxGraphView
+                   using mxEventSource.addListener.
+                */
                 var undoManager = new mxUndoManager();
                 var listener = function(sender, evt)
                 {
@@ -117,10 +124,12 @@
                   undoManager.redo();
                 });
 
+                /*
+                  For every click on the graph, check if the selected mxCell is the recently created edge,
+                  and then check if that edge satisfies one of the port constraints.
+                */
                 graph.addListener(mxEvent.CLICK, function(sender, evt)
                 {
-                  console.log(undoManager.history);
-                  console.log(undoManager.canUndo());
                   var selectedEdgeObject = graph.getSelectionCell();
                   if (selectedEdgeObject != null && selectedEdgeObject.isEdge() == true)
                   {
@@ -143,23 +152,8 @@
 
                       if(source != null && (source.value != "ExplicitOutputPort" || target.value != "ExplicitInputPort")) {
                         alert("Explicit data input port must be connected to explicit data output port");
-                        //var edges = graph.getModel().getEdges(source);
-                        //console.log(edges);
-                        //undoManager.history.shift();
-                        //graph.getModel().remove(selectedEdgeObject);
-                        //console.log(graph.getModel());
-                        //model.beginUpdate();
-                      	//model.parent = null; //null
-                      	//model.previous = null; //null
-                      	//model.child = selectedEdgeObject; //
-                        //model.endUpdate();
-                      	/*graph.getModel().parent = null;
-                      	graph.getModel().previous = null;
-                      	graph.getModel().child = selectedEdgeObject;*/
                         editor.execute('undo');
                         undoManager.history.splice(-1,1);
-                        //undoManager.history.pop();
-                        console.log(undoManager.history.length);
                         var storage = [];
                         for(i in undoManager.history) {
                           if(undoManager.history[i] != null) {
@@ -172,7 +166,6 @@
                           undoManager.undoableEditHappened(storage[i]);
                         }
                         }
-                        //console.log(selectedEdgeObject);
                       }
                     }
                   }
@@ -1278,9 +1271,8 @@
             return this.graph.view.createState(edge);
         };
 
-        // Uses right mouse button to create edges on background (see also: lines 67 ff)
         mxConnectionHandler.prototype.isStopEvent = function(me) {
-            return me.getState() != null;
+            return me.getState() != null || mxEvent.isRightMouseButton(me.getEvent());
         };
 
         // Updates target terminal point for edge-to-edge connections.
