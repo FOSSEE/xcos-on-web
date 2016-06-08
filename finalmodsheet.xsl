@@ -49,15 +49,15 @@ Look for TAG:Break1!!!
                         <xsl:call-template name="CommandPort" />
                     </xsl:when>
                     <xsl:otherwise>
-                        <!-- Maverick -->
-                        <!-- TAG:Break1 
-							 This line has been commented because Javascript was having
-							 some problem with the function call. 
+                    <!-- Maverick -->
+                    <!-- TAG:Break1 
+					 This line has been commented because Javascript was having
+					 some problem with the function call. 
 
-							 Commenting doesn't bring any change to the result now, but
-							 may cause some problems in the future. 
-	    				-->
-                        <!-- <xsl:apply-templates select="name(*[1])"/> -->
+					 Commenting doesn't bring any change to the result now, but
+					 may cause some problems in the future. 
+    				-->
+                    <!-- <xsl:apply-templates select="name(*[1])"/> -->
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:when>

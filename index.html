@@ -491,30 +491,48 @@
 
                 var xmlFromExportXML=null;
                 var flagXcosClickedFirst=false;
-                // Defines a new export action
-                editor.addAction('exportXML', function(editor, cell) {
-                    var textarea = document.createElement('textarea');
+
+
+				/*              
+				Maverick
+                The Export buttons in toolbar call this function with varying
+                arguments. 
+                The third argument is used to decide which button is being 
+                pressed.
+				exportXML : 2 arguments
+				exportXcos: 3 arguments
+                */
+                function displayXMLorXcos()
+                {
+                	var textarea = document.createElement('textarea');
                     textarea.style.width = '400px';
                     textarea.style.height = '400px';
 
                     var enc = new mxCodec(mxUtils.createXmlDocument());
-                    var node = enc.encode(editor.graph.getModel());
+                    var node = enc.encode(arguments[0].graph.getModel());
 
                    
                     //console.log(mxUtils.getPrettyXml(node));
                     textarea.value = mxUtils.getPrettyXml(node);
                     xmlFromExportXML=mxUtils.getXml(node);
-                    if(!flagXcosClickedFirst)
-                    showModalWindow(graph, 'XML', textarea, 410, 440);
+                    
+                   	if(arguments[2]==null)
+                    	showModalWindow(graph, 'XML', textarea, 410, 440);
+                	
+                }
+
+                // Defines a new export action
+                editor.addAction('exportXML', function(editor, cell) {
+                	//Only two parameters passed here.
+                    displayXMLorXcos(editor,cell);
                 });
 
                /* Maverick
                 Reference: http://www.w3schools.com/xsl/xsl_client.asp*/
 
-                editor.addAction('exportXcos', function() {
-                    flagXcosClickedFirst=true;
-                    editor.execute('exportXML');
-                    flagXcosClickedFirst=false;
+                editor.addAction('exportXcos', function(editor,cell) {
+                	//Mind the 3 parameters.
+                    displayXMLorXcos(editor,cell,true);
                     if(xmlFromExportXML==null) alert('First create the XML file.');
                     else
                     {
