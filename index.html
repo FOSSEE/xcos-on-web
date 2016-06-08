@@ -32,6 +32,27 @@
     <script type="text/javascript" src="json2.js"></script>
     <script type="text/javascript">
 
+        /*
+            Maverick
+            This method is used for loading the stylesheet from the file.
+            Reference: http://www.w3schools.com/xsl/xsl_client.asp
+        */
+
+        function loadXMLDoc(filename) {
+             if (window.ActiveXObject) {
+                 xhttp = new ActiveXObject("Msxml2.XMLHTTP");
+             } else {
+                 xhttp = new XMLHttpRequest();
+             }
+             xhttp.open("GET", filename, false);
+             try {
+                 xhttp.responseType = "msxml-document"
+             } catch (err) {}
+             xhttp.send("");
+             return xhttp.responseXML;
+         }
+
+
         function main(container, outline, toolbar, sidebar, status) {
             // Checks if the browser is supported
             if (!mxClient.isBrowserSupported()) {
@@ -461,18 +482,71 @@
 
                 toolbar.appendChild(spacer.cloneNode(true));
 
+                /*
+                    Maverick
+                    Defining a variable to used by both the export buttons.
+                    This variable contains the value of the created XML and 
+                    is subsequently used by the ExportXCOS button.
+                */
+
+                var xmlFromExportXML=null;
+                var flagXcosClickedFirst=false;
                 // Defines a new export action
-                editor.addAction('export', function(editor, cell) {
+                editor.addAction('exportXML', function(editor, cell) {
                     var textarea = document.createElement('textarea');
                     textarea.style.width = '400px';
                     textarea.style.height = '400px';
+
                     var enc = new mxCodec(mxUtils.createXmlDocument());
                     var node = enc.encode(editor.graph.getModel());
+
+                   
+                    //console.log(mxUtils.getPrettyXml(node));
                     textarea.value = mxUtils.getPrettyXml(node);
+                    xmlFromExportXML=mxUtils.getXml(node);
+                    if(!flagXcosClickedFirst)
                     showModalWindow(graph, 'XML', textarea, 410, 440);
                 });
 
-                addToolbarButton(editor, toolbar, 'export', 'Export', 'images/export1.png');
+               /* Maverick
+                Reference: http://www.w3schools.com/xsl/xsl_client.asp*/
+
+                editor.addAction('exportXcos', function() {
+                    flagXcosClickedFirst=true;
+                    editor.execute('exportXML');
+                    flagXcosClickedFirst=false;
+                    if(xmlFromExportXML==null) alert('First create the XML file.');
+                    else
+                    {
+                        /* 
+                         Maverick
+                         Adding <mxGraphModel> tag to make up for the missing tag.
+                        */
+
+                        var xml=mxUtils.parseXml("<mxGraphModel>"+xmlFromExportXML+"</mxGraphModel>");
+
+                        var xsl=loadXMLDoc("finalmodsheet.xsl");
+
+                        xsltProcessor = new XSLTProcessor();
+                        xsltProcessor.importStylesheet(xsl);
+                        resultDocument = xsltProcessor.transformToDocument(xml);
+                        
+                        
+                        var textarea = document.createElement('textarea');
+                        textarea.style.width = '400px';
+                        textarea.style.height = '400px';
+                        /*
+                            Maverick
+                            Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
+                        */
+                        textarea.value=mxUtils.getPrettyXml(resultDocument.documentElement);
+                        showModalWindow(graph, 'Xcos', textarea, 410, 440);
+                    }
+                });
+
+                addToolbarButton(editor, toolbar, 'exportXML', 'Export XML', 'images/export1.png');
+
+                addToolbarButton(editor, toolbar, 'exportXcos', 'Export Xcos', 'images/export1.png');
 
                 // Adds toolbar buttons into the status bar at the bottom
                 // of the window.
