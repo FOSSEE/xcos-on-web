@@ -1,6 +1,6 @@
 import os
 
-# Blocks SUPER_f ,INIMPL_f ,IN_f ,OUTIMPL_f ,OUT_f ,CLKINV_f and CLKOUTV_f don't contain simulationFunctionName attribute as their name 
+# Blocks SUPER_f ,INIMPL_f ,IN_f ,OUTIMPL_f ,OUT_f ,CLKSOMV_f ,CLKINV_f and CLKOUTV_f don't contain simulationFunctionName attribute as their name 
 # hence these blocks must be handled separately
 
 
