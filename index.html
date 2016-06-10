@@ -108,97 +108,125 @@
                 graph.panningHandler.autoExpand = true;
 
                 // Creates a right-click menu
-                graph.panningHandler.factoryMethod = function(menu, cell, evt) {
-
-                    if (cell != null) {
-
-                        if (cell.value == "ExplicitInputPort" || cell.value == "ExplicitOutputPort" || cell.value == "CommandPort" || cell.value == "ControlPort") {
-
-                        } else if (cell.isEdge() == true) // @ToDo: Pooja: Different edge value cases.
+                graph.panningHandler.factoryMethod = function(menu, cell, evt)
+                {
+                        
+                        if (cell != null)
                         {
+                            
+                            if( cell.value == "ExplicitInputPort" || cell.value == "ExplicitOutputPort" || cell.value == "CommandPort" || cell.value == "ControlPort")
+                            {
+                                
+                            }
+                            else if (cell.isEdge() == true)// @ToDo: Pooja: Different edge value cases.
+                            {
+                                
+                                menu.addItem('Delete', 'images/delete2.png', function()
+                                {
+                                    editor.execute('delete');
+                                });
+                                var edgeformat = menu.addItem('Format', null, null);
+                                
+                                menu.addItem('Border Color', 'images/draw-brush.png', function()
+                                {
+                                    // @ToDo: Pooja: Functionality to be put.   
+                                    showColorWheel(graph,cell,'edgeStrokeColor');  
 
-                            menu.addItem('Delete', 'images/delete2.png', function() {
-                                editor.execute('delete');
-                            });
-                            var edgeformat = menu.addItem('Format', null, null);
+                                }, edgeformat);
+                                menu.addItem('Text and Text Font', 'images/edit.png', function()
+                                {
+                                    alert('Edit...');// @ToDo: Pooja: Functionality to be put.
+                                }, edgeformat);
+                                menu.addItem('Text Color', 'images/edit.png', function()
+                                {
+                                    alert('Edit...');// @ToDo: Pooja: Functionality to be put.
+                                }, edgeformat);
+                                
+                            }
+                            else 
+                            {
+                                menu.addItem('Block Parameters...', 'images/gear.gif', function()
+                                {
+                                    showPropertiesWindow(graph, cell);
+                                });
+                                
+                                menu.addItem('Cut', 'images/cut.png', function()
+                                {
+                                    editor.execute('cut');
+                                });
+                                menu.addItem('Copy', 'images/copy.png', function()
+                                {
+                                    editor.execute('copy');
+                                });
+                                menu.addItem('Delete', 'images/delete2.png', function()
+                                {
+                                    editor.execute('delete');
+                                });
+                                
+                                menu.addItem('Selection to superblock', 'images/superblock.png', function()
+                                {
+                                 // @ToDo: Pooja: Functionality to be put.
+                                });
+                                var format = menu.addItem('Format', null, null);
+                                
+                                menu.addItem('Rotate', 'images/rotate.png', function()
+                                {
+                                    editor.execute('rotateCustom');
+                                }, format);
+                                menu.addItem('Border Color', 'images/draw-brush.png', function()
+                                {
+                                    showColorWheel(graph,cell,'vertexStrokeColor'); 
 
-                            menu.addItem('Border Color', 'images/draw-brush.png', function() {
-                                alert('Border Color'); // @ToDo: Pooja: Functionality to be put.
-                            }, edgeformat);
-                            menu.addItem('Edit...', 'images/edit.png', function() {
-                                alert('Edit...'); // @ToDo: Pooja: Functionality to be put.
-                            }, edgeformat);
-
-                        } else {
-
-                            menu.addItem('Block Parameters...', 'images/gear.gif', function() {
-                                // @ToDo: Pooja: Functionality to be put.
-                            });
-
-                            menu.addItem('Cut', 'images/cut.png', function() {
-                                editor.execute('cut');
-                            });
-
-                            menu.addItem('Copy', 'images/copy.png', function() {
-                                editor.execute('copy');
-                            });
-
-                            menu.addItem('Delete', 'images/delete2.png', function() {
-                                editor.execute('delete');
-                            });
-
-                            menu.addItem('Selection to superblock', 'images/superblock.png', function() {
-                                // @ToDo: Pooja: Functionality to be put.   
-                            });
-                            var format = menu.addItem('Format', null, null);
-
-                            menu.addItem('Rotate', 'images/rotate.png', function() {
-                                alert('Rotate'); // @ToDo: Pooja: Functionality to be put.
-                            }, format);
-                            menu.addItem('Edit...', 'images/edit.png', function() {
-                                alert('Edit...'); // @ToDo: Pooja: Functionality to be put.
-                            }, format);
-
-                            menu.addItem('Details', null, function() {
-                                // @ToDo: Pooja: Functionality to be put.
-                            });
+                                }, format);
+                                menu.addItem('Fill Color', 'images/edit.png', function()
+                                {
+                                   showColorWheel(graph,cell,'vertexFillColor'); 
+                                }, format);
+                                menu.addItem('Details', null, function()
+                                {
+                                    // @ToDo: Pooja: Functionality to be put.
+                                });
+                            }
                         }
-
-                    } else {
-                        menu.addItem('Undo', 'images/undo.png', function() {
-                            editor.execute('undo');
-                        });
-                        menu.addItem('Redo', 'images/redo.png', function() {
-                            editor.execute('redo');
-                        });
-                        menu.addItem('Paste', 'images/paste.png', function() {
-                            editor.execute('paste');
-                        });
-                        menu.addItem('Select all', 'images/selectall.png', function() {
-                            editor.execute('selectAll');
-                        });
-                        menu.addItem('Set Context', null, function() {
-                            // @ToDo: Pooja: Functionality to be put.
-                        });
-                        menu.addItem('Setup', 'images/setup.png', function() {
-                            // @ToDo: Pooja: Functionality to be put.
-                        });
-
-                        menu.addItem('Zoom In', 'images/zoom_in.png', function() {
-                            editor.execute('zoomIn');
-                        });
-                        menu.addItem('Zoom Out', 'images/zoom_out.png', function() {
-                            editor.execute('zoomOut');
-                        });
-                        menu.addItem('Diagram background...', null, function() {
-
-                            showColorWheel(graph);
-                            // graph.container.style.backgroundColor=showColorWheel(graph);
-                            //editor.execute('pageBackgroundColor');
-                            // @ToDo: Pooja: Functionality to be put.
-                        });
-                    }
-
+                        else {
+                            menu.addItem('Undo', 'images/undo.png', function()
+                            {
+                                editor.execute('undo');
+                            });
+                            menu.addItem('Redo', 'images/redo.png', function()
+                            {
+                                editor.execute('redo');
+                            });
+                            menu.addItem('Paste', 'images/paste.png', function()
+                            {
+                                editor.execute('paste');
+                            });
+                            menu.addItem('Select all', 'images/selectall.png', function()
+                            {
+                                editor.execute('selectAll');
+                            });
+                            menu.addItem('Set Context', null, function()
+                            {
+                               // @ToDo: Pooja: Functionality to be put.
+                            });
+                            menu.addItem('Setup', 'images/setup.png', function()
+                            {
+                                // @ToDo: Pooja: Functionality to be put.
+                            });
+                            menu.addItem('Zoom In', 'images/zoom_in.png', function()
+                            {
+                                editor.execute('zoomIn');
+                            });
+                            menu.addItem('Zoom Out', 'images/zoom_out.png', function()
+                            {
+                                editor.execute('zoomOut');
+                            });
+                            menu.addItem('Diagram background...', null, function()
+                            {
+                                showColorWheel(graph,cell,'bgColor');
+                            });
+                        }                    
+                   
                 };
 
                 //var config = mxUtils.load('config/editor-commons.xml').getDocumentElement();
@@ -478,6 +506,193 @@
                     button.appendChild(titleName);
                 });
 
+
+                /*
+                	@pooja, @jiteshjha
+					Create a custom rotate action for a selected cell.
+                */
+                editor.addAction('rotateCustom', function(editor, cell) {
+                    selectedCell = graph.getSelectionCell();
+                    if (selectedCell != null)
+                    {
+                        var cells=[];
+                        cells.push(selectedCell);
+                        for(var i=0; i < selectedCell.getChildCount();i++)
+                            cells.push(selectedCell.getChildAt(i));
+                        graph.getModel().beginUpdate();
+                        try
+                        {
+                            for (var i = 0; i < cells.length; i++)
+                            {
+                                var cell = cells[i];
+                            if (cell.isVertex() == true)
+                            {
+                                var geo = graph.getCellGeometry(cell);
+                    
+                                if (geo != null)
+                                {
+                                    // Rotates the size and position in the geometry
+                                    geo = geo.clone();
+                                    geo.x += geo.width / 2 - geo.height / 2;
+                                    geo.y += geo.height / 2 - geo.width / 2;
+                                    var tmp = geo.width;
+                                    geo.width = geo.height;
+                                    geo.height = tmp;
+                                    graph.getModel().setGeometry(cell, geo);
+                                    // Reads the current direction and advances by 90 degrees
+                                    var state = graph.view.getState(cell);
+                                    
+                                    if (state != null)
+                                    {
+                                        if(cell.isConnectable() == true) {
+                                            if(cell.value == "ExplicitOutputPort" || cell.value == "ImplicitOutputPort") {
+                                                var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
+                                                var geoCell = cell.getGeometry();
+                                                if (dir == 'east' || dir == 'west')
+                                                {
+                                                    var temp = geoCell.x;
+                                                    geoCell.x = geoCell.y - 0.0625;
+                                                    geoCell.y = temp + 0.0625;
+                                                    cell.setGeometry(geoCell);
+                                                    if(dir == 'east')
+                                                        dir = 'south';
+                                                    else
+                                                        dir = 'north';
+                                                }
+                                                else if (dir == 'south' || dir == 'north')
+                                                {
+                                                    
+                                                    geoCell.y = geoCell.x + 0.0625;
+                                                    if(dir == 'south') {
+                                                        dir = 'west';
+                                                        geoCell.x = 0-0.125;
+                                                    }
+                                                    else {
+                                                        dir = 'east';
+                                                        geoCell.x = 1;
+                                                    }
+                                                    cell.setGeometry(geoCell);
+                                                }
+                                            }
+                                            else if(cell.value == "ExplicitInputPort" || cell.value == "ImplicitInputPort") {
+                                                var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
+                                                var geoCell = cell.getGeometry();
+                                                if (dir == 'south' || dir == 'north')
+                                                {
+                                                    geoCell.y = geoCell.x - 0.0625;
+                                                    if(dir == 'south') {
+                                                        dir = 'west';
+                                                        geoCell.x = 1 + 0.125;
+                                                    }
+                                                    else {
+                                                        dir = 'east';
+                                                        geoCell.x = 0;
+                                                    }
+                                                    cell.setGeometry(geoCell);
+                                                }
+                                                else if (dir == 'east' || dir == 'west')
+                                                {
+                                                    geoCell = geoCell.clone();
+                                                    var temp = geoCell.x;
+                                                    geoCell.x = parseFloat(geoCell.y) + 0.0625;
+                                                    geoCell.y = temp - 0.0625;
+                                                    cell.setGeometry(geoCell);
+                                                    if(dir == 'east')
+                                                        dir = 'south';
+                                                    else
+                                                        dir = 'north';
+                                                }
+                                            }
+                                            else if(cell.value == 'CommandPort') {
+                                                var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
+                                                var geoCell = cell.getGeometry();
+                                                if (dir == 'south' || dir == 'north')
+                                                {
+                                                    var temp = geoCell.x;
+                                                    geoCell.x = geoCell.y + 0.0625;
+                                                    geoCell.y = temp - 0.0625;
+                                                    cell.setGeometry(geoCell);
+                                                    if(dir == 'south')
+                                                        dir = 'west';
+                                                    else
+                                                        dir = 'east';
+                                                }
+                                                else if (dir == 'east' || dir == 'west')
+                                                {
+                                                    geoCell.y = parseFloat(geoCell.x) - 0.0625;
+                                                    if(dir == 'east') {
+                                                        dir = 'south';
+                                                        geoCell.x = 0-0.0625;
+                                                    }
+                                                    else {
+                                                        dir = 'north';
+                                                        geoCell.x = 1 + 0.0625;
+                                                    }
+                                                    cell.setGeometry(geoCell);
+                                                }
+                                            }
+                                            else if(cell.value == 'ControlPort') {
+                                                var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
+                                                var geoCell = cell.getGeometry();
+                                                if (dir == 'south' || dir == 'north')
+                                                {
+                                                    var temp = geoCell.x;
+                                                    geoCell.x = geoCell.y - 0.0625;
+                                                    geoCell.y = temp + 0.0625;
+                                                    cell.setGeometry(geoCell);
+                                                    if(dir == 'south')
+                                                        dir = 'west';
+                                                    else
+                                                        dir = 'east';
+                                                }
+                                                else if (dir == 'east' || dir == 'west')
+                                                {
+                                                    geoCell.y = parseFloat(geoCell.x) + 0.0625;
+                                                    if(dir == 'east') {
+                                                        dir = 'south';
+                                                        
+                                                        geoCell.x = 1 + 0.0625;
+                                                    }
+                                                    else {
+                                                        dir = 'north';
+                                                        geoCell.x = 0-0.0625;
+                                                    }
+                                                    cell.setGeometry(geoCell);
+                                                }
+                                            }
+                                        }
+                                        else {
+                                            var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
+                                            
+                                            if (dir == 'east')
+                                            {
+                                                dir = 'south';
+                                            }
+                                            else if (dir == 'south')
+                                            {
+                                                dir = 'west';
+                                            }
+                                            else if (dir == 'west')
+                                            {
+                                                dir = 'north';
+                                            }
+                                            else if (dir == 'north')
+                                            {
+                                                dir = 'east';
+                                            }
+                                        }
+                                        graph.setCellStyles(mxConstants.STYLE_DIRECTION, dir, [cell]);
+                                    }
+                                }                               
+                            }
+                        }
+                        }
+                        finally
+                        {
+                            graph.getModel().endUpdate();
+                        }
+                    }
+                }, null, null, 'Ctrl+R');
 
 
                 // @jiteshjha, @pooja
@@ -866,29 +1081,28 @@
             showModalWindow(graph, 'Properties', content, 450, height);
         };
 
-        function showColorWheel(graph) {
 
 
-            // Create basic structure for the form
-            var content = document.createElement('div');
-            content.setAttribute("id", "colorProperties");
+	    function showColorWheel(graph, cell, selectProperty) {
+	      
+	        // Create basic structure for the form
+	        var content = document.createElement('div');
+	        content.setAttribute("id", "colorProperties");
 
-            // Add Form
-            var myform = document.createElement("form");
-            myform.method = "";
-            myform.setAttribute("id", "formProperties");
+	        // Add Form
+	        var myform = document.createElement("form");
+	        myform.method = "";
+	        myform.setAttribute("id","formProperties");
 
-            // Line break
-            var linebreak = document.createElement('br');
-            myform.appendChild(linebreak);
-
-
+	         // Line break
+	        var linebreak = document.createElement('br');
+	        myform.appendChild(linebreak);
+	        
             // Input Title
             var fieldName = 'Color';
             var namelabel = document.createElement('label');
             namelabel.innerHTML = fieldName;
             myform.appendChild(namelabel);
-
 
             // Input
             var input = document.createElement("input");
@@ -901,50 +1115,80 @@
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
-
+            
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
-
-
-            // Line break
-            var linebreak = document.createElement('br');
-            myform.appendChild(linebreak);
-
-            var picker = document.createElement('div');
-            picker.setAttribute("id", "picker");
-            myform.appendChild(picker);
-
-            // Line break
-            var linebreak = document.createElement('br');
-            myform.appendChild(linebreak);
-
-            // Button - Submit
-
-            var btn = document.createElement("button");
-            btn.innerHTML = 'Submit';
-            btn.type = "button";
-            btn.name = "submit";
-            btn.style.cssText = 'margin-left: 75px';
-
-            // Executes when button 'btn' is clicked
-            btn.onclick = function() {
-
-                var input = document.getElementById('color').value;
-
-                graph.container.style.backgroundColor = input;
-
-            };
-
-            myform.appendChild(btn);
-
-            content.appendChild(myform);
-            showModalWindow(graph, 'Diagram background...', content, 285, 340);
-            // Invokes the farbtastic functionality 
-            $(document).ready(function() {
-                $('#picker').farbtastic('#color');
-            });
-        };
+	        
+	        // Line break
+	        var linebreak = document.createElement('br');
+	        myform.appendChild(linebreak);
+	        var picker = document.createElement('div');
+	        picker.setAttribute("id", "picker");
+	        myform.appendChild(picker);
+	        // Line break
+	        var linebreak = document.createElement('br');
+	        myform.appendChild(linebreak);
+	        
+	        // Button - Submit
+	        var btn = document.createElement("button");
+	        btn.innerHTML = 'Submit';
+	        btn.type = "button";
+	        btn.name = "submit";
+	        btn.style.cssText = 'margin-left: 75px';
+	        
+	        // Executes when button 'btn' is clicked
+	        btn.onclick = function() {
+	            var input=document.getElementById('color').value;
+	            if(selectProperty == "edgeStrokeColor") {
+	                var style = graph.getModel().getStyle(cell);
+	                if(style == null) {
+	                    style = 'strokeColor='+input;
+	                    graph.getModel().setStyle(cell, style);
+	                }
+	                else {
+	                    style = style.replace(/strokeColor=#[a-fA-F0-9]{6,}/g, "strokeColor="+input);
+	                    graph.getModel().setStyle(cell, style);
+	                }
+	            }
+	            else if(selectProperty == "bgColor") {
+	            graph.container.style.backgroundColor=input;
+	            }
+	            else if(selectProperty == "vertexStrokeColor") {
+	                var style = graph.getModel().getStyle(cell);
+	                if(style.indexOf('strokeColor') > -1) {
+	                    style = style.replace(/strokeColor=#[a-fA-F0-9]{6,}/g, "strokeColor="+input);
+	                    graph.getModel().setStyle(cell, style);
+	                }
+	                else {
+	                    style = style + ';' + 'strokeColor='+input;
+	                    graph.getModel().setStyle(cell, style);
+	                }
+	            }
+	            else if(selectProperty == "vertexFillColor") {
+	                var style = graph.getModel().getStyle(cell);                    
+	                if(style.indexOf('fillColor') > -1) {
+	                    style = style.replace(/fillColor=#[a-fA-F0-9]{6,}/g, "fillColor="+input);
+	                    graph.getModel().setStyle(cell, style);
+	                }
+	                else {
+	                    style = style + ';' + 'fillColor='+input;
+	                    graph.getModel().setStyle(cell, style);
+	                }
+	            }
+	            
+	            
+	            
+	        };
+	        myform.appendChild(btn);
+	        
+	        content.appendChild(myform);
+	        showModalWindow(graph, 'Diagram background...', content,285,340);
+	        // Invokes the farbtastic functionality 
+	         $(document).ready(function() {
+	             $('#picker').farbtastic('#color');
+	        });
+	    };
 
         function createButtonImage(button, image) {
             if (image != null) {
