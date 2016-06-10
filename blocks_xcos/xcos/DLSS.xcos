@@ -1,1 +1,51 @@
-<?xml version="1.0" encoding="UTF-8"?><XcosDiagram background="-1" title="Untitled"><!--Xcos - 1.0 - scilab-5.5.2 - 20150331 1152--><Array as="context" scilabClass="String[]"><add value=""/></Array><mxGraphModel as="model"><root><mxCell id="-bba8320:1552f82e570:-7f6e"/><mxCell id="-bba8320:1552f82e570:-7f6f" parent="-bba8320:1552f82e570:-7f6e"/><BasicBlock blockType="d" id="-bba8320:1552f82e570:-7f6c" interfaceFunctionName="DLSS" parent="-bba8320:1552f82e570:-7f6f" simulationFunctionName="dsslti4" simulationFunctionType="C_OR_FORTRAN" style="DLSS"><ScilabString as="exprs" height="5" width="1"><data column="0" line="0" value="-1"/><data column="0" line="1" value="1"/><data column="0" line="2" value="1"/><data column="0" line="3" value="0"/><data column="0" line="4" value="0"/></ScilabString><ScilabDouble as="realParameters" height="4" width="1"><data column="0" line="0" realPart="-1.0"/><data column="0" line="1" realPart="1.0"/><data column="0" line="2" realPart="1.0"/><data column="0" line="3" realPart="0.0"/></ScilabDouble><ScilabDouble as="integerParameters" height="0" width="0"/><Array as="objectsParameters" scilabClass="ScilabList"/><ScilabDouble as="nbZerosCrossing" height="1" width="1"><data column="0" line="0" realPart="0.0"/></ScilabDouble><ScilabDouble as="nmode" height="1" width="1"><data column="0" line="0" realPart="0.0"/></ScilabDouble><ScilabDouble as="dState" height="1" width="1"><data column="0" line="0" realPart="0.0"/></ScilabDouble><Array as="oDState" scilabClass="ScilabList"/><Array as="equations" scilabClass="ScilabList"/><mxGeometry as="geometry" height="7.0" width="7.0" x="38.5" y="37.5"/></BasicBlock><ExplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-bba8320:1552f82e570:-7f6b" ordering="1" parent="-bba8320:1552f82e570:-7f6c" style="ExplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0" value=""><mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="-3.0"/></ExplicitInputPort><ExplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-bba8320:1552f82e570:-7f6a" ordering="1" parent="-bba8320:1552f82e570:-7f6c" style="ExplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0" value=""><mxGeometry as="geometry" height="8.0" width="8.0" x="4.0" y="-3.0"/></ExplicitOutputPort><ControlPort dataType="UNKNOW_TYPE" id="-bba8320:1552f82e570:-7f69" ordering="1" parent="-bba8320:1552f82e570:-7f6c" style="ControlPort;align=center;verticalAlign=top;spacing=10.0;rotation=90"><mxGeometry as="geometry" height="8.0" width="8.0" x="-2.0" y="-8.0"/></ControlPort></root></mxGraphModel><mxCell as="defaultParent" id="-bba8320:1552f82e570:-7f6f" parent="-bba8320:1552f82e570:-7f6e"/></XcosDiagram>
+<XcosDiagram background="-1" title="Untitled">
+  <!--Xcos - 1.0 - scilab-5.5.2 - 20150331 1152-->
+  <Array as="context" scilabClass="String[]">
+    <add value=""/>
+  </Array>
+  <mxGraphModel as="model">
+    <root>
+      <mxCell id="-bba8320:1552f82e570:-7f6e"/>
+      <mxCell id="-bba8320:1552f82e570:-7f6f" parent="-bba8320:1552f82e570:-7f6e"/>
+      <BasicBlock blockType="d" id="-bba8320:1552f82e570:-7f6c" interfaceFunctionName="DLSS" parent="-bba8320:1552f82e570:-7f6f" simulationFunctionName="dsslti4" simulationFunctionType="C_OR_FORTRAN" style="DLSS">
+        <ScilabString as="exprs" height="5" width="1">
+          <data column="0" line="0" value="-1"/>
+          <data column="0" line="1" value="1"/>
+          <data column="0" line="2" value="1"/>
+          <data column="0" line="3" value="0"/>
+          <data column="0" line="4" value="0"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="4" width="1">
+          <data column="0" line="0" realPart="-1.0"/>
+          <data column="0" line="1" realPart="1.0"/>
+          <data column="0" line="2" realPart="1.0"/>
+          <data column="0" line="3" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="dState" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabList"/>
+        <mxGeometry as="geometry" height="7.0" width="7.0" x="38.5" y="37.5"/>
+      </BasicBlock>
+      <ExplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-bba8320:1552f82e570:-7f6b" ordering="1" parent="-bba8320:1552f82e570:-7f6c" style="ExplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0" value="">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="-3.0"/>
+      </ExplicitInputPort>
+      <ExplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-bba8320:1552f82e570:-7f6a" ordering="1" parent="-bba8320:1552f82e570:-7f6c" style="ExplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0" value="">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="4.0" y="-3.0"/>
+      </ExplicitOutputPort>
+      <ControlPort dataType="UNKNOW_TYPE" id="-bba8320:1552f82e570:-7f69" ordering="1" parent="-bba8320:1552f82e570:-7f6c" style="ControlPort;align=center;verticalAlign=top;spacing=10.0;rotation=90">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-2.0" y="-8.0"/>
+      </ControlPort>
+    </root>
+  </mxGraphModel>
+  <mxCell as="defaultParent" id="-bba8320:1552f82e570:-7f6f" parent="-bba8320:1552f82e570:-7f6e"/>
+</XcosDiagram>

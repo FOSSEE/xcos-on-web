@@ -1,1 +1,71 @@
-<?xml version="1.0" encoding="UTF-8"?><XcosDiagram background="-1" title="Untitled"><!--Xcos - 1.0 - scilab-5.5.2 - 20150331 1152--><Array as="context" scilabClass="String[]"><add value=""/></Array><mxGraphModel as="model"><root><mxCell id="5e6464c0:15524622c93:-7f5e"/><mxCell id="5e6464c0:15524622c93:-7f5f" parent="5e6464c0:15524622c93:-7f5e"/><BasicBlock dependsOnU="1" id="5e6464c0:15524622c93:-7f5c" interfaceFunctionName="VanneReglante" parent="5e6464c0:15524622c93:-7f5f" simulationFunctionName="VanneReglante" simulationFunctionType="DEFAULT" style="VanneReglante"><ScilabString as="exprs" height="2" width="1"><data column="0" line="0" value="8005.42"/><data column="0" line="1" value="0"/></ScilabString><ScilabDouble as="realParameters" height="2" width="1"><data column="0" line="0" realPart="8005.42"/><data column="0" line="1" realPart="0.0"/></ScilabDouble><ScilabDouble as="integerParameters" height="0" width="0"/><Array as="objectsParameters" scilabClass="ScilabList"/><ScilabDouble as="nbZerosCrossing" height="1" width="1"><data column="0" line="0" realPart="0.0"/></ScilabDouble><ScilabDouble as="nmode" height="1" width="1"><data column="0" line="0" realPart="0.0"/></ScilabDouble><Array as="oDState" scilabClass="ScilabList"/><Array as="equations" scilabClass="ScilabTList"><ScilabString height="1" width="5"><data column="0" line="0" value="modelica"/><data column="1" line="0" value="model"/><data column="2" line="0" value="inputs"/><data column="3" line="0" value="outputs"/><data column="4" line="0" value="parameters"/></ScilabString><ScilabString height="1" width="1"><data column="0" line="0" value="VanneReglante"/></ScilabString><ScilabString height="1" width="2"><data column="0" line="0" value="C1"/><data column="1" line="0" value="Ouv"/></ScilabString><ScilabString height="1" width="1"><data column="0" line="0" value="C2"/></ScilabString><Array scilabClass="ScilabList"><ScilabString height="2" width="1"><data column="0" line="0" value="Cvmax"/><data column="0" line="1" value="p_rho"/></ScilabString><ScilabDouble height="2" width="1"><data column="0" line="0" realPart="8005.42"/><data column="0" line="1" realPart="0.0"/></ScilabDouble></Array></Array><mxGeometry as="geometry" height="7.0" width="7.0" x="37.5" y="37.5"/></BasicBlock><ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="5e6464c0:15524622c93:-7f5b" ordering="1" parent="5e6464c0:15524622c93:-7f5c" style="ImplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0" value=""><mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="-3.3333333333333335"/></ImplicitInputPort><ExplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="5e6464c0:15524622c93:-7f5a" ordering="2" parent="5e6464c0:15524622c93:-7f5c" style="ExplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0" value=""><mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="-2.666666666666667"/></ExplicitInputPort><ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="5e6464c0:15524622c93:-7f59" ordering="1" parent="5e6464c0:15524622c93:-7f5c" style="ImplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0" value=""><mxGeometry as="geometry" height="8.0" width="8.0" x="2.0" y="-3.0"/></ImplicitOutputPort></root></mxGraphModel><mxCell as="defaultParent" id="5e6464c0:15524622c93:-7f5f" parent="5e6464c0:15524622c93:-7f5e"/></XcosDiagram>
+<XcosDiagram background="-1" title="Untitled">
+  <!--Xcos - 1.0 - scilab-5.5.2 - 20150331 1152-->
+  <Array as="context" scilabClass="String[]">
+    <add value=""/>
+  </Array>
+  <mxGraphModel as="model">
+    <root>
+      <mxCell id="5e6464c0:15524622c93:-7f5e"/>
+      <mxCell id="5e6464c0:15524622c93:-7f5f" parent="5e6464c0:15524622c93:-7f5e"/>
+      <BasicBlock dependsOnU="1" id="5e6464c0:15524622c93:-7f5c" interfaceFunctionName="VanneReglante" parent="5e6464c0:15524622c93:-7f5f" simulationFunctionName="VanneReglante" simulationFunctionType="DEFAULT" style="VanneReglante">
+        <ScilabString as="exprs" height="2" width="1">
+          <data column="0" line="0" value="8005.42"/>
+          <data column="0" line="1" value="0"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="2" width="1">
+          <data column="0" line="0" realPart="8005.42"/>
+          <data column="0" line="1" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="VanneReglante"/>
+          </ScilabString>
+          <ScilabString height="1" width="2">
+            <data column="0" line="0" value="C1"/>
+            <data column="1" line="0" value="Ouv"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="C2"/>
+          </ScilabString>
+          <Array scilabClass="ScilabList">
+            <ScilabString height="2" width="1">
+              <data column="0" line="0" value="Cvmax"/>
+              <data column="0" line="1" value="p_rho"/>
+            </ScilabString>
+            <ScilabDouble height="2" width="1">
+              <data column="0" line="0" realPart="8005.42"/>
+              <data column="0" line="1" realPart="0.0"/>
+            </ScilabDouble>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="7.0" width="7.0" x="37.5" y="37.5"/>
+      </BasicBlock>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="5e6464c0:15524622c93:-7f5b" ordering="1" parent="5e6464c0:15524622c93:-7f5c" style="ImplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0" value="">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="-3.3333333333333335"/>
+      </ImplicitInputPort>
+      <ExplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="5e6464c0:15524622c93:-7f5a" ordering="2" parent="5e6464c0:15524622c93:-7f5c" style="ExplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0" value="">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="-2.666666666666667"/>
+      </ExplicitInputPort>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="5e6464c0:15524622c93:-7f59" ordering="1" parent="5e6464c0:15524622c93:-7f5c" style="ImplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0" value="">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="2.0" y="-3.0"/>
+      </ImplicitOutputPort>
+    </root>
+  </mxGraphModel>
+  <mxCell as="defaultParent" id="5e6464c0:15524622c93:-7f5f" parent="5e6464c0:15524622c93:-7f5e"/>
+</XcosDiagram>

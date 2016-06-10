@@ -1,1 +1,75 @@
-<?xml version="1.0" encoding="UTF-8"?><XcosDiagram background="-1" title="Untitled"><!--Xcos - 1.0 - scilab-5.5.2 - 20150331 1152--><Array as="context" scilabClass="String[]"><add value=""/></Array><mxGraphModel as="model"><root><mxCell id="-1b7beca7:15524560360:-7dee"/><mxCell id="-1b7beca7:15524560360:-7def" parent="-1b7beca7:15524560360:-7dee"/><BasicBlock dependsOnU="1" id="-1b7beca7:15524560360:-7dec" interfaceFunctionName="Capacitor" parent="-1b7beca7:15524560360:-7def" simulationFunctionName="Capacitor" simulationFunctionType="DEFAULT" style="Capacitor"><ScilabString as="exprs" height="2" width="1"><data column="0" line="0" value="0.01"/><data column="0" line="1" value="0"/></ScilabString><ScilabDouble as="realParameters" height="2" width="1"><data column="0" line="0" realPart="0.01"/><data column="0" line="1" realPart="0.0"/></ScilabDouble><ScilabDouble as="integerParameters" height="0" width="0"/><Array as="objectsParameters" scilabClass="ScilabList"/><ScilabDouble as="nbZerosCrossing" height="1" width="1"><data column="0" line="0" realPart="0.0"/></ScilabDouble><ScilabDouble as="nmode" height="1" width="1"><data column="0" line="0" realPart="0.0"/></ScilabDouble><Array as="oDState" scilabClass="ScilabList"/><Array as="equations" scilabClass="ScilabTList"><ScilabString height="1" width="5"><data column="0" line="0" value="modelica"/><data column="1" line="0" value="model"/><data column="2" line="0" value="inputs"/><data column="3" line="0" value="outputs"/><data column="4" line="0" value="parameters"/></ScilabString><ScilabString height="1" width="1"><data column="0" line="0" value="Capacitor"/></ScilabString><ScilabString height="1" width="1"><data column="0" line="0" value="p"/></ScilabString><ScilabString height="1" width="1"><data column="0" line="0" value="n"/></ScilabString><Array scilabClass="ScilabList"><ScilabString height="1" width="2"><data column="0" line="0" value="C"/><data column="1" line="0" value="v"/></ScilabString><Array scilabClass="ScilabList"><ScilabDouble height="1" width="1"><data column="0" line="0" realPart="0.01"/></ScilabDouble><ScilabDouble height="1" width="1"><data column="0" line="0" realPart="0.0"/></ScilabDouble></Array><ScilabDouble height="1" width="2"><data column="0" line="0" realPart="0.0"/><data column="1" line="0" realPart="1.0"/></ScilabDouble></Array></Array><mxGeometry as="geometry" height="7.0" width="7.0" x="37.5" y="37.05"/></BasicBlock><ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-1b7beca7:15524560360:-7deb" ordering="1" parent="-1b7beca7:15524560360:-7dec" style="ImplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0" value=""><mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="-3.45"/></ImplicitInputPort><ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-1b7beca7:15524560360:-7dea" ordering="1" parent="-1b7beca7:15524560360:-7dec" style="ImplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0" value=""><mxGeometry as="geometry" height="8.0" width="8.0" x="2.0" y="-3.45"/></ImplicitOutputPort></root></mxGraphModel><mxCell as="defaultParent" id="-1b7beca7:15524560360:-7def" parent="-1b7beca7:15524560360:-7dee"/></XcosDiagram>
+<XcosDiagram background="-1" title="Untitled">
+  <!--Xcos - 1.0 - scilab-5.5.2 - 20150331 1152-->
+  <Array as="context" scilabClass="String[]">
+    <add value=""/>
+  </Array>
+  <mxGraphModel as="model">
+    <root>
+      <mxCell id="-1b7beca7:15524560360:-7dee"/>
+      <mxCell id="-1b7beca7:15524560360:-7def" parent="-1b7beca7:15524560360:-7dee"/>
+      <BasicBlock dependsOnU="1" id="-1b7beca7:15524560360:-7dec" interfaceFunctionName="Capacitor" parent="-1b7beca7:15524560360:-7def" simulationFunctionName="Capacitor" simulationFunctionType="DEFAULT" style="Capacitor">
+        <ScilabString as="exprs" height="2" width="1">
+          <data column="0" line="0" value="0.01"/>
+          <data column="0" line="1" value="0"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="2" width="1">
+          <data column="0" line="0" realPart="0.01"/>
+          <data column="0" line="1" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabTList">
+          <ScilabString height="1" width="5">
+            <data column="0" line="0" value="modelica"/>
+            <data column="1" line="0" value="model"/>
+            <data column="2" line="0" value="inputs"/>
+            <data column="3" line="0" value="outputs"/>
+            <data column="4" line="0" value="parameters"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="Capacitor"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="p"/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="n"/>
+          </ScilabString>
+          <Array scilabClass="ScilabList">
+            <ScilabString height="1" width="2">
+              <data column="0" line="0" value="C"/>
+              <data column="1" line="0" value="v"/>
+            </ScilabString>
+            <Array scilabClass="ScilabList">
+              <ScilabDouble height="1" width="1">
+                <data column="0" line="0" realPart="0.01"/>
+              </ScilabDouble>
+              <ScilabDouble height="1" width="1">
+                <data column="0" line="0" realPart="0.0"/>
+              </ScilabDouble>
+            </Array>
+            <ScilabDouble height="1" width="2">
+              <data column="0" line="0" realPart="0.0"/>
+              <data column="1" line="0" realPart="1.0"/>
+            </ScilabDouble>
+          </Array>
+        </Array>
+        <mxGeometry as="geometry" height="7.0" width="7.0" x="37.5" y="37.05"/>
+      </BasicBlock>
+      <ImplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-1b7beca7:15524560360:-7deb" ordering="1" parent="-1b7beca7:15524560360:-7dec" style="ImplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0" value="">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="-3.45"/>
+      </ImplicitInputPort>
+      <ImplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="-1b7beca7:15524560360:-7dea" ordering="1" parent="-1b7beca7:15524560360:-7dec" style="ImplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0" value="">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="2.0" y="-3.45"/>
+      </ImplicitOutputPort>
+    </root>
+  </mxGraphModel>
+  <mxCell as="defaultParent" id="-1b7beca7:15524560360:-7def" parent="-1b7beca7:15524560360:-7dee"/>
+</XcosDiagram>

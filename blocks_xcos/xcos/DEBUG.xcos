@@ -1,1 +1,36 @@
-<?xml version="1.0" encoding="UTF-8"?><XcosDiagram background="-1" title="Untitled"><!--Xcos - 1.0 - scilab-5.5.2 - 20150331 1152--><Array as="context" scilabClass="String[]"><add value=""/></Array><mxGraphModel as="model"><root><mxCell id="5e6464c0:15524622c93:-7f89"/><mxCell id="5e6464c0:15524622c93:-7f8a" parent="5e6464c0:15524622c93:-7f89"/><BasicBlock blockType="d" id="5e6464c0:15524622c93:-7f87" interfaceFunctionName="DEBUG" parent="5e6464c0:15524622c93:-7f8a" simulationFunctionName="%debug_scicos" simulationFunctionType="DEBUG" style="DEBUG"><Array as="exprs" scilabClass="ScilabList"><ScilabString height="1" width="1"><data column="0" line="0" value=""/></ScilabString><ScilabString height="1" width="1"><data column="0" line="0" value="xcos_debug_gui(flag,block);"/></ScilabString></Array><ScilabDouble as="realParameters" height="0" width="0"/><ScilabDouble as="integerParameters" height="0" width="0"/><Array as="objectsParameters" scilabClass="ScilabList"/><ScilabDouble as="nbZerosCrossing" height="1" width="1"><data column="0" line="0" realPart="0.0"/></ScilabDouble><ScilabDouble as="nmode" height="1" width="1"><data column="0" line="0" realPart="0.0"/></ScilabDouble><Array as="oDState" scilabClass="ScilabList"/><Array as="equations" scilabClass="ScilabList"/><mxGeometry as="geometry" height="7.0" width="8.0" x="40.0" y="37.5"/></BasicBlock></root></mxGraphModel><mxCell as="defaultParent" id="5e6464c0:15524622c93:-7f8a" parent="5e6464c0:15524622c93:-7f89"/><mxPoint as="origin" x="-27.5"/></XcosDiagram>
+<XcosDiagram background="-1" title="Untitled">
+  <!--Xcos - 1.0 - scilab-5.5.2 - 20150331 1152-->
+  <Array as="context" scilabClass="String[]">
+    <add value=""/>
+  </Array>
+  <mxGraphModel as="model">
+    <root>
+      <mxCell id="5e6464c0:15524622c93:-7f89"/>
+      <mxCell id="5e6464c0:15524622c93:-7f8a" parent="5e6464c0:15524622c93:-7f89"/>
+      <BasicBlock blockType="d" id="5e6464c0:15524622c93:-7f87" interfaceFunctionName="DEBUG" parent="5e6464c0:15524622c93:-7f8a" simulationFunctionName="%debug_scicos" simulationFunctionType="DEBUG" style="DEBUG">
+        <Array as="exprs" scilabClass="ScilabList">
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value=""/>
+          </ScilabString>
+          <ScilabString height="1" width="1">
+            <data column="0" line="0" value="xcos_debug_gui(flag,block);"/>
+          </ScilabString>
+        </Array>
+        <ScilabDouble as="realParameters" height="0" width="0"/>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabList"/>
+        <mxGeometry as="geometry" height="7.0" width="8.0" x="40.0" y="37.5"/>
+      </BasicBlock>
+    </root>
+  </mxGraphModel>
+  <mxCell as="defaultParent" id="5e6464c0:15524622c93:-7f8a" parent="5e6464c0:15524622c93:-7f89"/>
+  <mxPoint as="origin" x="-27.5"/>
+</XcosDiagram>
