@@ -31,8 +31,6 @@
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="json2.js"></script>
     <script type="text/javascript">
-        
-
         function main(container, outline, toolbar, sidebar, status) {
             // Checks if the browser is supported
             if (!mxClient.isBrowserSupported()) {
@@ -123,47 +121,51 @@
                             var edgeformat = menu.addItem('Format', null, null);
 
                             menu.addItem('Border Color', 'images/draw-brush.png', function() {
-                                alert('Border Color'); // @ToDo: Pooja: Functionality to be put.
+                                // @ToDo: Pooja: Functionality to be put.   
+                                showColorWheel(graph, cell, 'edgeStrokeColor');
+
                             }, edgeformat);
-                            menu.addItem('Edit...', 'images/edit.png', function() {
+                            menu.addItem('Text and Text Font', 'images/edit.png', function() {
+                                alert('Edit...'); // @ToDo: Pooja: Functionality to be put.
+                            }, edgeformat);
+                            menu.addItem('Text Color', 'images/edit.png', function() {
                                 alert('Edit...'); // @ToDo: Pooja: Functionality to be put.
                             }, edgeformat);
 
                         } else {
-
                             menu.addItem('Block Parameters...', 'images/gear.gif', function() {
-                                // @ToDo: Pooja: Functionality to be put.
+                                showPropertiesWindow(graph, cell);
                             });
 
                             menu.addItem('Cut', 'images/cut.png', function() {
                                 editor.execute('cut');
                             });
-
                             menu.addItem('Copy', 'images/copy.png', function() {
                                 editor.execute('copy');
                             });
-
                             menu.addItem('Delete', 'images/delete2.png', function() {
                                 editor.execute('delete');
                             });
 
                             menu.addItem('Selection to superblock', 'images/superblock.png', function() {
-                                // @ToDo: Pooja: Functionality to be put.   
+                                // @ToDo: Pooja: Functionality to be put.
                             });
                             var format = menu.addItem('Format', null, null);
 
                             menu.addItem('Rotate', 'images/rotate.png', function() {
-                                alert('Rotate'); // @ToDo: Pooja: Functionality to be put.
+                                editor.execute('rotateCustom');
                             }, format);
-                            menu.addItem('Edit...', 'images/edit.png', function() {
-                                alert('Edit...'); // @ToDo: Pooja: Functionality to be put.
-                            }, format);
+                            menu.addItem('Border Color', 'images/draw-brush.png', function() {
+                                showColorWheel(graph, cell, 'vertexStrokeColor');
 
+                            }, format);
+                            menu.addItem('Fill Color', 'images/edit.png', function() {
+                                showColorWheel(graph, cell, 'vertexFillColor');
+                            }, format);
                             menu.addItem('Details', null, function() {
                                 // @ToDo: Pooja: Functionality to be put.
                             });
                         }
-
                     } else {
                         menu.addItem('Undo', 'images/undo.png', function() {
                             editor.execute('undo');
@@ -183,7 +185,6 @@
                         menu.addItem('Setup', 'images/setup.png', function() {
                             // @ToDo: Pooja: Functionality to be put.
                         });
-
                         menu.addItem('Zoom In', 'images/zoom_in.png', function() {
                             editor.execute('zoomIn');
                         });
@@ -191,11 +192,7 @@
                             editor.execute('zoomOut');
                         });
                         menu.addItem('Diagram background...', null, function() {
-
-                            showColorWheel(graph);
-                            // graph.container.style.backgroundColor=showColorWheel(graph);
-                            //editor.execute('pageBackgroundColor');
-                            // @ToDo: Pooja: Functionality to be put.
+                            showColorWheel(graph, cell, 'bgColor');
                         });
                     }
 
@@ -212,9 +209,8 @@
                    using mxEventSource.addListener.
                 */
                 var undoManager = new mxUndoManager();
-                var listener = function(sender, evt)
-                {
-                  undoManager.undoableEditHappened(evt.getProperty('edit'));
+                var listener = function(sender, evt) {
+                    undoManager.undoableEditHappened(evt.getProperty('edit'));
                 };
                 graph.getModel().addListener(mxEvent.UNDO, listener);
                 graph.getModel().addListener(mxEvent.REDO, listener);
@@ -222,11 +218,11 @@
                 graph.getView().addListener(mxEvent.REDO, listener);
 
                 editor.addAction('undoCustom', function(editor, cell) {
-                  undoManager.undo();
+                    undoManager.undo();
                 });
 
                 editor.addAction('redoCustom', function(editor, cell) {
-                  undoManager.redo();
+                    undoManager.redo();
                 });
 
                 /*
@@ -234,92 +230,84 @@
                   and then check if that edge satisfies one of the port constraints.
 
                 */
-                graph.addListener(mxEvent.CLICK, function(sender, evt)
-                {
-                  var selectedEdgeObject = graph.getSelectionCell();
-                  if (selectedEdgeObject != null && selectedEdgeObject.isEdge() == true)
-                  {
-
+                graph.addListener(mxEvent.CLICK, function(sender, evt) {
                     var selectedEdgeObject = graph.getSelectionCell();
-                    var target = selectedEdgeObject.target;
-                    var source;
+                    if (selectedEdgeObject != null && selectedEdgeObject.isEdge() == true) {
 
-                    if(selectedEdgeObject != null && selectedEdgeObject.isEdge() == true) {
-                      function getEdgeId(edgeObject) {
-                              while (edgeObject.source != null && edgeObject.source.isEdge() == true) {
-                                  edgeObject = edgeObject.source;
-                              }
-                              return edgeObject.source;
-                      }
+                        var selectedEdgeObject = graph.getSelectionCell();
+                        var target = selectedEdgeObject.target;
+                        var source;
 
-                      if(selectedEdgeObject.isEdge() == true) {
-                        source = getEdgeId(selectedEdgeObject);
-                      }
-                      if(source != null && target != null) {
-                        if(!(((source.value == "ExplicitOutputPort" && target.value == "ExplicitInputPort")
-                          || (source.value == "ExplicitInputPort" && target.value == "ExplicitOutputPort")
-                          || (source.value == "ImplicitOutputPort" && target.value == "ImplicitInputPort")
-                          || (source.value == "ImplicitInputPort" && target.value == "ImplicitOutputPort")
-                          || (source.value == "CommandPort" && target.value == "ControlPort")
-                          || (source.value == "ControlPort" && target.value == "CommandPort"))
-                          && (source.getEdgeCount() <= 1 && source.isVertex() == true
-                              && target.getEdgeCount() <=1 && target.isVertex() == true)
-                        )) {
-
-                          if(!(source.getEdgeCount() <= 1 && source.isVertex() == true
-                            && target.getEdgeCount() <=1 && target.isVertex() == true)) {
-                                alert("Port is already connected, please select an please select an unconnected port or a valid link");
-                          }
-                          else if(source.value == "ImplicitInputPort") {
-                            alert("Implicit data input port must be connected to implicit data output port");
-                          }
-                          else if(source.value == "ImplicitOutputPort") {
-                            alert("Implicit data output port must be connected to implicit data input port");
-                          }
-                          else if(source.value == "ExplicitOutputPort") {
-                            alert("Explicit data output port must be connected to explicit data input port");
-                          }
-                          else if(source.value == "ExplicitInputPort") {
-                            alert("Explicit data input port must be connected to explicit data output port");
-                          }
-                          else if(source.value = "ControlPort") {
-                            alert("Control port must be connected to command port");
-                          }
-                          else if(source.value = "CommandPort") {
-                            alert("Command port must be connected to control port");
-                          }
-                          
-                          /*
-                            Remove last mxEvent from the undoManager history stack, 
-                            Store all the remaining undo mxEvents into a temporary array, 
-                            clears the history, and readds the mxEvents into the undoManager history stack.
-                          */
-                          editor.execute('undo');
-                          
-                          // Remove the last element from the history array.
-                          undoManager.history.splice(-1,1);
-                          
-                          // storage[] -> temporary array
-                          var storage = [];
-                          for(i in undoManager.history) {
-                              if(undoManager.history[i] != null) {
-                              storage.push(undoManager.history[i])
+                        if (selectedEdgeObject != null && selectedEdgeObject.isEdge() == true) {
+                            function getEdgeId(edgeObject) {
+                                while (edgeObject.source != null && edgeObject.source.isEdge() == true) {
+                                    edgeObject = edgeObject.source;
+                                }
+                                return edgeObject.source;
                             }
-                          }
-                          
-                          // Clear the undoManager history, and reset the undoManager pointer to avoid any undo of null events.
-                          undoManager.clear();
-                          
-                          // Move the remaning mxEvents back into the undoManager history stack.
-                          for(i in storage) {
-                              if(storage[i] != null) {
-                              undoManager.undoableEditHappened(storage[i]);
+
+                            if (selectedEdgeObject.isEdge() == true) {
+                                source = getEdgeId(selectedEdgeObject);
                             }
-                          }
+                            if (source != null && target != null) {
+                                if (!(((source.value == "ExplicitOutputPort" && target.value == "ExplicitInputPort") ||
+                                            (source.value == "ExplicitInputPort" && target.value == "ExplicitOutputPort") ||
+                                            (source.value == "ImplicitOutputPort" && target.value == "ImplicitInputPort") ||
+                                            (source.value == "ImplicitInputPort" && target.value == "ImplicitOutputPort") ||
+                                            (source.value == "CommandPort" && target.value == "ControlPort") ||
+                                            (source.value == "ControlPort" && target.value == "CommandPort")) &&
+                                        (source.getEdgeCount() <= 1 && source.isVertex() == true &&
+                                            target.getEdgeCount() <= 1 && target.isVertex() == true)
+                                    )) {
+
+                                    if (!(source.getEdgeCount() <= 1 && source.isVertex() == true &&
+                                            target.getEdgeCount() <= 1 && target.isVertex() == true)) {
+                                        alert("Port is already connected, please select an please select an unconnected port or a valid link");
+                                    } else if (source.value == "ImplicitInputPort") {
+                                        alert("Implicit data input port must be connected to implicit data output port");
+                                    } else if (source.value == "ImplicitOutputPort") {
+                                        alert("Implicit data output port must be connected to implicit data input port");
+                                    } else if (source.value == "ExplicitOutputPort") {
+                                        alert("Explicit data output port must be connected to explicit data input port");
+                                    } else if (source.value == "ExplicitInputPort") {
+                                        alert("Explicit data input port must be connected to explicit data output port");
+                                    } else if (source.value = "ControlPort") {
+                                        alert("Control port must be connected to command port");
+                                    } else if (source.value = "CommandPort") {
+                                        alert("Command port must be connected to control port");
+                                    }
+
+                                    /*
+                                      Remove last mxEvent from the undoManager history stack, 
+                                      Store all the remaining undo mxEvents into a temporary array, 
+                                      clears the history, and readds the mxEvents into the undoManager history stack.
+                                    */
+                                    editor.execute('undo');
+
+                                    // Remove the last element from the history array.
+                                    undoManager.history.splice(-1, 1);
+
+                                    // storage[] -> temporary array
+                                    var storage = [];
+                                    for (i in undoManager.history) {
+                                        if (undoManager.history[i] != null) {
+                                            storage.push(undoManager.history[i])
+                                        }
+                                    }
+
+                                    // Clear the undoManager history, and reset the undoManager pointer to avoid any undo of null events.
+                                    undoManager.clear();
+
+                                    // Move the remaning mxEvents back into the undoManager history stack.
+                                    for (i in storage) {
+                                        if (storage[i] != null) {
+                                            undoManager.undoableEditHappened(storage[i]);
+                                        }
+                                    }
+                                }
+                            }
                         }
-                      }
                     }
-                  }
                 });
 
                 // Disables drag-and-drop into non-swimlanes.
@@ -479,6 +467,158 @@
                 });
 
 
+                /*
+                	@pooja, @jiteshjha
+					Create a custom rotate action for a selected cell.
+                */
+                editor.addAction('rotateCustom', function(editor, cell) {
+                    selectedCell = graph.getSelectionCell();
+                    if (selectedCell != null) {
+                        var cells = [];
+                        cells.push(selectedCell);
+                        for (var i = 0; i < selectedCell.getChildCount(); i++)
+                            cells.push(selectedCell.getChildAt(i));
+                        graph.getModel().beginUpdate();
+                        try {
+                            for (var i = 0; i < cells.length; i++) {
+                                var cell = cells[i];
+                                if (cell.isVertex() == true) {
+                                    var geo = graph.getCellGeometry(cell);
+
+                                    if (geo != null) {
+                                        // Rotates the size and position in the geometry
+                                        geo = geo.clone();
+                                        geo.x += geo.width / 2 - geo.height / 2;
+                                        geo.y += geo.height / 2 - geo.width / 2;
+                                        var tmp = geo.width;
+                                        geo.width = geo.height;
+                                        geo.height = tmp;
+                                        graph.getModel().setGeometry(cell, geo);
+                                        // Reads the current direction and advances by 90 degrees
+                                        var state = graph.view.getState(cell);
+
+                                        if (state != null) {
+                                            if (cell.isConnectable() == true) {
+                                                if (cell.value == "ExplicitOutputPort" || cell.value == "ImplicitOutputPort") {
+                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
+                                                    var geoCell = cell.getGeometry();
+                                                    if (dir == 'east' || dir == 'west') {
+                                                        var temp = geoCell.x;
+                                                        geoCell.x = geoCell.y - 0.0625;
+                                                        geoCell.y = temp + 0.0625;
+                                                        cell.setGeometry(geoCell);
+                                                        if (dir == 'east')
+                                                            dir = 'south';
+                                                        else
+                                                            dir = 'north';
+                                                    } else if (dir == 'south' || dir == 'north') {
+
+                                                        geoCell.y = geoCell.x + 0.0625;
+                                                        if (dir == 'south') {
+                                                            dir = 'west';
+                                                            geoCell.x = 0 - 0.125;
+                                                        } else {
+                                                            dir = 'east';
+                                                            geoCell.x = 1;
+                                                        }
+                                                        cell.setGeometry(geoCell);
+                                                    }
+                                                } else if (cell.value == "ExplicitInputPort" || cell.value == "ImplicitInputPort") {
+                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
+                                                    var geoCell = cell.getGeometry();
+                                                    if (dir == 'south' || dir == 'north') {
+                                                        geoCell.y = geoCell.x - 0.0625;
+                                                        if (dir == 'south') {
+                                                            dir = 'west';
+                                                            geoCell.x = 1 + 0.125;
+                                                        } else {
+                                                            dir = 'east';
+                                                            geoCell.x = 0;
+                                                        }
+                                                        cell.setGeometry(geoCell);
+                                                    } else if (dir == 'east' || dir == 'west') {
+                                                        geoCell = geoCell.clone();
+                                                        var temp = geoCell.x;
+                                                        geoCell.x = parseFloat(geoCell.y) + 0.0625;
+                                                        geoCell.y = temp - 0.0625;
+                                                        cell.setGeometry(geoCell);
+                                                        if (dir == 'east')
+                                                            dir = 'south';
+                                                        else
+                                                            dir = 'north';
+                                                    }
+                                                } else if (cell.value == 'CommandPort') {
+                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
+                                                    var geoCell = cell.getGeometry();
+                                                    if (dir == 'south' || dir == 'north') {
+                                                        var temp = geoCell.x;
+                                                        geoCell.x = geoCell.y + 0.0625;
+                                                        geoCell.y = temp - 0.0625;
+                                                        cell.setGeometry(geoCell);
+                                                        if (dir == 'south')
+                                                            dir = 'west';
+                                                        else
+                                                            dir = 'east';
+                                                    } else if (dir == 'east' || dir == 'west') {
+                                                        geoCell.y = parseFloat(geoCell.x) - 0.0625;
+                                                        if (dir == 'east') {
+                                                            dir = 'south';
+                                                            geoCell.x = 0 - 0.0625;
+                                                        } else {
+                                                            dir = 'north';
+                                                            geoCell.x = 1 + 0.0625;
+                                                        }
+                                                        cell.setGeometry(geoCell);
+                                                    }
+                                                } else if (cell.value == 'ControlPort') {
+                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
+                                                    var geoCell = cell.getGeometry();
+                                                    if (dir == 'south' || dir == 'north') {
+                                                        var temp = geoCell.x;
+                                                        geoCell.x = geoCell.y - 0.0625;
+                                                        geoCell.y = temp + 0.0625;
+                                                        cell.setGeometry(geoCell);
+                                                        if (dir == 'south')
+                                                            dir = 'west';
+                                                        else
+                                                            dir = 'east';
+                                                    } else if (dir == 'east' || dir == 'west') {
+                                                        geoCell.y = parseFloat(geoCell.x) + 0.0625;
+                                                        if (dir == 'east') {
+                                                            dir = 'south';
+
+                                                            geoCell.x = 1 + 0.0625;
+                                                        } else {
+                                                            dir = 'north';
+                                                            geoCell.x = 0 - 0.0625;
+                                                        }
+                                                        cell.setGeometry(geoCell);
+                                                    }
+                                                }
+                                            } else {
+                                                var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
+
+                                                if (dir == 'east') {
+                                                    dir = 'south';
+                                                } else if (dir == 'south') {
+                                                    dir = 'west';
+                                                } else if (dir == 'west') {
+                                                    dir = 'north';
+                                                } else if (dir == 'north') {
+                                                    dir = 'east';
+                                                }
+                                            }
+                                            graph.setCellStyles(mxConstants.STYLE_DIRECTION, dir, [cell]);
+                                        }
+                                    }
+                                }
+                            }
+                        } finally {
+                            graph.getModel().endUpdate();
+                        }
+                    }
+                }, null, null, 'Ctrl+R');
+
 
                 // @jiteshjha, @pooja
                 /*
@@ -552,25 +692,25 @@
                 toolbar.appendChild(spacer.cloneNode(true));
 
 
-		/*
+                /*
                     Maverick
                     This method is used for loading the stylesheet from the file.
                     Reference: http://www.w3schools.com/xsl/xsl_client.asp
 	        */
-	
-	        function loadXMLDoc(filename) {
-	            if (window.ActiveXObject) {
-	                xhttp = new ActiveXObject("Msxml2.XMLHTTP");
-	            } else {
-	                xhttp = new XMLHttpRequest();
-	            }
-	            xhttp.open("GET", filename, false);
-	            try {
-	                xhttp.responseType = "msxml-document"
-	            } catch (err) {}
-	            xhttp.send("");
-	            return xhttp.responseXML;
-	        }
+
+                function loadXMLDoc(filename) {
+                    if (window.ActiveXObject) {
+                        xhttp = new ActiveXObject("Msxml2.XMLHTTP");
+                    } else {
+                        xhttp = new XMLHttpRequest();
+                    }
+                    xhttp.open("GET", filename, false);
+                    try {
+                        xhttp.responseType = "msxml-document"
+                    } catch (err) {}
+                    xhttp.send("");
+                    return xhttp.responseXML;
+                }
 
 
                 /*              
@@ -866,8 +1006,9 @@
             showModalWindow(graph, 'Properties', content, 450, height);
         };
 
-        function showColorWheel(graph) {
 
+
+        function showColorWheel(graph, cell, selectProperty) {
 
             // Create basic structure for the form
             var content = document.createElement('div');
@@ -882,13 +1023,11 @@
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
-
             // Input Title
             var fieldName = 'Color';
             var namelabel = document.createElement('label');
             namelabel.innerHTML = fieldName;
             myform.appendChild(namelabel);
-
 
             // Input
             var input = document.createElement("input");
@@ -906,21 +1045,17 @@
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
-
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
-
             var picker = document.createElement('div');
             picker.setAttribute("id", "picker");
             myform.appendChild(picker);
-
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
             // Button - Submit
-
             var btn = document.createElement("button");
             btn.innerHTML = 'Submit';
             btn.type = "button";
@@ -929,13 +1064,41 @@
 
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
-
                 var input = document.getElementById('color').value;
+                if (selectProperty == "edgeStrokeColor") {
+                    var style = graph.getModel().getStyle(cell);
+                    if (style == null) {
+                        style = 'strokeColor=' + input;
+                        graph.getModel().setStyle(cell, style);
+                    } else {
+                        style = style.replace(/strokeColor=#[a-fA-F0-9]{6,}/g, "strokeColor=" + input);
+                        graph.getModel().setStyle(cell, style);
+                    }
+                } else if (selectProperty == "bgColor") {
+                    graph.container.style.backgroundColor = input;
+                } else if (selectProperty == "vertexStrokeColor") {
+                    var style = graph.getModel().getStyle(cell);
+                    if (style.indexOf('strokeColor') > -1) {
+                        style = style.replace(/strokeColor=#[a-fA-F0-9]{6,}/g, "strokeColor=" + input);
+                        graph.getModel().setStyle(cell, style);
+                    } else {
+                        style = style + ';' + 'strokeColor=' + input;
+                        graph.getModel().setStyle(cell, style);
+                    }
+                } else if (selectProperty == "vertexFillColor") {
+                    var style = graph.getModel().getStyle(cell);
+                    if (style.indexOf('fillColor') > -1) {
+                        style = style.replace(/fillColor=#[a-fA-F0-9]{6,}/g, "fillColor=" + input);
+                        graph.getModel().setStyle(cell, style);
+                    } else {
+                        style = style + ';' + 'fillColor=' + input;
+                        graph.getModel().setStyle(cell, style);
+                    }
+                }
 
-                graph.container.style.backgroundColor = input;
+
 
             };
-
             myform.appendChild(btn);
 
             content.appendChild(myform);
