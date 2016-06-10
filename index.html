@@ -205,10 +205,128 @@
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
                 editor.configure(config);
 
+                // @jiteshjha, @pooja
+                /*
+                   The code creates a function that informs the undoManager of an undoable edit
+                   and binds it to the undo event of mxGraphModel and mxGraphView
+                   using mxEventSource.addListener.
+                */
+                var undoManager = new mxUndoManager();
+                var listener = function(sender, evt)
+                {
+                  undoManager.undoableEditHappened(evt.getProperty('edit'));
+                };
+                graph.getModel().addListener(mxEvent.UNDO, listener);
+                graph.getModel().addListener(mxEvent.REDO, listener);
+                graph.getView().addListener(mxEvent.UNDO, listener);
+                graph.getView().addListener(mxEvent.REDO, listener);
+
+                editor.addAction('undoCustom', function(editor, cell) {
+                  undoManager.undo();
+                });
+
+                editor.addAction('redoCustom', function(editor, cell) {
+                  undoManager.redo();
+                });
+
+                /*
+                  For every click on the graph, check if the selected mxCell is the recently created edge,
+                  and then check if that edge satisfies one of the port constraints.
+
+                */
+                graph.addListener(mxEvent.CLICK, function(sender, evt)
+                {
+                  var selectedEdgeObject = graph.getSelectionCell();
+                  if (selectedEdgeObject != null && selectedEdgeObject.isEdge() == true)
+                  {
+
+                    var selectedEdgeObject = graph.getSelectionCell();
+                    var target = selectedEdgeObject.target;
+                    var source;
+
+                    if(selectedEdgeObject != null && selectedEdgeObject.isEdge() == true) {
+                      function getEdgeId(edgeObject) {
+                              while (edgeObject.source != null && edgeObject.source.isEdge() == true) {
+                                  edgeObject = edgeObject.source;
+                              }
+                              return edgeObject.source;
+                      }
+
+                      if(selectedEdgeObject.isEdge() == true) {
+                        source = getEdgeId(selectedEdgeObject);
+                      }
+                      if(source != null && target != null) {
+                        if(!(((source.value == "ExplicitOutputPort" && target.value == "ExplicitInputPort")
+                          || (source.value == "ExplicitInputPort" && target.value == "ExplicitOutputPort")
+                          || (source.value == "ImplicitOutputPort" && target.value == "ImplicitInputPort")
+                          || (source.value == "ImplicitInputPort" && target.value == "ImplicitOutputPort")
+                          || (source.value == "CommandPort" && target.value == "ControlPort")
+                          || (source.value == "ControlPort" && target.value == "CommandPort"))
+                          && (source.getEdgeCount() <= 1 && source.isVertex() == true
+                              && target.getEdgeCount() <=1 && target.isVertex() == true)
+                        )) {
+
+                          if(!(source.getEdgeCount() <= 1 && source.isVertex() == true
+                            && target.getEdgeCount() <=1 && target.isVertex() == true)) {
+                                alert("Port is already connected, please select an please select an unconnected port or a valid link");
+                          }
+                          else if(source.value == "ImplicitInputPort") {
+                            alert("Implicit data input port must be connected to implicit data output port");
+                          }
+                          else if(source.value == "ImplicitOutputPort") {
+                            alert("Implicit data output port must be connected to implicit data input port");
+                          }
+                          else if(source.value == "ExplicitOutputPort") {
+                            alert("Explicit data output port must be connected to explicit data input port");
+                          }
+                          else if(source.value == "ExplicitInputPort") {
+                            alert("Explicit data input port must be connected to explicit data output port");
+                          }
+                          else if(source.value = "ControlPort") {
+                            alert("Control port must be connected to command port");
+                          }
+                          else if(source.value = "CommandPort") {
+                            alert("Command port must be connected to control port");
+                          }
+                          
+                          /*
+                            Remove last mxEvent from the undoManager history stack, 
+                            Store all the remaining undo mxEvents into a temporary array, 
+                            clears the history, and readds the mxEvents into the undoManager history stack.
+                          */
+                          editor.execute('undo');
+                          
+                          // Remove the last element from the history array.
+                          undoManager.history.splice(-1,1);
+                          
+                          // storage[] -> temporary array
+                          var storage = [];
+                          for(i in undoManager.history) {
+                              if(undoManager.history[i] != null) {
+                              storage.push(undoManager.history[i])
+                            }
+                          }
+                          
+                          // Clear the undoManager history, and reset the undoManager pointer to avoid any undo of null events.
+                          undoManager.clear();
+                          
+                          // Move the remaning mxEvents back into the undoManager history stack.
+                          for(i in storage) {
+                              if(storage[i] != null) {
+                              undoManager.undoableEditHappened(storage[i]);
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                });
+
                 // Disables drag-and-drop into non-swimlanes.
                 graph.isValidDropTarget = function(cell, cells, evt) {
                     return this.isSwimlane(cell);
                 };
+
 
                 // Disables drilling into non-swimlanes.
                 graph.isValidRoot = function(cell) {
@@ -360,6 +478,8 @@
                     button.appendChild(titleName);
                 });
 
+
+
                 // @jiteshjha, @pooja
                 /*
                    On selection and deletion of any block, 'deleteBlock'
@@ -416,18 +536,14 @@
                 addToolbarButton(editor, toolbar, 'toggle', 'Expand All', 'images/navigate_plus.png');
                 toolbar.appendChild(spacer.cloneNode(true));
 
-                addToolbarButton(editor, toolbar, 'deleteBlock', 'Delete', 'images/delete2.png');
-                toolbar.appendChild(spacer.cloneNode(true));
-
                 addToolbarButton(editor, toolbar, 'cut', 'Cut', 'images/cut.png');
                 addToolbarButton(editor, toolbar, 'copy', 'Copy', 'images/copy.png');
                 addToolbarButton(editor, toolbar, 'paste', 'Paste', 'images/paste.png');
 
                 toolbar.appendChild(spacer.cloneNode(true));
 
-                addToolbarButton(editor, toolbar, 'undo', '', 'images/undo.png');
-                addToolbarButton(editor, toolbar, 'redo', '', 'images/redo.png');
-
+                addToolbarButton(editor, toolbar, 'undoCustom', '', 'images/undo.png');
+                addToolbarButton(editor, toolbar, 'redoCustom', '', 'images/redo.png');
                 toolbar.appendChild(spacer.cloneNode(true));
 
                 addToolbarButton(editor, toolbar, 'show', 'Show', 'images/camera.png');
@@ -1468,7 +1584,6 @@
             return this.graph.view.createState(edge);
         };
 
-        // Uses right mouse button to create edges on background (see also: lines 67 ff)
         mxConnectionHandler.prototype.isStopEvent = function(me) {
             return me.getState() != null || mxEvent.isRightMouseButton(me.getEvent());
         };
