@@ -1,0 +1,42 @@
+<XcosDiagram background="-1" title="Untitled">
+  <!--Xcos - 1.0 - scilab-5.5.2 - 20150331 1152-->
+  <Array as="context" scilabClass="String[]">
+    <add value=""/>
+  </Array>
+  <mxGraphModel as="model">
+    <root>
+      <mxCell id="528afd98:155247883f0:-7f2b"/>
+      <mxCell id="528afd98:155247883f0:-7f2c" parent="528afd98:155247883f0:-7f2b"/>
+      <BasicBlock blockType="d" id="528afd98:155247883f0:-7f29" interfaceFunctionName="TOWS_c" parent="528afd98:155247883f0:-7f2c" simulationFunctionName="tows_c" simulationFunctionType="C_OR_FORTRAN" style="TOWS_c">
+        <ScilabString as="exprs" height="3" width="1">
+          <data column="0" line="0" value="128"/>
+          <data column="0" line="1" value="A"/>
+          <data column="0" line="2" value="0"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="0" width="0"/>
+        <ScilabDouble as="integerParameters" height="3" width="1">
+          <data column="0" line="0" realPart="128.0"/>
+          <data column="0" line="1" realPart="1.0"/>
+          <data column="0" line="2" realPart="65.0"/>
+        </ScilabDouble>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabList"/>
+        <mxGeometry as="geometry" height="7.0" width="7.0" x="38.5" y="37.5"/>
+      </BasicBlock>
+      <ExplicitInputPort dataType="UNKNOW_TYPE" id="528afd98:155247883f0:-7f28" ordering="1" parent="528afd98:155247883f0:-7f29" style="ExplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0" value="">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="-3.0"/>
+      </ExplicitInputPort>
+      <ControlPort dataType="UNKNOW_TYPE" id="528afd98:155247883f0:-7f27" ordering="1" parent="528afd98:155247883f0:-7f29" style="ControlPort;align=center;verticalAlign=top;spacing=10.0;rotation=90">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-2.0" y="-8.0"/>
+      </ControlPort>
+    </root>
+  </mxGraphModel>
+  <mxCell as="defaultParent" id="528afd98:155247883f0:-7f2c" parent="528afd98:155247883f0:-7f2b"/>
+</XcosDiagram>

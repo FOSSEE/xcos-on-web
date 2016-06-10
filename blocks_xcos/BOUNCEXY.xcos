@@ -1,0 +1,70 @@
+<XcosDiagram background="-1" title="Untitled">
+  <!--Xcos - 1.0 - scilab-5.5.2 - 20150331 1152-->
+  <Array as="context" scilabClass="String[]">
+    <add value=""/>
+  </Array>
+  <mxGraphModel as="model">
+    <root>
+      <mxCell id="5e6464c0:15524622c93:-7f72"/>
+      <mxCell id="5e6464c0:15524622c93:-7f73" parent="5e6464c0:15524622c93:-7f72"/>
+      <BasicBlock blockType="d" id="5e6464c0:15524622c93:-7f70" interfaceFunctionName="BOUNCEXY" parent="5e6464c0:15524622c93:-7f73" simulationFunctionName="bouncexy" simulationFunctionType="C_OR_FORTRAN" style="BOUNCEXY">
+        <ScilabString as="exprs" height="8" width="1">
+          <data column="0" line="0" value="[1;2]"/>
+          <data column="0" line="1" value="[1;1]"/>
+          <data column="0" line="2" value="-1"/>
+          <data column="0" line="3" value="1"/>
+          <data column="0" line="4" value="-5"/>
+          <data column="0" line="5" value="5"/>
+          <data column="0" line="6" value="0"/>
+          <data column="0" line="7" value="15"/>
+        </ScilabString>
+        <ScilabDouble as="realParameters" height="4" width="1">
+          <data column="0" line="0" realPart="-5.0"/>
+          <data column="0" line="1" realPart="5.0"/>
+          <data column="0" line="2" realPart="0.0"/>
+          <data column="0" line="3" realPart="15.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="integerParameters" height="4" width="1">
+          <data column="0" line="0" realPart="-1.0"/>
+          <data column="0" line="1" realPart="1.0"/>
+          <data column="0" line="2" realPart="1.0"/>
+          <data column="0" line="3" realPart="2.0"/>
+        </ScilabDouble>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="dState" height="12" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+          <data column="0" line="1" realPart="0.0"/>
+          <data column="0" line="2" realPart="2.0"/>
+          <data column="0" line="3" realPart="2.0"/>
+          <data column="0" line="4" realPart="0.0"/>
+          <data column="0" line="5" realPart="23040.0"/>
+          <data column="0" line="6" realPart="0.0"/>
+          <data column="0" line="7" realPart="0.0"/>
+          <data column="0" line="8" realPart="2.0"/>
+          <data column="0" line="9" realPart="2.0"/>
+          <data column="0" line="10" realPart="0.0"/>
+          <data column="0" line="11" realPart="23040.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabList"/>
+        <mxGeometry as="geometry" height="7.0" width="7.0" x="37.5" y="37.5"/>
+      </BasicBlock>
+      <ExplicitInputPort dataColumns="1" dataType="REAL_MATRIX" id="5e6464c0:15524622c93:-7f6f" ordering="1" parent="5e6464c0:15524622c93:-7f70" style="ExplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0" value="">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="-3.3333333333333335"/>
+      </ExplicitInputPort>
+      <ExplicitInputPort dataColumns="1" dataType="REAL_MATRIX" id="5e6464c0:15524622c93:-7f6e" ordering="2" parent="5e6464c0:15524622c93:-7f70" style="ExplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0" value="">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="-2.666666666666667"/>
+      </ExplicitInputPort>
+      <ControlPort dataType="UNKNOW_TYPE" id="5e6464c0:15524622c93:-7f6d" ordering="1" parent="5e6464c0:15524622c93:-7f70" style="ControlPort;align=center;verticalAlign=top;spacing=10.0;rotation=90">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-3.0" y="-8.0"/>
+      </ControlPort>
+    </root>
+  </mxGraphModel>
+  <mxCell as="defaultParent" id="5e6464c0:15524622c93:-7f73" parent="5e6464c0:15524622c93:-7f72"/>
+</XcosDiagram>

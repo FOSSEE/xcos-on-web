@@ -1,0 +1,27 @@
+<XcosDiagram background="-1" title="Untitled">
+  <!--Xcos - 1.0 - scilab-5.5.2 - 20150331 1152-->
+  <Array as="context" scilabClass="String[]">
+    <add value=""/>
+  </Array>
+  <mxGraphModel as="model">
+    <root>
+      <mxCell id="528afd98:155247883f0:-7ed1"/>
+      <mxCell id="528afd98:155247883f0:-7ed2" parent="528afd98:155247883f0:-7ed1"/>
+      <EventOutBlock blockType="d" id="528afd98:155247883f0:-7ecf" ordering="1" parent="528afd98:155247883f0:-7ed2" simulationFunctionType="DEFAULT">
+        <ScilabString as="exprs" height="1" width="1">
+          <data column="0" line="0" value="1"/>
+        </ScilabString>
+        <ScilabDouble as="integerParameters" height="1" width="1">
+          <data column="0" line="0" realPart="1.0"/>
+        </ScilabDouble>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabList"/>
+        <mxGeometry as="geometry" height="7.0" width="7.0" x="37.0" y="37.0"/>
+      </EventOutBlock>
+      <ControlPort dataType="UNKNOW_TYPE" id="528afd98:155247883f0:-7ece" ordering="1" parent="528afd98:155247883f0:-7ecf" style="ControlPort;align=center;verticalAlign=top;spacing=10.0;rotation=90">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-3.5" y="-8.0"/>
+      </ControlPort>
+    </root>
+  </mxGraphModel>
+  <mxCell as="defaultParent" id="528afd98:155247883f0:-7ed2" parent="528afd98:155247883f0:-7ed1"/>
+</XcosDiagram>

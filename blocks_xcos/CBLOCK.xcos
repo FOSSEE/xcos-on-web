@@ -1,0 +1,52 @@
+<XcosDiagram background="-1" title="Untitled">
+  <!--Xcos - 1.0 - scilab-5.5.2 - 20150331 1152-->
+  <Array as="context" scilabClass="String[]">
+    <add value=""/>
+  </Array>
+  <mxGraphModel as="model">
+    <root>
+      <mxCell id="5e6464c0:15524622c93:-7f7f"/>
+      <mxCell id="5e6464c0:15524622c93:-7f80" parent="5e6464c0:15524622c93:-7f7f"/>
+      <BasicBlock dependsOnU="1" id="5e6464c0:15524622c93:-7f7d" interfaceFunctionName="CBLOCK" parent="5e6464c0:15524622c93:-7f80" simulationFunctionName=" " simulationFunctionType="DYNAMIC_EXPLICIT_4" style="CBLOCK">
+        <Array as="exprs" scilabClass="ScilabList">
+          <ScilabString height="14" width="1">
+            <data column="0" line="0" value="toto"/>
+            <data column="0" line="1" value="n"/>
+            <data column="0" line="2" value="1"/>
+            <data column="0" line="3" value="1"/>
+            <data column="0" line="4" value="[]"/>
+            <data column="0" line="5" value="[]"/>
+            <data column="0" line="6" value="[]"/>
+            <data column="0" line="7" value="0"/>
+            <data column="0" line="8" value="[]"/>
+            <data column="0" line="9" value="[]"/>
+            <data column="0" line="10" value="[]"/>
+            <data column="0" line="11" value="[]"/>
+            <data column="0" line="12" value="y"/>
+            <data column="0" line="13" value="n"/>
+          </ScilabString>
+          <ScilabDouble height="0" width="0"/>
+        </Array>
+        <ScilabDouble as="realParameters" height="0" width="0"/>
+        <ScilabDouble as="integerParameters" height="0" width="0"/>
+        <Array as="objectsParameters" scilabClass="ScilabList"/>
+        <ScilabDouble as="nbZerosCrossing" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <ScilabDouble as="nmode" height="1" width="1">
+          <data column="0" line="0" realPart="0.0"/>
+        </ScilabDouble>
+        <Array as="oDState" scilabClass="ScilabList"/>
+        <Array as="equations" scilabClass="ScilabList"/>
+        <mxGeometry as="geometry" height="7.0" width="7.0" x="38.5" y="37.5"/>
+      </BasicBlock>
+      <ExplicitInputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="5e6464c0:15524622c93:-7f7c" ordering="1" parent="5e6464c0:15524622c93:-7f7d" style="ExplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0" value="">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="-8.0" y="-3.0"/>
+      </ExplicitInputPort>
+      <ExplicitOutputPort dataColumns="1" dataLines="1" dataType="REAL_MATRIX" id="5e6464c0:15524622c93:-7f7b" ordering="1" parent="5e6464c0:15524622c93:-7f7d" style="ExplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0" value="">
+        <mxGeometry as="geometry" height="8.0" width="8.0" x="4.0" y="-3.0"/>
+      </ExplicitOutputPort>
+    </root>
+  </mxGraphModel>
+  <mxCell as="defaultParent" id="5e6464c0:15524622c93:-7f80" parent="5e6464c0:15524622c93:-7f7f"/>
+</XcosDiagram>
