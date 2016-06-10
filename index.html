@@ -183,15 +183,29 @@
                           else if(source.value = "CommandPort") {
                             alert("Command port must be connected to control port");
                           }
+                          
+                          /*
+                            Remove last mxEvent from the undoManager history stack, 
+                            Store all the remaining undo mxEvents into a temporary array, 
+                            clears the history, and readds the mxEvents into the undoManager history stack.
+                          */
                           editor.execute('undo');
+                          
+                          // Remove the last element from the history array.
                           undoManager.history.splice(-1,1);
+                          
+                          // storage[] -> temporary array
                           var storage = [];
                           for(i in undoManager.history) {
                               if(undoManager.history[i] != null) {
                               storage.push(undoManager.history[i])
                             }
                           }
+                          
+                          // Clear the undoManager history, and reset the undoManager pointer to avoid any undo of null events.
                           undoManager.clear();
+                          
+                          // Move the remaning mxEvents back into the undoManager history stack.
                           for(i in storage) {
                               if(storage[i] != null) {
                               undoManager.undoableEditHappened(storage[i]);
