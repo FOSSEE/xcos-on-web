@@ -58,6 +58,7 @@ Look for TAG:Break1!!!
 					 may cause some problems in the future. 
     				-->
                     <!-- <xsl:apply-templates select="name(*[1])"/> -->
+                    <xsl:apply-templates/>
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
