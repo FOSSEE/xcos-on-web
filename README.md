@@ -25,7 +25,6 @@ You can get support in the community mailing list and forums:
 * Kumar Saarang Singh, Manipal Institute of Technology, Manipal
 * Nimish Singhal, Manipal Institute of Technology, Manipal
 * Pooja Soundalgekar, National Institute of Technology Karnataka, Surathkal
-
 * Adhitya Kamakshidasan, Visvesvaraya National Institute of Technology, Nagpur
 * Inderpreet Arora
 * Srikant Patnaik
