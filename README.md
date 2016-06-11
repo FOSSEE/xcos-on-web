@@ -16,3 +16,16 @@ For further information please refer to 'license.txt'-file
 You can get support in the community mailing list and forums:
 
     https://groups.google.com/forum/#!forum/xcos-on-web
+    
+## Contributors
+
+* Amit Kumar Yadav, Motilal Nehru National Institute of Technology, Allahabad
+* Chhavi Agarwal, National Institute of Technology, Kurukshetra
+* Jitesh Jha, Manipal Institute of Technology, Manipal
+* Kumar Saarang Singh, Manipal Institute of Technology, Manipal
+* Nimish Singhal, Manipal Institute of Technology, Manipal
+* Pooja Soundalgekar, National Institute of Technology Karnataka, Surathkal
+
+* Adhitya Kamakshidasan, Visvesvaraya National Institute of Technology, Nagpur
+* Inderpreet Arora
+* Srikant Patnaik
