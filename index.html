@@ -8,11 +8,11 @@
         BODY {
             font-family: Arial;
         }
-        
+
         H1 {
             font-size: 18px;
         }
-        
+
         H2 {
             font-size: 16px;
         }
@@ -121,7 +121,7 @@
                             var edgeformat = menu.addItem('Format', null, null);
 
                             menu.addItem('Border Color', 'images/draw-brush.png', function() {
-                                // @ToDo: Pooja: Functionality to be put.   
+                                // @ToDo: Pooja: Functionality to be put.
                                 showColorWheel(graph, cell, 'edgeStrokeColor');
 
                             }, edgeformat);
@@ -278,8 +278,8 @@
                                     }
 
                                     /*
-                                      Remove last mxEvent from the undoManager history stack, 
-                                      Store all the remaining undo mxEvents into a temporary array, 
+                                      Remove last mxEvent from the undoManager history stack,
+                                      Store all the remaining undo mxEvents into a temporary array,
                                       clears the history, and readds the mxEvents into the undoManager history stack.
                                     */
                                     editor.execute('undo');
@@ -305,6 +305,37 @@
                                         }
                                     }
                                 }
+
+                                else {
+                                  var style = graph.getModel().getStyle(selectedEdgeObject);
+                                  if(style == null) {
+                                    if(source.value == "ImplicitOutputPort") {
+                                        selectedEdgeObject.edgeStyle = "ImplicitLink";
+                                        style = "ImplicitLink";
+                                        graph.getModel().setStyle(selectedEdgeObject, style);
+                                    }
+                                    else if(source.value == "ExplicitOutputPort") {
+
+                                        selectedEdgeObject.edgeStyle = "ExplicitLink";
+                                        style = "ExplicitLink";
+                                        graph.getModel().setStyle(selectedEdgeObject, style);
+
+                                        /*selectedEdgeObject.style = "ExplicitLink";
+                                        console.log(selectedEdgeObject);
+
+                                        selectedEdgeObject.edgeStyle = "ExplicitLink";
+                                        style = "ExplicitLink";
+                                        graph.getModel().setStyle(selectedEdgeObject, style);*/
+                                        console.log(selectedEdgeObject);
+                                    }
+                                    else if(source.value == "CommandPort") {
+                                      selectedEdgeObject.edgeStyle = "CommandControlLink";
+                                      style = "CommandControlLink";
+                                      graph.getModel().setStyle(selectedEdgeObject, style);
+                                    }
+                                  }
+                                }
+
                             }
                         }
                     }
@@ -713,11 +744,11 @@
                 }
 
 
-                /*              
+                /*
 				Maverick
                 The Export buttons in toolbar call this function with varying
-                arguments. 
-                The third argument is used to decide which button is being 
+                arguments.
+                The third argument is used to decide which button is being
                 pressed.
 				exportXML : 2 arguments
 				exportXcos: 3 arguments
@@ -758,7 +789,7 @@
                     var xmlFromExportXML = displayXMLorXcos(editor, cell, true);
                     if (xmlFromExportXML == null) alert('First create the XML file.');
                     else {
-                        /* 
+                        /*
                          Maverick
                          Adding <mxGraphModel> tag to make up for the missing tag.
                         */
@@ -1103,7 +1134,7 @@
 
             content.appendChild(myform);
             showModalWindow(graph, 'Diagram background...', content, 285, 340);
-            // Invokes the farbtastic functionality 
+            // Invokes the farbtastic functionality
             $(document).ready(function() {
                 $('#picker').farbtastic('#color');
             });
@@ -1794,7 +1825,6 @@
             var result = null;
             var model = this.graph.getModel();
             var parent = model.getParent(edge);
-
             model.beginUpdate();
             try {
                 result = mxEdgeHandlerConnect.apply(this, arguments);
