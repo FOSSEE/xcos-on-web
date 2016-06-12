@@ -1,10 +1,17 @@
 # Xcos-on-Web Wires Connection
 #### @jiteshjha @pooja
 
-Track our progress here on [xcos-on-web](https://groups.google.com/forum/#!searchin/xcos-on-web/authorname$3A$20Jitesh$20Jha).
+Track our progress on wires connection here on [xcos-on-web group](https://groups.google.com/forum/#!searchin/xcos-on-web/authorname$3A$20Jitesh$20Jha).
 
 [Depends on mxGraph library, version  1.10.4.1, which can be found [here](https://github.com/rmoriz/mxgraph). ]
 
+## Purpose 
+
+ - One of the major feature of xcos-on-desktop is the connections between blocks.
+ - We used [wires.html](https://github.com/rmoriz/mxgraph/blob/master/javascript/examples/wires.html) example as the basic structure of our xcos-on-web application, with many additions explained below to closely resemble the connections possible on xcos-on-desktop.
+ 
+##Documentation
+ 
 #### `mxConnectionHandler.prototype.movePreviewAway`
 
  - Switch to enable moving the preview away from the mousepointer.  This is required in browsers where the preview cannot be made transparent to events and if the built-in hit detection on the HTML elements in the page should be used. This is set as false in index.html.
