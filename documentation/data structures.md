@@ -4,12 +4,9 @@ Data Structures to build .xcos
 ===================
 ####@ASP1234
 
-This document contains description and flow used to write the **Data Structures** in **details.js **[^details.js] file. It can be considered as helpful for someone who wants to understand and write the Data Structures for newly added blocks
+This document contains description and flow used to write the **Data Structures** in **details.js** file. It can be considered as helpful for someone who wants to understand and write the Data Structures for newly added blocks
 
 ----------
-## Table of contents
-[TOC]
-
 ##Basic Outline
 
 
@@ -154,6 +151,8 @@ Stores the boolean data.
 
 ###Dependencies
 
+Scilab stores the functional dependencis of all the blocks present in xcos as **.sci** files. These files are present in *scilab-5.5.2\modules\scicos\macros\scicos_scicos*
+
 Here's the **.sci**
 
     function blk=scicos_block(v1,v2,v3,v4,v5)
@@ -258,9 +257,6 @@ So, one can see how similar these two versions are in terms of code. Likewise, o
 There are few information which **.sci** file fails to provide for a particular block. This includes blocktype, attributes, realParameters, ObjectParameters. For this reason we need to use **.xcos** file for the particular block to extract such data. It can also be used for testing the **generated .xcos** with the **actual .xcos** files.
 
 ## Appendix
-
- [^details.js]: details.js is present in xcos-on-web root directory.
- 
 
 - You can get support in the community mailing list and forums:
        https://groups.google.com/forum/#!forum/xcos-on-web
