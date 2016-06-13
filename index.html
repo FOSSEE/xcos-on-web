@@ -107,44 +107,41 @@
 
                 /*
                   @jiteshjha, @pooja
-                  Needs to set a flag to check for dynamic style changes,
-        				  that is, changes to styles on cells where the style was
-  				        not explicitely changed using mxStyleChange
-        				  graph.getView().updateStyle = true;
-
         				  Overrides mxGraphModel.getStyle to return a specific style
-        				  for edges that reflects their target terminal (in this case
-        				  the strokeColor will be equal to the target's fillColor).
+        				  for edges that reflects their target terminal.
                 */
-                var previous = graph.model.getStyle;
 
                 graph.model.getStyle = function(cell) {
-
+                    var style = null;
                     if (cell != null) {
-                        var style = previous.apply(this, arguments);
 
+                        // Get style for the recently created mxCell.
+                        style = mxGraphModel.prototype.getStyle.apply(this, arguments);
+
+                        // If the mxCell is an edge and if it's a fully formed edge
                         if (this.isEdge(cell) && cell.source != null) {
                             var target = this.getTerminal(cell, false);
 
                             if (target != null) {
-                                if (cell.source.value == "ExplicitOutputPort" || cell.source.value == "ExplicitInputPort") {
-                                    style += ';strokeColor=' + 'blue';
-                                    cell.edgeStyle = "ExplicitLink";
-                                } else if (cell.source.value == "ImplicitOutputPort" || cell.source.value == "ImplicitInputPort") {
-                                    style += ';strokeColor=' + 'blue';
-                                    cell.edgeStyle = "ImplicitLink";
 
+                                /* cell.name attribute defines the link name
+                                   so that it can be parsed in the XML during
+                                   XSLT transformation.
+                                */
+                                if (cell.source.value == "ExplicitOutputPort" || cell.source.value == "ExplicitInputPort") {
+                                    style += ';' + 'ExplicitLink';
+                                    cell.name = "ExplicitLink";
+                                } else if (cell.source.value == "ImplicitOutputPort" || cell.source.value == "ImplicitInputPort") {
+                                    style += ';' + 'ImplicitLink';
+                                    cell.name = "ImplicitLink";
                                 } else if (cell.source.value == "CommandPort" || cell.source.value == "ControlPort") {
-                                    style += ';strokeColor=' + 'red';
-                                    cell.edgeStyle = "CommandControlLink";
+                                    style += ';' + 'CommandControlLink';
+                                    cell.name = "CommandControlLink";
                                 }
                             }
                         }
-
-                        return style;
                     }
-
-                    return null;
+                    return style;
                 };
 
 
