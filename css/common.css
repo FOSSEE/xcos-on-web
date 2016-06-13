@@ -182,3 +182,17 @@ td.mxPopupMenuIcon {
 .fieldInput {
 	float: right;
 }
+
+#descriptionSetContext {
+	font-size: 14px;
+}
+
+#textareaSetContext {
+	width:380px;
+	height: 200px;
+}
+
+#buttonSetContext {
+	margin-left: 160px;
+	width: 50px;
+}

@@ -220,7 +220,7 @@
                             editor.execute('selectAll');
                         });
                         menu.addItem('Set Context', null, function() {
-                            // @ToDo: Pooja: Functionality to be put.
+                            setContext(graph, cell);
                         });
                         menu.addItem('Setup', 'images/setup.png', function() {
                             // @ToDo: Pooja: Functionality to be put.
@@ -935,6 +935,62 @@
             }
         };
 
+        /*
+          @jiteshjha, @pooja
+          setContext dialog box
+          Includes a set context instruction text and input text area.
+        */
+        function setContext(graph, cell) {
+
+            // Create basic structure for the form
+            var content = document.createElement('div');
+            content.setAttribute("id", "setContext");
+
+            // Add Form
+            var myform = document.createElement("form");
+            myform.method = "";
+            myform.setAttribute("id", "formProperties");
+
+            // Add set context string
+            var descriptionSetContext = document.createElement("div");
+            descriptionSetContext.innerHTML = "You may enter here scilab instructions to define symbolic parameters used in block definitions using Scilab instructions. These instructions are evaluated once confirmed(i.e. you click on OK and every time the diagram is loaded)";
+            descriptionSetContext.setAttribute("id", "descriptionSetContext");
+            myform.appendChild(descriptionSetContext);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // input text area
+            var textareaSetContext = document.createElement("textarea");
+            textareaSetContext.setAttribute("id", "textareaSetContext");
+
+            myform.appendChild(textareaSetContext);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Button - Submit
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Ok';
+            btn.type = "button";
+            btn.name = "submit";
+            btn.setAttribute("id", "buttonSetContext");
+
+            // Executes when button 'btn' is clicked
+            btn.onclick = function() {
+              console.log('Input: '+document.getElementById('textareaSetContext').value);
+            };
+
+            myform.appendChild(btn);
+            content.appendChild(myform);
+            showModalWindow(graph, 'Set Context', content, 450, 350);
+        };
 
         function showPropertiesWindow(graph, cell) {
 
