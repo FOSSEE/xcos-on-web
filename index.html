@@ -8,11 +8,11 @@
         BODY {
             font-family: Arial;
         }
-        
+
         H1 {
             font-size: 18px;
         }
-        
+
         H2 {
             font-size: 16px;
         }
@@ -105,6 +105,49 @@
                 // Configures automatic expand on mouseover
                 graph.panningHandler.autoExpand = true;
 
+                /*
+                  @jiteshjha, @pooja
+                  Needs to set a flag to check for dynamic style changes,
+        				  that is, changes to styles on cells where the style was
+  				        not explicitely changed using mxStyleChange
+        				  graph.getView().updateStyle = true;
+
+        				  Overrides mxGraphModel.getStyle to return a specific style
+        				  for edges that reflects their target terminal (in this case
+        				  the strokeColor will be equal to the target's fillColor).
+                */
+                var previous = graph.model.getStyle;
+
+                graph.model.getStyle = function(cell) {
+
+                    if (cell != null) {
+                        var style = previous.apply(this, arguments);
+
+                        if (this.isEdge(cell) && cell.source != null) {
+                            var target = this.getTerminal(cell, false);
+
+                            if (target != null) {
+                                if (cell.source.value == "ExplicitOutputPort" || cell.source.value == "ExplicitInputPort") {
+                                    style += ';strokeColor=' + 'blue';
+                                    cell.edgeStyle = "ExplicitLink";
+                                } else if (cell.source.value == "ImplicitOutputPort" || cell.source.value == "ImplicitInputPort") {
+                                    style += ';strokeColor=' + 'blue';
+                                    cell.edgeStyle = "ImplicitLink";
+
+                                } else if (cell.source.value == "CommandPort" || cell.source.value == "ControlPort") {
+                                    style += ';strokeColor=' + 'red';
+                                    cell.edgeStyle = "CommandControlLink";
+                                }
+                            }
+                        }
+
+                        return style;
+                    }
+
+                    return null;
+                };
+
+
                 // Creates a right-click menu
                 graph.panningHandler.factoryMethod = function(menu, cell, evt) {
 
@@ -121,7 +164,7 @@
                             var edgeformat = menu.addItem('Format', null, null);
 
                             menu.addItem('Border Color', 'images/draw-brush.png', function() {
-                                // @ToDo: Pooja: Functionality to be put.   
+                                // @ToDo: Pooja: Functionality to be put.
                                 showColorWheel(graph, cell, 'edgeStrokeColor');
 
                             }, edgeformat);
@@ -278,8 +321,8 @@
                                     }
 
                                     /*
-                                      Remove last mxEvent from the undoManager history stack, 
-                                      Store all the remaining undo mxEvents into a temporary array, 
+                                      Remove last mxEvent from the undoManager history stack,
+                                      Store all the remaining undo mxEvents into a temporary array,
                                       clears the history, and readds the mxEvents into the undoManager history stack.
                                     */
                                     editor.execute('undo');
@@ -713,11 +756,11 @@
                 }
 
 
-                /*              
+                /*
 				Maverick
                 The Export buttons in toolbar call this function with varying
-                arguments. 
-                The third argument is used to decide which button is being 
+                arguments.
+                The third argument is used to decide which button is being
                 pressed.
 				exportXML : 2 arguments
 				exportXcos: 3 arguments
@@ -758,7 +801,7 @@
                     var xmlFromExportXML = displayXMLorXcos(editor, cell, true);
                     if (xmlFromExportXML == null) alert('First create the XML file.');
                     else {
-                        /* 
+                        /*
                          Maverick
                          Adding <mxGraphModel> tag to make up for the missing tag.
                         */
@@ -1103,7 +1146,7 @@
 
             content.appendChild(myform);
             showModalWindow(graph, 'Diagram background...', content, 285, 340);
-            // Invokes the farbtastic functionality 
+            // Invokes the farbtastic functionality
             $(document).ready(function() {
                 $('#picker').farbtastic('#color');
             });
