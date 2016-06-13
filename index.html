@@ -8,11 +8,11 @@
         BODY {
             font-family: Arial;
         }
-        
+
         H1 {
             font-size: 18px;
         }
-        
+
         H2 {
             font-size: 16px;
         }
@@ -121,7 +121,7 @@
                             var edgeformat = menu.addItem('Format', null, null);
 
                             menu.addItem('Border Color', 'images/draw-brush.png', function() {
-                                // @ToDo: Pooja: Functionality to be put.   
+                                // @ToDo: Pooja: Functionality to be put.
                                 showColorWheel(graph, cell, 'edgeStrokeColor');
 
                             }, edgeformat);
@@ -180,7 +180,7 @@
                             editor.execute('selectAll');
                         });
                         menu.addItem('Set Context', null, function() {
-                            // @ToDo: Pooja: Functionality to be put.
+                            setContext(graph, cell);
                         });
                         menu.addItem('Setup', 'images/setup.png', function() {
                             // @ToDo: Pooja: Functionality to be put.
@@ -278,8 +278,8 @@
                                     }
 
                                     /*
-                                      Remove last mxEvent from the undoManager history stack, 
-                                      Store all the remaining undo mxEvents into a temporary array, 
+                                      Remove last mxEvent from the undoManager history stack,
+                                      Store all the remaining undo mxEvents into a temporary array,
                                       clears the history, and readds the mxEvents into the undoManager history stack.
                                     */
                                     editor.execute('undo');
@@ -713,11 +713,11 @@
                 }
 
 
-                /*              
+                /*
 				Maverick
                 The Export buttons in toolbar call this function with varying
-                arguments. 
-                The third argument is used to decide which button is being 
+                arguments.
+                The third argument is used to decide which button is being
                 pressed.
 				exportXML : 2 arguments
 				exportXcos: 3 arguments
@@ -758,7 +758,7 @@
                     var xmlFromExportXML = displayXMLorXcos(editor, cell, true);
                     if (xmlFromExportXML == null) alert('First create the XML file.');
                     else {
-                        /* 
+                        /*
                          Maverick
                          Adding <mxGraphModel> tag to make up for the missing tag.
                         */
@@ -895,6 +895,62 @@
             }
         };
 
+        /*
+          @jiteshjha, @pooja
+          setContext dialog box
+          Includes a set context instruction text and input text area.
+        */
+        function setContext(graph, cell) {
+
+            // Create basic structure for the form
+            var content = document.createElement('div');
+            content.setAttribute("id", "setContext");
+
+            // Add Form
+            var myform = document.createElement("form");
+            myform.method = "";
+            myform.setAttribute("id", "formProperties");
+
+            // Add set context string
+            var stringSetContext = document.createElement("div");
+            stringSetContext.innerHTML = "You may enter here scilab instructions to define symbolic parameters used in block definitions using Scilab instructions. These instructions are evaluated once confirmed(i.e. you click on OK and every time the diagram is loaded)";
+            stringSetContext.setAttribute("id", "stringSetContext");
+            myform.appendChild(stringSetContext);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // input text area
+            var textarea = document.createElement("textarea");
+            textarea.setAttribute("id", "setContextTextArea");
+
+            myform.appendChild(textarea);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Button - Submit
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Ok';
+            btn.type = "button";
+            btn.name = "submit";
+            btn.setAttribute("id", "buttonSetContext");
+
+            // Executes when button 'btn' is clicked
+            btn.onclick = function() {
+              console.log('Input: '+document.getElementById('setContextTextArea').value);
+            };
+
+            myform.appendChild(btn);
+            content.appendChild(myform);
+            showModalWindow(graph, 'Set Context', content, 450, 350);
+        };
 
         function showPropertiesWindow(graph, cell) {
 
@@ -1103,7 +1159,7 @@
 
             content.appendChild(myform);
             showModalWindow(graph, 'Diagram background...', content, 285, 340);
-            // Invokes the farbtastic functionality 
+            // Invokes the farbtastic functionality
             $(document).ready(function() {
                 $('#picker').farbtastic('#color');
             });
