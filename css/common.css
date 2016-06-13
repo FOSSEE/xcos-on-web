@@ -183,11 +183,11 @@ td.mxPopupMenuIcon {
 	float: right;
 }
 
-#stringSetContext {
+#descriptionSetContext {
 	font-size: 14px;
 }
 
-#setContextTextArea {
+#textareaSetContext {
 	width:380px;
 	height: 200px;
 }

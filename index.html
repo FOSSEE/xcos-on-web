@@ -912,20 +912,20 @@
             myform.setAttribute("id", "formProperties");
 
             // Add set context string
-            var stringSetContext = document.createElement("div");
-            stringSetContext.innerHTML = "You may enter here scilab instructions to define symbolic parameters used in block definitions using Scilab instructions. These instructions are evaluated once confirmed(i.e. you click on OK and every time the diagram is loaded)";
-            stringSetContext.setAttribute("id", "stringSetContext");
-            myform.appendChild(stringSetContext);
+            var descriptionSetContext = document.createElement("div");
+            descriptionSetContext.innerHTML = "You may enter here scilab instructions to define symbolic parameters used in block definitions using Scilab instructions. These instructions are evaluated once confirmed(i.e. you click on OK and every time the diagram is loaded)";
+            descriptionSetContext.setAttribute("id", "descriptionSetContext");
+            myform.appendChild(descriptionSetContext);
 
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
             // input text area
-            var textarea = document.createElement("textarea");
-            textarea.setAttribute("id", "setContextTextArea");
+            var textareaSetContext = document.createElement("textarea");
+            textareaSetContext.setAttribute("id", "textareaSetContext");
 
-            myform.appendChild(textarea);
+            myform.appendChild(textareaSetContext);
 
             // Line break
             var linebreak = document.createElement('br');
@@ -944,7 +944,7 @@
 
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
-              console.log('Input: '+document.getElementById('setContextTextArea').value);
+              console.log('Input: '+document.getElementById('textareaSetContext').value);
             };
 
             myform.appendChild(btn);
