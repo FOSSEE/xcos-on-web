@@ -1067,7 +1067,6 @@
 
             }
 
-            var wind = null;
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
 
@@ -1102,7 +1101,7 @@
 
             myform.appendChild(btn);
             content.appendChild(myform);
-            wind = showModalWindow(graph, 'Set Context', content, 450, 350);
+            var wind = showModalWindow(graph, 'Set Context', content, 450, 350);
         };
 
         function showPropertiesWindow(graph, cell) {
@@ -1179,7 +1178,7 @@
             btn.innerHTML = 'Submit';
             btn.type = "button";
             btn.name = "submit";
-            var wind = null;
+
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
                 var propertiesObject = {
@@ -1216,7 +1215,7 @@
             height = 135 + 26 * defaultProperties.length + 15;
 
             content.appendChild(myform);
-            wind = showModalWindow(graph, 'Properties', content, 450, height);
+            var wind = showModalWindow(graph, 'Properties', content, 450, height);
         };
 
 
@@ -1397,12 +1396,13 @@
                 }
                 graph.getModel().setStyle(cell, style);
                 graph.getModel().setValue(cell, propertiesObject['text']);
+                wind.destroy();
             };
             myform.appendChild(btn);
             // Base height without fields : 135 px
             height = 135 + 26 * defaultProperties.length + 15;
             content.appendChild(myform);
-            showModalWindow(graph, 'Text and Text font', content, 450, height);
+            var wind = showModalWindow(graph, 'Text and Text font', content, 450, height);
         };
         /*
           @jiteshjha, @pooja
@@ -1523,8 +1523,6 @@
             btn.type = "button";
             btn.name = "submit";
 
-            var wind = null;
-
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
                 var propertiesObject = {};
@@ -1577,7 +1575,7 @@
             height = 135 + 26 * defaultProperties.length + 15;
 
             content.appendChild(myform);
-            wind = showModalWindow(graph, 'Set Parameters', content, 450, height);
+            var wind = showModalWindow(graph, 'Set Parameters', content, 450, height);
         };
 
         function showColorWheel(graph, cell, selectProperty) {
