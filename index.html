@@ -225,10 +225,10 @@
                             editor.execute('selectAll');
                         });
                         menu.addItem('Set Context', null, function() {
-                            setContext(graph, cell);
+                            showSetContext(graph);
                         });
                         menu.addItem('Setup', 'images/setup.png', function() {
-                            // @ToDo: Pooja: Functionality to be put.
+                            showSetupWindow(graph);
                         });
                         menu.addItem('Zoom In', 'images/zoom_in.png', function() {
                             editor.execute('zoomIn');
@@ -945,7 +945,7 @@
           setContext dialog box
           Includes a set context instruction text and input text area.
         */
-        function setContext(graph, cell) {
+        function showSetContext(graph) {
 
             // Create basic structure for the form
             var content = document.createElement('div');
@@ -1107,7 +1107,168 @@
             showModalWindow(graph, 'Properties', content, 450, height);
         };
 
+        /*
+          @jiteshjha, @pooja
+          showSetupWindow dialog box
+        */
+        function showSetupWindow(graph) {
 
+            var defaultProperties = {
+                i_time: ["Final integration time", 1.0E05],
+                rt_scale: ["Real time scaling", 0.0E00],
+                ab_tolerance: ["Integrator absolute tolerance", 1.0E-06],
+                rl_tolerance: ["Integrator relative tolerance", 1.0E-06],
+                tm_tolerance: ["Tolerance on time", 1.0E-10],
+                integ_time_interval: ["Output window sizes", 1.00001E05],
+                solv_kind: ["Solver Kind", ["LSodar", "Sundials/CVODE - BDF - NEWTON",
+                "Sundials/CVODE - BDF - FUNCTIONAL",
+                "Sundials/CVODE - ADAMS - NEWTON",
+                "Sundials/CVODE - ADAMS - FUNCTIONAL",
+                "DOPRI5 - Dormand-Prince 4(5)",
+                "RK45 - Runge-Kutta 4(5)",
+                "Implicit RK45 - Implicit Runge-Kutta 4(5)",
+                "CRANI - Crank-Nicolson 2(3)",
+                "Sundials/IDA",
+                "DDaskr - Newton",
+                "DDaskr - GMRes"
+                ]],
+                max_step_sze: ["Maximum step size(0 means no limit)", 0.0E00]
+            };
+
+            // Create basic structure for the form
+            var content = document.createElement('div');
+            content.setAttribute("id", "contentProperties");
+
+            // Heading of content
+            var heading = document.createElement('h2');
+            heading.innerHTML = "Setup";
+            heading.id = "headingProperties"
+            content.appendChild(heading);
+
+            // Add Form
+            var myform = document.createElement("form");
+            myform.method = "post";
+            myform.id = "formProperties";
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            for (var key in defaultProperties) {
+                if (defaultProperties.hasOwnProperty(key)) {
+
+                    // Input Title
+                    var fieldName = defaultProperties[key];
+                    var namelabel = document.createElement('label');
+                    namelabel.innerHTML = defaultProperties[key][0];
+                    myform.appendChild(namelabel);
+
+                    if(key == "solv_kind") {
+
+                      //Here we create a "select" element (a drop down list).
+                      var newList = document.createElement("select");
+                      newList.style.cssText = "float:right";
+                      newList.setAttribute("id", key.toString());
+                      var dropdownItems = defaultProperties[key][1];
+
+                      // Iterate over the dropdown options and create html elements
+                      dropdownItems.forEach(function (value, i) {
+                        option = document.createElement('option');
+                        option.value = i.toFixed(1);
+                        option.text = value;
+                        newList.appendChild(option);
+                      });
+
+                      myform.appendChild(newList);
+
+                    }
+                    else {
+                      var input = document.createElement("input");
+                      input.name = key;
+                      input.value = defaultProperties[key][1];
+                      input.setAttribute("id", key.toString());
+                      input.setAttribute("class", "fieldInput");
+                      myform.appendChild(input);
+                    }
+
+                    // Line break
+                    var linebreak = document.createElement('br');
+                    myform.appendChild(linebreak);
+
+                    // Line break
+                    var linebreak = document.createElement('br');
+                    myform.appendChild(linebreak);
+                }
+            }
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Button - Set Context
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Set Context';
+            btn.style.cssText = 'float: left';
+            btn.type = "button";
+            btn.name = "submit";
+            btn.id = "resetButtonProperties";
+            btn.onclick = function() {
+                // show Set Context
+                showSetContext(graph);
+            };
+            myform.appendChild(btn);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Button - Submit
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Submit';
+            btn.type = "button";
+            btn.name = "submit";
+
+            // Executes when button 'btn' is clicked
+            btn.onclick = function() {
+                var propertiesObject = {};
+
+                for (var key in defaultProperties) {
+                    if (defaultProperties.hasOwnProperty(key)) {
+                          propertiesObject[key] = document.getElementById(key.toString()).value;
+                    }
+                }
+                console.log(propertiesObject);
+            };
+
+            myform.appendChild(btn);
+
+            // Button - Reset
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Reset';
+            btn.type = "button";
+            btn.name = "submit";
+            btn.id = "resetButtonProperties";
+            btn.onclick = function() {
+                // Reset
+                for (var key in defaultProperties) {
+                    if (defaultProperties.hasOwnProperty(key)) {
+                        var element = document.getElementById(key.toString());
+                        element.value = defaultProperties[key][1];
+                    }
+                }
+            };
+
+            myform.appendChild(btn);
+            // Base height without fields : 135 px
+            height = 135 + 26 * defaultProperties.length + 15;
+
+            content.appendChild(myform);
+            showModalWindow(graph, 'Set Parameters', content, 450, height);
+        };
 
         function showColorWheel(graph, cell, selectProperty) {
 
