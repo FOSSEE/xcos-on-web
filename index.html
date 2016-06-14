@@ -24,12 +24,12 @@
     <script type="text/javascript" src="editor/mxDefaultKeyHandler.js"></script>
     <script type="text/javascript" src="handler/mxKeyHandler.js"></script>
     <script type="text/javascript" src="jquery/farbtastic.js"></script>
-    <script type="text/javascript" src="setup.js"></script>
 
     <link rel="stylesheet" href="jquery/farbtastic.css" type="text/css" />
     <link rel="stylesheet" href="jquery/jquery-ui.css">
 
     <script type="text/javascript" src="details.js"></script>
+    <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="json2.js"></script>
     <script type="text/javascript">
         function main(container, outline, toolbar, sidebar, status) {
@@ -1021,14 +1021,14 @@
             btn.name = "submit";
             btn.setAttribute("id", "buttonSetContext");
 
-            var getValue = context("get");
+            var contextValue = context("get");
 
-            var toDisp = "";
-            for (element in getValue) {
-                toDisp += getValue[element] + "\n";
+            var displayValue = "";
+            for (i in contextValue) {
+                displayValue += contextValue[i] + "\n";
             }
-            if (getValue != "") {
-                textareaSetContext.value = toDisp;
+            if (contextValue != "") {
+                textareaSetContext.value = displayValue;
             } else {
                 textareaSetContext.value = "";
 
@@ -1045,13 +1045,13 @@
                     Code to extract context parameter values from the text area
                     containing the input.
                 */
-                var contextVals = [];
+                var contextValues = [];
                 var i = 0,
                     temp = "";
                 for (i = 0; i < input.length; i++) {
                     if (input[i] == '\n') {
                         if (temp != "") {
-                            contextVals.push(temp);
+                            contextValues.push(temp);
                         }
                         temp = "";
                         continue;
@@ -1059,11 +1059,11 @@
                     temp += input[i];
                 }
                 if (temp != "") {
-                    contextVals.push(temp);
+                    contextValues.push(temp);
                 }
 
-                diagRoot.context = contextVals;
-                context("set", contextVals);
+                diagRoot.context = contextValues;
+                context("set", contextValues);
                 wind.destroy();
             };
 
