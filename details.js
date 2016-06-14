@@ -73,19 +73,6 @@ function standard_define() {
     return new scicos_block(block_options);
 }
 
-// Returns ScilabDouble which contains a list with size = n and all values = 0
-function zeros(n) {
-    var arg = new Array(n + 1).join("0").split("").map(parseFloat);
-    var port = new ScilabDouble();
-    var i = 0;
-
-    for (i = 0; i < arg[0].length; i++)
-        port.list.push(arg[0][i]);
-
-    return port;
-}
-
-
 function scicos_graphics() {
     var options = arguments[0] || new Object();
     var graphics_type = ["graphics", "orig", "sz", "flip", "theta", "exprs", "pin", "pout", "pein", "peout", "gr_i", "id", "in_implicit", "out_implicit", "in_style", "out_style", "in_label", "out_label", "style"];
@@ -296,6 +283,24 @@ function data() {
     this.column;
     this.realPart;
     this.value;
+}
+
+function getData() {
+    var dataObject = arguments[0];
+    var key;
+    var dataArray = [];
+    for( key in dataObject ) {
+        if(key != "height" && key != "width")
+        {
+            if( typeof dataObject[key].value === "undefined" ) {
+                dataArray.push(dataObject[key].realPart);
+            }
+            else {
+                dataArray.push(dataObject[key].value);
+            }
+        }
+    }
+    return dataArray;
 }
 
 function CONST_m() {
@@ -537,7 +542,6 @@ function CFSCOPE() {
 }
 
 function CMSCOPE() {
-
     switch (arguments[0]) {
         case "define":
             this.win = -1;
@@ -609,8 +613,8 @@ function CLOCK_c() {
     evtdly.graphics.peout = new ScilabDouble([3]);
     evtdly.model.rpar = new ScilabDouble([0.1], [0.1]);
     evtdly.model.firing = new ScilabDouble([0.1]);
-    //changed
-    evtdly.model.uid = new ScilabString([count]);
+    
+    evtdly.model.uid = new ScilabString([count]); // changed
     evtdly.doc = list(new ScilabString([count++]));
     evtdly.model.evtin = new ScilabDouble([-1]);
     evtdly.model.evtout = new ScilabDouble([-1]);
@@ -623,8 +627,8 @@ function CLOCK_c() {
     output_port.graphics.exprs = new ScilabString(["1"]);
     output_port.graphics.pein = new ScilabDouble([5]);
     output_port.model.ipar = new ScilabDouble([1]);
-    //changed
-    output_port.model.uid = new ScilabString([count]);
+    
+    output_port.model.uid = new ScilabString([count]); // changed
     output_port.doc = list(new ScilabString([count++]));
 
     var split = CLKSPLIT_f("define");
@@ -633,8 +637,7 @@ function CLOCK_c() {
     split.graphics.peout = new ScilabDouble([5], [6]);
     split.model.uid = new ScilabString([count]);
     split.doc = list(new ScilabString([count++]));
-    //changed
-    split.graphics.pein = new ScilabDouble([4]);
+    split.graphics.pein = new ScilabDouble([4]); // changed
 
     var diagram = scicos_diagram();
     diagram.objs.push(output_port);
@@ -771,7 +774,6 @@ function IFTHEL_f() {
     var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"IFTHEL_f\",sz(1),sz(2));"]);
     var exprs = new ScilabString(["1"], ["1"]); // value model.in, model.nmode inverse
 
-
     var block = new standard_define(new ScilabDouble([80, 80]), model, exprs, gr_i); // 3 -> 80
     block.graphics.in_implicit = new ScilabString(["E"]);
     // changed
@@ -784,7 +786,6 @@ function IFTHEL_f() {
 
 function BasicBlock() {
     if (arguments.length > 0) {
-
         var options = arguments[0];
         this.angle = options.angle; // Not Known
         this.blockType = getData(options.model.blocktype)[0];
@@ -909,20 +910,14 @@ function colon_operator() {
     return new_arr;
 }
 
-function getData() {
-    var dataObject = arguments[0];
-    var key;
-    var dataArray = [];
-    for( key in dataObject ) {
-        if(key != "height" && key != "width")
-        {
-            if( typeof dataObject[key].value === "undefined" ) {
-                dataArray.push(dataObject[key].realPart);
-            }
-            else {
-                dataArray.push(dataObject[key].value);
-            }
-        }
-    }
-    return dataArray;
+// Returns ScilabDouble which contains a list with size = n and all values = 0
+function zeros(n) {
+    var arg = new Array(n + 1).join("0").split("").map(parseFloat);
+    var port = new ScilabDouble();
+    var i = 0;
+
+    for (i = 0; i < arg[0].length; i++)
+        port.list.push(arg[0][i]);
+
+    return port;
 }
