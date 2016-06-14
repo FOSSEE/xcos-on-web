@@ -134,13 +134,19 @@
                                   cellSource = cellSource.source;
                                 }
                                 if (cellSource.value == "ExplicitOutputPort" || cellSource.value == "ExplicitInputPort") {
-                                    style += ';' + 'ExplicitLink';
+                                    if(style == null) {
+                                      style += ';' + 'ExplicitLink' + ';';
+                                    }
                                     cell.name = "ExplicitLink";
                                 } else if (cellSource.value == "ImplicitOutputPort" || cellSource.value == "ImplicitInputPort") {
-                                    style += ';' + 'ImplicitLink';
+                                    if(style == null) {
+                                      style += ';' + 'ImplicitLink' + ';';
+                                    }
                                     cell.name = "ImplicitLink";
                                 } else if (cellSource.value == "CommandPort" || cellSource.value == "ControlPort") {
-                                    style += ';' + 'CommandControlLink';
+                                    if(style == null) {
+                                      style += ';' + 'CommandControlLink' + ';';
+                                    }
                                     cell.name = "CommandControlLink";
                                 }
                             }
@@ -171,7 +177,7 @@
 
                             }, edgeformat);
                             menu.addItem('Text and Text Font', 'images/edit.png', function() {
-                                alert('Edit...'); // @ToDo: Pooja: Functionality to be put.
+                                showTextEditWindow(graph, cell);
                             }, edgeformat);
                             menu.addItem('Text Color', 'images/edit.png', function() {
                                 alert('Edit...'); // @ToDo: Pooja: Functionality to be put.
@@ -743,7 +749,7 @@
                     Maverick
                     This method is used for loading the stylesheet from the file.
                     Reference: http://www.w3schools.com/xsl/xsl_client.asp
-	        */
+	              */
 
                 function loadXMLDoc(filename) {
                     if (window.ActiveXObject) {
@@ -1109,6 +1115,131 @@
             showModalWindow(graph, 'Properties', content, 450, height);
         };
 
+        function showTextEditWindow(graph, cell) {
+
+            var defaultProperties = {
+                text: ["Text", ""],
+                fontFamily : ["FontFamily", [
+                  "Arial",
+                  "Dialog",
+                  "Verdana",
+                  "Times New Roman"
+                ]],
+                fontSize: ["fontSize", 10]
+            };
+
+            // Create basic structure for the form
+            var content = document.createElement('div');
+            content.setAttribute("id", "contentProperties");
+
+            // Heading of content
+            var heading = document.createElement('h2');
+            heading.innerHTML = "Text and Text Font";
+            heading.id = "headingProperties"
+            content.appendChild(heading);
+
+            // Add Form
+            var myform = document.createElement("form");
+            myform.method = "post";
+            myform.id = "formProperties";
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            for (var key in defaultProperties) {
+                if (defaultProperties.hasOwnProperty(key)) {
+
+                    // Input Title
+                    var fieldName = defaultProperties[key];
+                    var namelabel = document.createElement('label');
+                    namelabel.innerHTML = defaultProperties[key][0];
+                    myform.appendChild(namelabel);
+
+                    if(key == "fontFamily") {
+                      //Here we create a "select" element (a drop down list).
+                      var newList = document.createElement("select");
+                      newList.style.cssText = "float:right";
+                      newList.setAttribute("id", key.toString());
+                      var dropdownItems = defaultProperties[key][1];
+
+                      // Iterate over the dropdown options and create html elements
+                      dropdownItems.forEach(function (value, i) {
+                        option = document.createElement('option');
+                        option.value = value;
+                        option.text = value;
+                        newList.appendChild(option);
+                      });
+
+                      myform.appendChild(newList);
+                    }
+                    else {
+                      var input = document.createElement("input");
+                      input.name = key;
+                      input.value = defaultProperties[key][1];
+                      input.setAttribute("id", key.toString());
+                      input.setAttribute("class", "fieldInput");
+                      myform.appendChild(input);
+                    }
+
+                    // Line break
+                    var linebreak = document.createElement('br');
+                    myform.appendChild(linebreak);
+
+                    // Line break
+                    var linebreak = document.createElement('br');
+                    myform.appendChild(linebreak);
+                }
+            }
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Button - Submit
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Submit';
+            btn.type = "button";
+            btn.name = "submit";
+
+            // Executes when button 'btn' is clicked
+            btn.onclick = function() {
+                var propertiesObject = {
+                    id: cell.id
+                };
+
+                for (var key in defaultProperties) {
+                    if (defaultProperties.hasOwnProperty(key)) {
+                        propertiesObject[key] = document.getElementById(key.toString()).value;
+                    }
+                }
+                var style = graph.getModel().getStyle(cell);
+
+                if (style.indexOf('fontSize') > -1) {
+                    style = style.replace(/fontSize=(.*)pt;/, "fontSize=" + propertiesObject['fontFamily'] + ';');
+                } else {
+                    style += 'fontSize=' + propertiesObject['fontSize'] + 'pt' + ';';
+                }
+
+                if (style.indexOf('fontFamily') > -1) {
+                    style = style.replace(/fontFamily=(.*);/, "fontFamily=" + propertiesObject['fontFamily'] + ';');
+                } else {
+                    style += 'fontFamily=' + propertiesObject['fontFamily'] + ';';
+                }
+
+                graph.getModel().setStyle(cell, style);
+                console.log(graph.getModel().getStyle(cell));
+                graph.getModel().setValue(cell, propertiesObject['text']);
+            };
+            myform.appendChild(btn);
+            // Base height without fields : 135 px
+            height = 135 + 26 * defaultProperties.length + 15;
+
+            content.appendChild(myform);
+            showModalWindow(graph, 'Text and Text font', content, 450, height);
+        };
+
+
         /*
           @jiteshjha, @pooja
           showSetupWindow dialog box
@@ -1178,6 +1309,8 @@
                         option = document.createElement('option');
                         option.value = i.toFixed(1);
                         option.text = value;
+                        if(i == 1)
+                          option.class = "selected";
                         newList.appendChild(option);
                       });
 
@@ -1331,13 +1464,14 @@
                 var input = document.getElementById('color').value;
                 if (selectProperty == "edgeStrokeColor") {
                     var style = graph.getModel().getStyle(cell);
-                    if (style == null) {
-                        style = 'strokeColor=' + input;
-                        graph.getModel().setStyle(cell, style);
-                    } else {
+                    if (style.indexOf('strokeColor') > -1) {
                         style = style.replace(/strokeColor=#[a-fA-F0-9]{6,}/g, "strokeColor=" + input);
                         graph.getModel().setStyle(cell, style);
+                    } else {
+                        style += 'strokeColor=' + input;
+                        graph.getModel().setStyle(cell, style);
                     }
+                    console.log(style);
                 } else if (selectProperty == "bgColor") {
                     graph.container.style.backgroundColor = input;
                 } else if (selectProperty == "vertexStrokeColor") {
