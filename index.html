@@ -1399,7 +1399,7 @@
                 wind.destroy();
             };
             myform.appendChild(btn);
-            // Base height without fields : 135 px
+            // Base heights without fields : 135 px
             height = 135 + 26 * defaultProperties.length + 15;
             content.appendChild(myform);
             var wind = showModalWindow(graph, 'Text and Text font', content, 450, height);
@@ -1665,10 +1665,11 @@
                       graph.getModel().setStyle(cell, style);
                   }
                 }
+                wind.destroy();
             };
             myform.appendChild(btn);
             content.appendChild(myform);
-            showModalWindow(graph, 'Diagram background...', content, 285, 340);
+            var wind = showModalWindow(graph, 'Diagram background...', content, 285, 340);
             // Invokes the farbtastic functionality
             $(document).ready(function() {
                 $('#picker').farbtastic('#color');
