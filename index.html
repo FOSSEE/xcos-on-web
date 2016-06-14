@@ -1118,7 +1118,7 @@
         function showTextEditWindow(graph, cell) {
 
             var defaultProperties = {
-                text: ["Text", ""],
+                text: ["Text", "text"],
                 fontFamily : ["FontFamily", [
                   "Arial",
                   "Dialog",
@@ -1196,6 +1196,102 @@
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
+            // Button - Bold
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Bold';
+            btn.setAttribute("id", "boldButton");
+            btn.type = "button";
+            btn.name = "submit";
+
+            btn.onclick = function() {
+              var trigger = document.getElementById('boldButton');
+              trigger.classList.toggle('boldButton');
+
+              var style = graph.getModel().getStyle(cell);
+              if (style.indexOf('fontStyle') > -1) {
+                  var previousValue = parseInt(style.charAt(style.indexOf('fontStyle') + 'fontStyle='.length));
+                  if(previousValue == 1 || previousValue == 3 || previousValue == 5 || previousValue == 7) {
+                    previousValue -= 1;
+                  }
+                  else {
+                    previousValue += 1;
+                  }
+                  style = style.replace(/fontStyle=(.*);/, "fontStyle=" + previousValue + ';');
+              } else {
+                  style += 'fontStyle=' + '1' + ';';
+              }
+              graph.getModel().setStyle(cell, style);
+            }
+
+            myform.appendChild(btn);
+
+            // Button - Italics
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Italic';
+            btn.setAttribute("id", "italicButton");
+            btn.type = "button";
+            btn.name = "submit";
+
+            btn.onclick = function() {
+              var trigger = document.getElementById('italicButton');
+              trigger.classList.toggle('italicButton');
+
+              var style = graph.getModel().getStyle(cell);
+              if (style.indexOf('fontStyle') > -1) {
+                  var previousValue = parseInt(style.charAt(style.indexOf('fontStyle') + 'fontStyle='.length));
+                  if(previousValue == 2 || previousValue == 3 || previousValue == 6 || previousValue == 7) {
+                    previousValue -= 2;
+                  }
+                  else {
+                    previousValue += 2;
+                  }
+                  style = style.replace(/fontStyle=(.*);/, "fontStyle=" + previousValue + ';');
+              } else {
+                  style += 'fontStyle=' + '2' + ';';
+              }
+              graph.getModel().setStyle(cell, style);
+            }
+
+            myform.appendChild(btn);
+
+            // Button - Underline
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Underline';
+            btn.setAttribute("id", "underlineButton");
+            btn.type = "button";
+            btn.name = "submit";
+
+            btn.onclick = function() {
+              var trigger = document.getElementById('underlineButton');
+              trigger.classList.toggle('underlineButton');
+
+              var style = graph.getModel().getStyle(cell);
+              if (style.indexOf('fontStyle') > -1) {
+                  var previousValue = parseInt(style.charAt(style.indexOf('fontStyle') + 'fontStyle='.length));
+                  if(previousValue == 4 || previousValue == 5 || previousValue == 6 || previousValue == 7) {
+                    previousValue -= 4;
+                  }
+                  else {
+                    previousValue += 4;
+                  }
+                  style = style.replace(/fontStyle=(.*);/, "fontStyle=" + previousValue + ';');
+              } else {
+                  style += 'fontStyle=' + '4' + ';';
+              }
+              graph.getModel().setStyle(cell, style);
+            }
+
+
+            myform.appendChild(btn);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
             // Button - Submit
             var btn = document.createElement("button");
             btn.innerHTML = 'Submit';
@@ -1216,9 +1312,9 @@
                 var style = graph.getModel().getStyle(cell);
 
                 if (style.indexOf('fontSize') > -1) {
-                    style = style.replace(/fontSize=(.*)pt;/, "fontSize=" + propertiesObject['fontFamily'] + ';');
+                    style = style.replace(/fontSize=(.*);/, "fontSize=" + propertiesObject['fontSize'] + ';');
                 } else {
-                    style += 'fontSize=' + propertiesObject['fontSize'] + 'pt' + ';';
+                    style += 'fontSize=' + propertiesObject['fontSize'] + ';';
                 }
 
                 if (style.indexOf('fontFamily') > -1) {
@@ -1228,7 +1324,6 @@
                 }
 
                 graph.getModel().setStyle(cell, style);
-                console.log(graph.getModel().getStyle(cell));
                 graph.getModel().setValue(cell, propertiesObject['text']);
             };
             myform.appendChild(btn);
@@ -1471,7 +1566,6 @@
                         style += 'strokeColor=' + input;
                         graph.getModel().setStyle(cell, style);
                     }
-                    console.log(style);
                 } else if (selectProperty == "bgColor") {
                     graph.container.style.backgroundColor = input;
                 } else if (selectProperty == "vertexStrokeColor") {
@@ -2420,6 +2514,11 @@
                 preload(blockImages);
             }
         });
+    });
+
+    //Bold button
+    $(".bold").click(function() {
+      $(".text").toggleClass("bold");
     });
     //Find out more here: http://stackoverflow.com/questions/12843418/jquery-ui-accordion-expand-collapse-all
     $(window).load(function() {

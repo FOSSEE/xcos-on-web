@@ -196,3 +196,15 @@ td.mxPopupMenuIcon {
 	margin-left: 160px;
 	width: 50px;
 }
+
+.boldButton {
+	font-weight: bold;
+}
+
+.italicButton {
+	font-style: italic;
+}
+
+.underlineButton {
+	text-decoration: underline;
+}
