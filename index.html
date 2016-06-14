@@ -172,7 +172,6 @@
                             var edgeformat = menu.addItem('Format', null, null);
 
                             menu.addItem('Border Color', 'images/draw-brush.png', function() {
-                                // @ToDo: Pooja: Functionality to be put.
                                 showColorWheel(graph, cell, 'edgeStrokeColor');
 
                             }, edgeformat);
@@ -180,7 +179,7 @@
                                 showTextEditWindow(graph, cell);
                             }, edgeformat);
                             menu.addItem('Text Color', 'images/edit.png', function() {
-                                alert('Edit...'); // @ToDo: Pooja: Functionality to be put.
+                                showColorWheel(graph, cell, 'edgeTextColor');
                             }, edgeformat);
 
                         } else {
@@ -1587,9 +1586,16 @@
                         graph.getModel().setStyle(cell, style);
                     }
                 }
-
-
-
+                else if(selectProperty == "edgeTextColor") {
+                  var style = graph.getModel().getStyle(cell);
+                  if (style.indexOf('fontColor') > -1) {
+                      style = style.replace(/fontColor=#[a-fA-F0-9]{6,}/g, "fontColor=" + input);
+                      graph.getModel().setStyle(cell, style);
+                  } else {
+                      style = style + 'fontColor=' + input + ';';
+                      graph.getModel().setStyle(cell, style);
+                  }
+                }
             };
             myform.appendChild(btn);
 
