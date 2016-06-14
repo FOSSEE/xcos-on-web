@@ -128,13 +128,18 @@
                                    so that it can be parsed in the XML during
                                    XSLT transformation.
                                 */
-                                if (cell.source.value == "ExplicitOutputPort" || cell.source.value == "ExplicitInputPort") {
+
+                                var cellSource = cell.source;
+                                while(cellSource.isEdge() == true) {
+                                  cellSource = cellSource.source;
+                                }
+                                if (cellSource.value == "ExplicitOutputPort" || cellSource.value == "ExplicitInputPort") {
                                     style += ';' + 'ExplicitLink';
                                     cell.name = "ExplicitLink";
-                                } else if (cell.source.value == "ImplicitOutputPort" || cell.source.value == "ImplicitInputPort") {
+                                } else if (cellSource.value == "ImplicitOutputPort" || cellSource.value == "ImplicitInputPort") {
                                     style += ';' + 'ImplicitLink';
                                     cell.name = "ImplicitLink";
-                                } else if (cell.source.value == "CommandPort" || cell.source.value == "ControlPort") {
+                                } else if (cellSource.value == "CommandPort" || cellSource.value == "ControlPort") {
                                     style += ';' + 'CommandControlLink';
                                     cell.name = "CommandControlLink";
                                 }
@@ -1954,7 +1959,7 @@
         }
     </script>
     <!--
-	   Implements a custom resistor shape. Direction currently ignored here.
+	   Implements a perpendicular wires connection edge style
     -->
     <script type="text/javascript">
         mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
