@@ -848,7 +848,7 @@ function BasicBlock() {
             }
             this.simulationFunctionType = func_type;
         } else {
-            this.simulationFunctionName = getData(options.model.sim[0])[0];
+            this.simulationFunctionName = getData(options.model.sim)[0];
             this.simulationFunctionType = "DEFAULT";
         }
         this.style = arguments.callee.caller.name;

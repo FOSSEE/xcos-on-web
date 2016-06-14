@@ -437,24 +437,55 @@
 
                 graph.getTooltipForCell = function(cell) {
                     var text = null;
-                    // If cell is a block or port
-                    if (cell.source == null && cell.target == null) {
-                        if (cell.connectable) { // Cell is a port
-                            // @ToDo: Port Number
-                            text = 'Style : ' + cell.style + "\n";
-                        } else { //Cell is a block
-                            // @ToDo: Block Name, Simulation, Flip, Mirror
-                            // @ToDo: Number of Input, Output, Control, Command Ports
-                            var geometry = cell.getGeometry();
-                            text = 'UID : ' + cell.id + "\n" +
-                                'Style : ' + cell.style + "\n" +
-                                'x : ' + geometry.x + "\n" +
-                                'y : ' + geometry.y + "\n" +
-                                'w : ' + geometry.width + "\n" +
-                                'h : ' + geometry.height + "\n";
+                    if(cell.isVertex() == true && cell.isConnectable() == false) {
+                        var name = cell.value.getAttribute('blockElementName');                        
+                        var cellvar = window[name]('details');
+                        // If cell is a block or port
+
+                        if (cell.source == null && cell.target == null) {
+                            if (cell.connectable) { // Cell is a port
+                                // @ToDo: Port Number
+                                text = 'Style : ' + cell.style + "\n";
+                            } else { //Cell is a block
+                                // @ToDo: Block Name, Simulation, Flip, Mirror
+                                // @ToDo: Number of Input, Output, Control, Command Ports
+                                var inputport, outputport, controlport, commandport;
+                                if (cellvar.model.in.width == null)
+                                    inputport = 0;
+                                else
+                                    inputport = cellvar.model.in.width;
+                                if (cellvar.model.out.width == null)
+                                    outputport = 0;
+                                else
+                                    outputport = cellvar.model.out.width;
+                                if (cellvar.model.evtin.width == null)
+                                    controlport = 0;
+                                else
+                                    controlport = cellvar.model.evtin.width;
+                                if (cellvar.model.evtout.width == null)
+                                    commandport = 0;
+                                else
+                                    commandport = cellvar.model.evtout.width;
+                                var geometry = cell.getGeometry();
+                                text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
+                                    'Simulation : ' + cell.value.getAttribute('simulationFunctionName') + "\n" +
+                                    'UID : ' + cell.id + "\n" +
+                                    'Style : ' + cell.style + "\n" +
+                                    'Flip : ' + getData(cellvar.graphics.flip)[0] + "\n" +
+                                    'Mirror : false' + "\n" +
+                                    'Input Ports : ' + inputport + "\n" +
+                                    'Output Ports : ' + outputport + "\n" +
+                                    'Control Ports : ' + controlport + "\n" +
+                                    'Command Ports : ' + commandport + "\n" +
+                                    'x : ' + geometry.x + "\n" +
+                                    'y : ' + geometry.y + "\n" +
+                                    'w : ' + geometry.width + "\n" +
+                                    'h : ' + geometry.height + "\n";
+                            }
                         }
+                        return text;
                     }
-                    return text;
+
                 };
 
                 // Create XML tags!
