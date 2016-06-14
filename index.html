@@ -427,7 +427,9 @@
                             content.innerHTML = this.convertValueToString(cell);
                             showModalWindow(this, 'Properties', content, 400, 300);
                             */
-                            showPropertiesWindow(graph, cell);
+                            if(cell.isVertex() == true) {
+                              showPropertiesWindow(graph, cell);
+                            }
                         }
                     }
 
