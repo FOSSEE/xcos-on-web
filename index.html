@@ -140,17 +140,17 @@
                                 }
                                 if (cellSource.value == "ExplicitOutputPort" || cellSource.value == "ExplicitInputPort") {
                                     if(style == null) {
-                                      style += ';' + 'ExplicitLink' + ';';
+                                      style = ';' + 'ExplicitLink' + ';';
                                     }
                                     cell.name = "ExplicitLink";
                                 } else if (cellSource.value == "ImplicitOutputPort" || cellSource.value == "ImplicitInputPort") {
                                     if(style == null) {
-                                      style += ';' + 'ImplicitLink' + ';';
+                                      style = ';' + 'ImplicitLink' + ';';
                                     }
                                     cell.name = "ImplicitLink";
                                 } else if (cellSource.value == "CommandPort" || cellSource.value == "ControlPort") {
                                     if(style == null) {
-                                      style += ';' + 'CommandControlLink' + ';';
+                                      style = ';' + 'CommandControlLink' + ';';
                                     }
                                     cell.name = "CommandControlLink";
                                 }
@@ -2239,8 +2239,6 @@
             var root = req.getDocumentElement();
             var dec = new mxCodec(root.ownerDocument);
             dec.decode(root, graph.stylesheet);
-            var style = graph.getStylesheet().getDefaultEdgeStyle();
-            style['edgeStyle'] = 'wireEdgeStyle';
         };
     </script>
     <!--
