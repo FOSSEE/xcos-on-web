@@ -8,6 +8,8 @@ var maxIntegrationTimeInterval = 1.00001E05;
 var solver = 0.0;
 var defaultProperties = null;
 
+var expressionArray = [""];
+
 var solver_kind_array = ["LSodar", "Sundials/CVODE - BDF - NEWTON",
     "Sundials/CVODE - BDF - FUNCTIONAL",
     "Sundials/CVODE - ADAMS - NEWTON",
@@ -45,8 +47,6 @@ function setup() {
         return solver_kind_array;
     }
 }
-
-var expressionArray = [""];
 
 function context() {
     if (arguments[0] == "get") {
