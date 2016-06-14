@@ -8,11 +8,11 @@
         BODY {
             font-family: Arial;
         }
-        
+
         H1 {
             font-size: 18px;
         }
-        
+
         H2 {
             font-size: 16px;
         }
@@ -85,7 +85,7 @@
                 /*
                     Maverick
                     The following variable 'diagRoot' serves as the root element for the entire
-                    diagram. 
+                    diagram.
                 */
                 var diagRoot = new XcosDiagram(null, model, null);
 
@@ -457,26 +457,55 @@
                 };
 
                 graph.getTooltipForCell = function(cell) {
-                    var text = null;
-                    // If cell is a block or port
-                    if (cell.source == null && cell.target == null) {
-                        if (cell.connectable) { // Cell is a port
-                            // @ToDo: Port Number
-                            text = 'Style : ' + cell.style + "\n";
-                        } else { //Cell is a block
-                            // @ToDo: Block Name, Simulation, Flip, Mirror
-                            // @ToDo: Number of Input, Output, Control, Command Ports
-                            var geometry = cell.getGeometry();
-                            text = 'UID : ' + cell.id + "\n" +
-                                'Style : ' + cell.style + "\n" +
-                                'x : ' + geometry.x + "\n" +
-                                'y : ' + geometry.y + "\n" +
-                                'w : ' + geometry.width + "\n" +
-                                'h : ' + geometry.height + "\n";
-                        }
-                    }
-                    return text;
-                };
+                     var text = null;
+                     if (cell.isVertex() == true && cell.isConnectable() == false) {
+                         var name = cell.value.getAttribute('blockElementName');
+                         var cellvar = window[name]('details');
+                         // If cell is a block or port
+                         if (cell.source == null && cell.target == null) {
+                             if (cell.connectable) { // Cell is a port
+                                 // @ToDo: Port Number
+                                 text = 'Style : ' + cell.style + "\n";
+                             } else { //Cell is a block
+                                 // @ToDo: Block Name, Simulation, Flip, Mirror
+                                 // @ToDo: Number of Input, Output, Control, Command Ports
+                                 var inputport, outputport, controlport, commandport;
+                                 if (cellvar.model.in.height == null)
+                                     inputport = 0;
+                                 else
+                                     inputport = cellvar.model.in.height;
+                                 if (cellvar.model.out.height == null)
+                                     outputport = 0;
+                                 else
+                                     outputport = cellvar.model.out.height;
+                                 if (cellvar.model.evtin.width == null)
+                                     controlport = 0;
+                                 else
+                                     controlport = cellvar.model.evtin.width;
+                                 if (cellvar.model.evtout.width == null)
+                                     commandport = 0;
+                                 else
+                                     commandport = cellvar.model.evtout.width;
+                                 var geometry = cell.getGeometry();
+                                 text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
+                                     'Simulation : ' + cell.value.getAttribute('simulationFunctionName') + "\n" +
+                                     'UID : ' + cell.id + "\n" +
+                                     'Style : ' + cell.style + "\n" +
+                                     'Flip : ' + getData(cellvar.graphics.flip)[0] + "\n" +
+                                     'Mirror : false' + "\n" +
+                                     'Input Ports : ' + inputport + "\n" +
+                                     'Output Ports : ' + outputport + "\n" +
+                                     'Control Ports : ' + controlport + "\n" +
+                                     'Command Ports : ' + commandport + "\n" +
+                                     'x : ' + geometry.x + "\n" +
+                                     'y : ' + geometry.y + "\n" +
+                                     'w : ' + geometry.width + "\n" +
+                                     'h : ' + geometry.height + "\n";
+                             }
+                         }
+                     }
+                     return text;
+                 };
 
                 // Create XML tags!
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -958,7 +987,7 @@
         /*
             Maverick
             The following function is used to define a tag for entire diagram.
-            We can set context, model and setup parameters for the entire diagram 
+            We can set context, model and setup parameters for the entire diagram
             using this function.
         */
 
@@ -1555,8 +1584,8 @@
             return wind;
         };
 
-        function addSidebarIcon(graph, sidebar, name, image) {
 
+        function addSidebarIcon(graph, sidebar, name, image) {
             // Function that is executed when the image is dropped on
             // the graph. The cell argument points to the cell under
             // the mousepointer if there is one.
@@ -1568,24 +1597,30 @@
                 model.beginUpdate();
                 try {
                     var label = getImgHTML(name); // Will not exist for all blocks
-
                     if (name == 'ANDBLK') {
                         var details = ANDBLK("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
                         //node.setAttribute('label',label);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
                         createPorts(graph, v1, [], ['CONTROL', 'CONTROL'], [], ['COMMAND']);
                     } else if (name == 'CMSCOPE') {
                         var details = CMSCOPE("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
+                        //node.setAttribute('label',label);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CMSCOPE');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], [], []);
                     } else if (name == 'CONST_m') {
                         var details = CONST_m("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CONST_m');
                         createPorts(graph, v1, [], [], ['EXPLICIT'], []);
                     } else if (name == 'CONVERT') {
@@ -1619,7 +1654,6 @@
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'SWITCH2_m');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
                     }
-
                     // CONTINUOUS
                     else if (name == 'CLINDUMMY_f') {
                         v1 = graph.insertVertex(parent, null, 'DUMMY<BR>CLSS', x, y, 80, 80, 'CLINDUMMY_f');
@@ -1655,7 +1689,6 @@
                         v1 = graph.insertVertex(parent, null, 'PDE', x, y, 80, 80, 'PDE');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT', 'EXPLICIT', 'EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], []);
                     }
-
                     // DISCONTINUOUS
                     else if (name == 'BACKLASH') {
                         v1 = graph.insertVertex(parent, null, 'Backlash', x, y, 80, 80, 'BACKLASH');
@@ -1679,7 +1712,6 @@
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'SATURATION');
                         createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
                     }
-
                     // DISCRETE
                     else if (name == 'AUTOMAT') {
                         v1 = graph.insertVertex(parent, null, 'Automaton<BR>nM=2, nX=1', x, y, 80, 80, 'AUTOMAT');
@@ -1711,11 +1743,25 @@
                     } else if (name == 'REGISTER') {
                         v1 = graph.insertVertex(parent, null, 'Shift<BR>register', x, y, 80, 80, 'REGISTER');
                         createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
+                    } else if (name == 'CFSCOPE') {
+                        var details = CFSCOPE("define");
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
+                        //node.setAttribute('label',label);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
+                        createPorts(graph, v1, [], ['CONTROL'], [], []);
                     }
-
                     // EVENTS
                     else if (name == 'CLOCK_c') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'CLOCK_c');
+                        var details = CLOCK_c("define");
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
+                        //node.setAttribute('label',label);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CLOCK_c');
                         createPorts(graph, v1, [], [], [], ['COMMAND']);
                     } else if (name == 'SampleCLK') {
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'SampleCLK');
@@ -1885,13 +1931,10 @@
                         v1 = graph.insertVertex(parent, null, '', x, y, 80, 80, 'TEXT_f');
                         createPorts(graph, v1, [], [], [], []);
                     }
-
                     v1.setConnectable(false);
-
                 } finally {
                     model.endUpdate();
                 }
-
                 graph.setSelectionCell(v1);
             }
 
