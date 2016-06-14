@@ -24,6 +24,7 @@
     <script type="text/javascript" src="editor/mxDefaultKeyHandler.js"></script>
     <script type="text/javascript" src="handler/mxKeyHandler.js"></script>
     <script type="text/javascript" src="jquery/farbtastic.js"></script>
+    <script type="text/javascript" src="setup.js"></script>
 
     <link rel="stylesheet" href="jquery/farbtastic.css" type="text/css" />
     <link rel="stylesheet" href="jquery/jquery-ui.css">
@@ -81,6 +82,13 @@
                 var graph = editor.graph;
                 var model = graph.getModel();
 
+                /*
+                    Maverick
+                    The following variable 'diagRoot' serves as the root element for the entire
+                    diagram. 
+                */
+                var diagRoot = new XcosDiagram(null, model, null);
+
                 graph.setPanning(true);
                 graph.setConnectable(true);
                 graph.setConnectableEdges(true);
@@ -107,8 +115,8 @@
 
                 /*
                   @jiteshjha, @pooja
-                          Overrides mxGraphModel.getStyle to return a specific style
-                          for edges that reflects their target terminal.
+        				  Overrides mxGraphModel.getStyle to return a specific style
+        				  for edges that reflects their target terminal.
                 */
 
                 graph.model.getStyle = function(cell) {
@@ -221,15 +229,28 @@
                         menu.addItem('Paste', 'images/paste.png', function() {
                             editor.execute('paste');
                         });
+
                         menu.addItem('Select all', 'images/selectall.png', function() {
                             editor.execute('selectAll');
                         });
+
+                        /*
+                            Maverick
+                            Added one more parameter to the setContext function.
+                        */
                         menu.addItem('Set Context', null, function() {
-                            showSetContext(graph);
+                            showSetContext(graph, diagRoot);
                         });
+
+                        /*
+                            Maverick
+                            Added one more parameter to the setContext function.
+                        */
                         menu.addItem('Setup', 'images/setup.png', function() {
-                            showSetupWindow(graph);
+                            showSetupWindow(graph, diagRoot);
                         });
+
+
                         menu.addItem('Zoom In', 'images/zoom_in.png', function() {
                             editor.execute('zoomIn');
                         });
@@ -437,55 +458,24 @@
 
                 graph.getTooltipForCell = function(cell) {
                     var text = null;
-                    if (cell.isVertex() == true && cell.isConnectable() == false) {
-                        var name = cell.value.getAttribute('blockElementName');
-                        var cellvar = window[name]('details');
-                        // If cell is a block or port
-                        if (cell.source == null && cell.target == null) {
-                            if (cell.connectable) { // Cell is a port
-                                // @ToDo: Port Number
-                                text = 'Style : ' + cell.style + "\n";
-                            } else { //Cell is a block
-                                // @ToDo: Block Name, Simulation, Flip, Mirror
-                                // @ToDo: Number of Input, Output, Control, Command Ports
-                                var inputport, outputport, controlport, commandport;
-                                if (cellvar.model.in.height == null)
-                                    inputport = 0;
-                                else
-                                    inputport = cellvar.model.in.height;
-                                if (cellvar.model.out.height == null)
-                                    outputport = 0;
-                                else
-                                    outputport = cellvar.model.out.height;
-                                if (cellvar.model.evtin.width == null)
-                                    controlport = 0;
-                                else
-                                    controlport = cellvar.model.evtin.width;
-                                if (cellvar.model.evtout.width == null)
-                                    commandport = 0;
-                                else
-                                    commandport = cellvar.model.evtout.width;
-                                var geometry = cell.getGeometry();
-                                text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
-                                    'Simulation : ' + cell.value.getAttribute('simulationFunctionName') + "\n" +
-                                    'UID : ' + cell.id + "\n" +
-                                    'Style : ' + cell.style + "\n" +
-                                    'Flip : ' + getData(cellvar.graphics.flip)[0] + "\n" +
-                                    'Mirror : false' + "\n" +
-                                    'Input Ports : ' + inputport + "\n" +
-                                    'Output Ports : ' + outputport + "\n" +
-                                    'Control Ports : ' + controlport + "\n" +
-                                    'Command Ports : ' + commandport + "\n" +
-                                    'x : ' + geometry.x + "\n" +
-                                    'y : ' + geometry.y + "\n" +
-                                    'w : ' + geometry.width + "\n" +
-                                    'h : ' + geometry.height + "\n";
-                            }
+                    // If cell is a block or port
+                    if (cell.source == null && cell.target == null) {
+                        if (cell.connectable) { // Cell is a port
+                            // @ToDo: Port Number
+                            text = 'Style : ' + cell.style + "\n";
+                        } else { //Cell is a block
+                            // @ToDo: Block Name, Simulation, Flip, Mirror
+                            // @ToDo: Number of Input, Output, Control, Command Ports
+                            var geometry = cell.getGeometry();
+                            text = 'UID : ' + cell.id + "\n" +
+                                'Style : ' + cell.style + "\n" +
+                                'x : ' + geometry.x + "\n" +
+                                'y : ' + geometry.y + "\n" +
+                                'w : ' + geometry.width + "\n" +
+                                'h : ' + geometry.height + "\n";
                         }
-
                     }
                     return text;
-
                 };
 
                 // Create XML tags!
@@ -544,8 +534,8 @@
 
 
                 /*
-                    @pooja, @jiteshjha
-                    Create a custom rotate action for a selected cell.
+                	@pooja, @jiteshjha
+					Create a custom rotate action for a selected cell.
                 */
                 editor.addAction('rotateCustom', function(editor, cell) {
                     selectedCell = graph.getSelectionCell();
@@ -772,7 +762,7 @@
                     Maverick
                     This method is used for loading the stylesheet from the file.
                     Reference: http://www.w3schools.com/xsl/xsl_client.asp
-            */
+	        */
 
                 function loadXMLDoc(filename) {
                     if (window.ActiveXObject) {
@@ -790,13 +780,13 @@
 
 
                 /*
-                Maverick
+				Maverick
                 The Export buttons in toolbar call this function with varying
                 arguments.
                 The third argument is used to decide which button is being
                 pressed.
-                exportXML : 2 arguments
-                exportXcos: 3 arguments
+				exportXML : 2 arguments
+				exportXcos: 3 arguments
                 */
                 function displayXMLorXcos() {
                     var textarea = document.createElement('textarea');
@@ -804,18 +794,15 @@
                     textarea.style.height = '400px';
 
                     var enc = new mxCodec(mxUtils.createXmlDocument());
-                    var node = enc.encode(arguments[0].graph.getModel());
+                    var node = enc.encode(diagRoot);
 
-
-                    //console.log(mxUtils.getPrettyXml(node));
                     textarea.value = mxUtils.getPrettyXml(node);
-
 
                     if (arguments[2] == null) {
                         showModalWindow(graph, 'XML', textarea, 410, 440);
                     } else {
-                        xmlFromExportXML = mxUtils.getXml(node);
-                        return xmlFromExportXML;
+
+                        return mxUtils.getPrettyXml(node);
                     }
                 }
 
@@ -834,12 +821,8 @@
                     var xmlFromExportXML = displayXMLorXcos(editor, cell, true);
                     if (xmlFromExportXML == null) alert('First create the XML file.');
                     else {
-                        /*
-                         Maverick
-                         Adding <mxGraphModel> tag to make up for the missing tag.
-                        */
 
-                        var xml = mxUtils.parseXml("<mxGraphModel>" + xmlFromExportXML + "</mxGraphModel>");
+                        var xml = mxUtils.parseXml(xmlFromExportXML);
 
                         var xsl = loadXMLDoc("finalmodsheet.xsl");
 
@@ -971,12 +954,32 @@
             }
         };
 
+
+        /*
+            Maverick
+            The following function is used to define a tag for entire diagram.
+            We can set context, model and setup parameters for the entire diagram 
+            using this function.
+        */
+
+        function XcosDiagram(context, model, attributes) {
+            this.context = context;
+            this.model = model;
+            this.finalIntegrationTime = attributes;
+        }
+
+
         /*
           @jiteshjha, @pooja
           setContext dialog box
           Includes a set context instruction text and input text area.
         */
-        function showSetContext(graph) {
+
+        /*
+            Maverick
+            Added 'diagRoot' parameter.
+        */
+        function showSetContext(graph, diagRoot) {
 
             // Create basic structure for the form
             var content = document.createElement('div');
@@ -1018,17 +1021,59 @@
             btn.name = "submit";
             btn.setAttribute("id", "buttonSetContext");
 
+            var getValue = context("get");
+
+            var toDisp = "";
+            for (element in getValue) {
+                toDisp += getValue[element] + "\n";
+            }
+            if (getValue != "") {
+                textareaSetContext.value = toDisp;
+            } else {
+                textareaSetContext.value = "";
+
+            }
+
+            var wind = null;
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
-                console.log('Input: ' + document.getElementById('textareaSetContext').value);
+
+                var input = document.getElementById('textareaSetContext').value;
+
+                /*
+                    Maverick
+                    Code to extract context parameter values from the text area
+                    containing the input.
+                */
+                var contextVals = [];
+                var i = 0,
+                    temp = "";
+                for (i = 0; i < input.length; i++) {
+                    if (input[i] == '\n') {
+                        if (temp != "") {
+                            contextVals.push(temp);
+                        }
+                        temp = "";
+                        continue;
+                    }
+                    temp += input[i];
+                }
+                if (temp != "") {
+                    contextVals.push(temp);
+                }
+
+                diagRoot.context = contextVals;
+                context("set", contextVals);
+                wind.destroy();
             };
 
             myform.appendChild(btn);
             content.appendChild(myform);
-            showModalWindow(graph, 'Set Context', content, 450, 350);
+            wind = showModalWindow(graph, 'Set Context', content, 450, 350);
         };
 
         function showPropertiesWindow(graph, cell) {
+
 
             var defaultProperties = {
                 nbr_curves: ["Number of curves", 1],
@@ -1043,6 +1088,8 @@
                 param3ds: ["Alpha and Theta", [50, 280]],
                 N: ["Buffer size", 2]
             };
+
+            //var defaultProperties=window["CONST_m"]("get");
 
             // Create basic structure for the form
             var content = document.createElement('div');
@@ -1099,7 +1146,7 @@
             btn.innerHTML = 'Submit';
             btn.type = "button";
             btn.name = "submit";
-
+            var wind = null;
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
                 var propertiesObject = {
@@ -1111,6 +1158,7 @@
                         propertiesObject[key] = document.getElementById(key.toString()).value;
                     }
                 }
+                wind.destroy();
             };
             myform.appendChild(btn);
 
@@ -1135,36 +1183,27 @@
             height = 135 + 26 * defaultProperties.length + 15;
 
             content.appendChild(myform);
-            showModalWindow(graph, 'Properties', content, 450, height);
+            wind = showModalWindow(graph, 'Properties', content, 450, height);
         };
 
         /*
           @jiteshjha, @pooja
           showSetupWindow dialog box
         */
-        function showSetupWindow(graph) {
 
-            var defaultProperties = {
-                i_time: ["Final integration time", 1.0E05],
-                rt_scale: ["Real time scaling", 0.0E00],
-                ab_tolerance: ["Integrator absolute tolerance", 1.0E-06],
-                rl_tolerance: ["Integrator relative tolerance", 1.0E-06],
-                tm_tolerance: ["Tolerance on time", 1.0E-10],
-                integ_time_interval: ["Output window sizes", 1.00001E05],
-                solv_kind: ["Solver Kind", ["LSodar", "Sundials/CVODE - BDF - NEWTON",
-                    "Sundials/CVODE - BDF - FUNCTIONAL",
-                    "Sundials/CVODE - ADAMS - NEWTON",
-                    "Sundials/CVODE - ADAMS - FUNCTIONAL",
-                    "DOPRI5 - Dormand-Prince 4(5)",
-                    "RK45 - Runge-Kutta 4(5)",
-                    "Implicit RK45 - Implicit Runge-Kutta 4(5)",
-                    "CRANI - Crank-Nicolson 2(3)",
-                    "Sundials/IDA",
-                    "DDaskr - Newton",
-                    "DDaskr - GMRes"
-                ]],
-                max_step_sze: ["Maximum step size(0 means no limit)", 0.0E00]
-            };
+        /*
+            Maverick
+            Added 'diagRoot' parameter.
+        */
+        function showSetupWindow(graph, diagRoot) {
+
+            /*
+                Maverick
+                Added one more element in the list for each key to be used in the <XcosDiagram>
+                tag.
+            */
+
+            var defaultProperties = setup("get");
 
             // Create basic structure for the form
             var content = document.createElement('div');
@@ -1200,7 +1239,7 @@
                         var newList = document.createElement("select");
                         newList.style.cssText = "float:right";
                         newList.setAttribute("id", key.toString());
-                        var dropdownItems = defaultProperties[key][1];
+                        var dropdownItems = setup("getArray");
 
                         // Iterate over the dropdown options and create html elements
                         dropdownItems.forEach(function(value, i) {
@@ -1209,13 +1248,13 @@
                             option.text = value;
                             newList.appendChild(option);
                         });
-
+                        newList.selectedIndex = defaultProperties[key][2];
                         myform.appendChild(newList);
 
                     } else {
                         var input = document.createElement("input");
                         input.name = key;
-                        input.value = defaultProperties[key][1];
+                        input.value = defaultProperties[key][2];
                         input.setAttribute("id", key.toString());
                         input.setAttribute("class", "fieldInput");
                         myform.appendChild(input);
@@ -1244,7 +1283,11 @@
             btn.id = "resetButtonProperties";
             btn.onclick = function() {
                 // show Set Context
-                showSetContext(graph);
+                /*
+                    Maverick
+                    Added the parameter here as well.
+                */
+                showSetContext(graph, diagRoot);
             };
             myform.appendChild(btn);
 
@@ -1262,19 +1305,30 @@
             btn.type = "button";
             btn.name = "submit";
 
+            var wind = null;
+
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
                 var propertiesObject = {};
 
                 for (var key in defaultProperties) {
                     if (defaultProperties.hasOwnProperty(key)) {
-                        propertiesObject[key] = document.getElementById(key.toString()).value;
+                        propertiesObject[defaultProperties[key][1]] = document.getElementById(key.toString()).value;
+
+                        /*
+                            Maverick
+                            Adding the corresponding attributes to the <XcosDiagram> tag.
+                        */
+                        diagRoot[defaultProperties[key][1]] = document.getElementById(key.toString()).value;
                     }
                 }
-                console.log(propertiesObject);
+
+                setup("set", propertiesObject);
+                wind.destroy();
             };
 
             myform.appendChild(btn);
+
 
             // Button - Reset
             var btn = document.createElement("button");
@@ -1287,7 +1341,15 @@
                 for (var key in defaultProperties) {
                     if (defaultProperties.hasOwnProperty(key)) {
                         var element = document.getElementById(key.toString());
-                        element.value = defaultProperties[key][1];
+                        if (key != "solv_kind") {
+                            element.value = defaultProperties[key][2];
+                        } else {
+                            /*
+ 								Maverick
+ 								Code modified to reset the drop down list.
+                    		*/
+                            element.selectedIndex = 0;
+                        }
                     }
                 }
             };
@@ -1297,7 +1359,7 @@
             height = 135 + 26 * defaultProperties.length + 15;
 
             content.appendChild(myform);
-            showModalWindow(graph, 'Set Parameters', content, 450, height);
+            wind = showModalWindow(graph, 'Set Parameters', content, 450, height);
         };
 
         function showColorWheel(graph, cell, selectProperty) {
@@ -1354,6 +1416,7 @@
             btn.name = "submit";
             btn.style.cssText = 'margin-left: 75px';
 
+            var wind = null;
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
                 var input = document.getElementById('color').value;
@@ -1387,14 +1450,12 @@
                         graph.getModel().setStyle(cell, style);
                     }
                 }
-
-
-
+                wind.destroy();
             };
             myform.appendChild(btn);
 
             content.appendChild(myform);
-            showModalWindow(graph, 'Diagram background...', content, 285, 340);
+            wind = showModalWindow(graph, 'Diagram background...', content, 285, 340);
             // Invokes the farbtastic functionality
             $(document).ready(function() {
                 $('#picker').farbtastic('#color');
@@ -1479,18 +1540,19 @@
 
             var x = Math.max(0, document.body.scrollWidth / 2 - width / 2);
             var y = Math.max(10, (document.body.scrollHeight || document.documentElement.scrollHeight) / 2 - height * 2 / 3);
-            var wnd = new mxWindow(title, content, x, y, width, height, false, true);
-            wnd.setClosable(true);
+            var wind = new mxWindow(title, content, x, y, width, height, false, true);
+            wind.setClosable(true);
 
             // Fades the background out after after the window has been closed
-            wnd.addListener(mxEvent.DESTROY, function(evt) {
+            wind.addListener(mxEvent.DESTROY, function(evt) {
                 graph.setEnabled(true);
                 mxEffects.fadeOut(background, 50, true, 10, 30, true);
             });
 
             graph.setEnabled(false);
             graph.tooltipHandler.hide();
-            wnd.setVisible(true);
+            wind.setVisible(true);
+            return wind;
         };
 
         function addSidebarIcon(graph, sidebar, name, image) {
@@ -1512,25 +1574,18 @@
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
                         //node.setAttribute('label',label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
                         createPorts(graph, v1, [], ['CONTROL', 'CONTROL'], [], ['COMMAND']);
                     } else if (name == 'CMSCOPE') {
                         var details = CMSCOPE("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        //node.setAttribute('label',label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CMSCOPE');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], [], []);
                     } else if (name == 'CONST_m') {
                         var details = CONST_m("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CONST_m');
                         createPorts(graph, v1, [], [], ['EXPLICIT'], []);
                     } else if (name == 'CONVERT') {
@@ -1656,26 +1711,11 @@
                     } else if (name == 'REGISTER') {
                         v1 = graph.insertVertex(parent, null, 'Shift<BR>register', x, y, 80, 80, 'REGISTER');
                         createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'CFSCOPE') {
-                        var details = CFSCOPE("define");
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        //node.setAttribute('label',label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
-                        createPorts(graph, v1, [], ['CONTROL'], [], []);
                     }
 
                     // EVENTS
                     else if (name == 'CLOCK_c') {
-                        var details = CLOCK_c("define");
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        //node.setAttribute('label',label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CLOCK_c');
+                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'CLOCK_c');
                         createPorts(graph, v1, [], [], [], ['COMMAND']);
                     } else if (name == 'SampleCLK') {
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'SampleCLK');
@@ -1976,7 +2016,7 @@
         };
     </script>
     <!--
-        Updates connection points before the routing is called.
+    	Updates connection points before the routing is called.
     -->
     <script type="text/javascript">
         // Computes the position of edge to edge connection points.
@@ -2149,7 +2189,7 @@
         };
     </script>
     <!--
-        Adds in-place highlighting for complete cell area (no hotspot).
+	    Adds in-place highlighting for complete cell area (no hotspot).
     -->
     <script type="text/javascript">
         mxConnectionHandlerCreateMarker = mxConnectionHandler.prototype.createMarker;
@@ -2175,7 +2215,7 @@
         }
     </script>
     <!--
-       Implements a perpendicular wires connection edge style
+	   Implements a perpendicular wires connection edge style
     -->
     <script type="text/javascript">
         mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
@@ -2271,10 +2311,10 @@
 <!-- Page passes the container for the graph to the program -->
 
 <body onload="main(document.getElementById('graphContainer'),
-            document.getElementById('outlineContainer'),
-            document.getElementById('toolbarContainer'),
-            document.getElementById('sidebarContainer'),
-            document.getElementById('statusContainer'));" style="margin:0px;">
+			document.getElementById('outlineContainer'),
+		 	document.getElementById('toolbarContainer'),
+			document.getElementById('sidebarContainer'),
+			document.getElementById('statusContainer'));" style="margin:0px;">
 
     <!-- Creates a container for the splash screen -->
     <div id="splash" style="position:absolute;top:0px;left:0px;width:100%;height:100%;background:white;z-index:1;">
