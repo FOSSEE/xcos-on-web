@@ -710,7 +710,7 @@ function CLKIN_f() {
     model.firing = new ScilabDouble([-1]);
     model.dep_ut = new ScilabBoolean([false, false]);
 
-    var exprs = ScilabString(["" + port]);
+    var exprs = new ScilabString([port]);
     var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CLKIN_f\",sz(1),sz(2));"]);
     var block = new standard_define(new ScilabDouble([80, 80]), model, exprs, gr_i); // 1 -> 80
 
