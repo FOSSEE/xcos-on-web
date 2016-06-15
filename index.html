@@ -4,19 +4,6 @@
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
     <title>Xcos</title>
-    <style type="text/css" media="screen">
-        BODY {
-            font-family: Arial;
-        }
-
-        H1 {
-            font-size: 18px;
-        }
-
-        H2 {
-            font-size: 16px;
-        }
-    </style>
 
     <!-- Loads and initializes the library -->
     <script type="text/javascript" src="jquery/jquery-1.8.2.js"></script>
@@ -32,6 +19,7 @@
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="json2.js"></script>
     <script type="text/javascript">
+
         function main(container, outline, toolbar, sidebar, status) {
             // Checks if the browser is supported
             if (!mxClient.isBrowserSupported()) {
@@ -119,8 +107,6 @@
         				  for edges that reflects their target terminal.
                 */
 
-
-
                 graph.model.getStyle = function(cell) {
                     var style = null;
                     if (cell != null) {
@@ -184,7 +170,7 @@
                               showTextEditWindow(graph, cell);
                             }, edgeformat);
                             menu.addItem('Text Color', 'images/edit.png', function() {
-                              showColorWheel(graph, cell, 'edgeTextColor');
+                              //showColorWheel(graph, cell, 'edgeTextColor');
                             }, edgeformat);
 
                         } else {
@@ -987,6 +973,36 @@
             }
         };
 
+        function styleToObject(style) {
+          var defaultStyle = style.substring(0, style.indexOf(';'));
+          var styleObject = {
+            "default" : defaultStyle
+          };
+          var remainingStyle = style.substring(style.indexOf(';') + 1);
+          while(remainingStyle.length > 0) {
+            var indexOfKey = remainingStyle.indexOf('=');
+            var key = remainingStyle.substring(0, indexOfKey);
+            remainingStyle = remainingStyle.substring(indexOfKey + 1);
+            var indexOfValue = remainingStyle.indexOf(';');
+            var value = remainingStyle.substring(0, indexOfValue);
+            styleObject[key] = value;
+            remainingStyle = remainingStyle.substring(indexOfValue + 1);
+          }
+          return styleObject;
+        }
+
+        function objectToStyle(object) {
+          var style = "";
+          for (var key in object) {
+            if(key.toString() == "default") {
+              style += object[key] + ';';
+            }
+            else {
+              style += key + '=' + object[key] + ';';
+            }
+          }
+          return style;
+        }
 
         /*
             Maverick
@@ -1219,18 +1235,29 @@
         };
 
 
-
         function showTextEditWindow(graph, cell) {
-            var defaultProperties = {
-                text: ["Text", "text"],
-                fontFamily : ["FontFamily", [
-                  "Arial",
-                  "Dialog",
-                  "Verdana",
-                  "Times New Roman"
-                ]],
-                fontSize: ["fontSize", 10]
-            };
+              var fontFamilyList = {
+                "Arial" : 0,
+                "Dialog" : 1,
+                "Verdana" : 2,
+                "Times New Roman" : 3
+              }
+              var defaultProperties = {
+                  text: ["Text", "text"],
+                  fontFamily : ["Font Family", fontFamilyList],
+                  fontSize: ["fontSize", 20]
+              };
+
+            var style = graph.getModel().getStyle(cell);
+            if (style.indexOf('fontSize') > -1) {
+                var fontSize =  style.substring(style.lastIndexOf("fontSize=") + "fontSize=".length);
+                fontSize = fontSize.substring(0, fontSize.indexOf(';'));
+                defaultProperties['fontSize'][1] = fontSize;
+            }
+            if (cell.value != "") {
+                defaultProperties['text'][1] = cell.value;
+            }
+
             // Create basic structure for the form
             var content = document.createElement('div');
             content.setAttribute("id", "contentProperties");
@@ -1259,13 +1286,22 @@
                       newList.style.cssText = "float:right";
                       newList.setAttribute("id", key.toString());
                       var dropdownItems = defaultProperties[key][1];
-                      // Iterate over the dropdown options and create html elements
-                      dropdownItems.forEach(function (value, i) {
-                        option = document.createElement('option');
-                        option.value = value;
-                        option.text = value;
-                        newList.appendChild(option);
-                      });
+
+                      for(var item in dropdownItems) {
+                        if (dropdownItems.hasOwnProperty(item)) {
+                          option = document.createElement('option');
+                          option.value = item;
+                          option.text = item;
+                          option.setAttribute("id", item);
+                          newList.appendChild(option);
+                        }
+                      }
+
+                      var selectedFontFamily = 0;
+                      if (style.indexOf('fontFamily') > -1) {
+                          selectedFontFamily =  style.substring(style.lastIndexOf("fontFamily=") + "fontFamily=".length, style.lastIndexOf(";"));
+                      }
+                      newList.selectedIndex = dropdownItems[selectedFontFamily];
                       myform.appendChild(newList);
                     }
                     else {
@@ -1294,17 +1330,19 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-              var trigger = document.getElementById('boldButton');
-              trigger.classList.toggle('boldButton');
+
               var style = graph.getModel().getStyle(cell);
+              var trigger = document.getElementById('boldButton');
               if (style.indexOf('fontStyle') > -1) {
                   var previousValue = parseInt(style.charAt(style.indexOf('fontStyle') + 'fontStyle='.length));
                   var mask = 1 << 0;
                   previousValue ^= mask;
-                  console.log(previousValue);
+                  trigger.classList.toggle('boldButton');
                   style = style.replace(/fontStyle=(.*);/, "fontStyle=" + previousValue + ';');
+
               } else {
                   style += 'fontStyle=' + '1' + ';';
+                  trigger.classList.toggle('boldButton');
               }
               graph.getModel().setStyle(cell, style);
             }
@@ -1323,7 +1361,6 @@
                   var previousValue = parseInt(style.charAt(style.indexOf('fontStyle') + 'fontStyle='.length));
                   var mask = 1 << 1;
                   previousValue ^= mask;
-                  console.log(previousValue);
                   style = style.replace(/fontStyle=(.*);/, "fontStyle=" + previousValue + ';');
               } else {
                   style += 'fontStyle=' + '2' + ';';
@@ -1345,7 +1382,6 @@
                   var previousValue = parseInt(style.charAt(style.indexOf('fontStyle') + 'fontStyle='.length));
                   var mask = 1 << 2;
                   previousValue ^= mask;
-                  console.log(previousValue);
                   style = style.replace(/fontStyle=(.*);/, "fontStyle=" + previousValue + ';');
               } else {
                   style += 'fontStyle=' + '4' + ';';
@@ -1390,10 +1426,34 @@
                 wind.destroy();
             };
             myform.appendChild(btn);
+
+
             // Base heights without fields : 135 px
             height = 135 + 26 * defaultProperties.length + 15;
             content.appendChild(myform);
             var wind = showModalWindow(graph, 'Text and Text font', content, 450, height);
+
+            var style = graph.getModel().getStyle(cell);
+            if(style.indexOf('fontStyle') > -1) {
+              var previousValue = parseInt(style.charAt(style.indexOf('fontStyle') + 'fontStyle='.length));
+              var mask = 1 << 0;
+              if ((previousValue & mask) != 0) {
+                var trigger = document.getElementById('boldButton');
+                trigger.classList.toggle('boldButton');
+              }
+
+              var mask = 1 << 1;
+              if ((previousValue & mask) != 0) {
+                var trigger = document.getElementById('italicButton');
+                trigger.classList.toggle('italicButton');
+              }
+
+              var mask = 1 << 2;
+              if ((previousValue & mask) != 0) {
+                var trigger = document.getElementById('underlineButton');
+                trigger.classList.toggle('underlineButton');
+              }
+            }
         };
         /*
           @jiteshjha, @pooja

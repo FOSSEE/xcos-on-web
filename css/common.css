@@ -1,3 +1,14 @@
+body {
+		font-family: Arial;
+}
+
+h1 {
+		font-size: 18px;
+}
+
+h2 {
+		font-size: 16px;
+}
 div.mxRubberband {
 	position: absolute;
 	overflow: hidden;
