@@ -140,17 +140,17 @@
                                 }
                                 if (cellSource.value == "ExplicitOutputPort" || cellSource.value == "ExplicitInputPort") {
                                     if(style == null) {
-                                      style = ';' + 'ExplicitLink' + ';';
+                                      style = 'ExplicitLink' + ';';
                                     }
                                     cell.name = "ExplicitLink";
                                 } else if (cellSource.value == "ImplicitOutputPort" || cellSource.value == "ImplicitInputPort") {
                                     if(style == null) {
-                                      style = ';' + 'ImplicitLink' + ';';
+                                      style = 'ImplicitLink' + ';';
                                     }
                                     cell.name = "ImplicitLink";
                                 } else if (cellSource.value == "CommandPort" || cellSource.value == "ControlPort") {
                                     if(style == null) {
-                                      style = ';' + 'CommandControlLink' + ';';
+                                      style = 'CommandControlLink' + ';';
                                     }
                                     cell.name = "CommandControlLink";
                                 }
@@ -1299,12 +1299,9 @@
               var style = graph.getModel().getStyle(cell);
               if (style.indexOf('fontStyle') > -1) {
                   var previousValue = parseInt(style.charAt(style.indexOf('fontStyle') + 'fontStyle='.length));
-                  if(previousValue == 1 || previousValue == 3 || previousValue == 5 || previousValue == 7) {
-                    previousValue -= 1;
-                  }
-                  else {
-                    previousValue += 1;
-                  }
+                  var mask = 1 << 0;
+                  previousValue ^= mask;
+                  console.log(previousValue);
                   style = style.replace(/fontStyle=(.*);/, "fontStyle=" + previousValue + ';');
               } else {
                   style += 'fontStyle=' + '1' + ';';
@@ -1324,12 +1321,9 @@
               var style = graph.getModel().getStyle(cell);
               if (style.indexOf('fontStyle') > -1) {
                   var previousValue = parseInt(style.charAt(style.indexOf('fontStyle') + 'fontStyle='.length));
-                  if(previousValue == 2 || previousValue == 3 || previousValue == 6 || previousValue == 7) {
-                    previousValue -= 2;
-                  }
-                  else {
-                    previousValue += 2;
-                  }
+                  var mask = 1 << 1;
+                  previousValue ^= mask;
+                  console.log(previousValue);
                   style = style.replace(/fontStyle=(.*);/, "fontStyle=" + previousValue + ';');
               } else {
                   style += 'fontStyle=' + '2' + ';';
@@ -1349,12 +1343,9 @@
               var style = graph.getModel().getStyle(cell);
               if (style.indexOf('fontStyle') > -1) {
                   var previousValue = parseInt(style.charAt(style.indexOf('fontStyle') + 'fontStyle='.length));
-                  if(previousValue == 4 || previousValue == 5 || previousValue == 6 || previousValue == 7) {
-                    previousValue -= 4;
-                  }
-                  else {
-                    previousValue += 4;
-                  }
+                  var mask = 1 << 2;
+                  previousValue ^= mask;
+                  console.log(previousValue);
                   style = style.replace(/fontStyle=(.*);/, "fontStyle=" + previousValue + ';');
               } else {
                   style += 'fontStyle=' + '4' + ';';
