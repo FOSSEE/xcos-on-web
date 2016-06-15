@@ -1359,6 +1359,26 @@
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
+            function getFontStyle(graph, cell, button, bit) {
+              var style = graph.getModel().getStyle(cell);
+              var trigger = document.getElementById(button);
+              var styleObject = styleToObject(style);
+              var previousValue = 1;
+              if ('fontStyle' in styleObject) {
+                  previousValue = styleObject['fontStyle'];
+
+                  // To get a bit mask:
+                  var mask = 1 << bit; // Get the 1st element
+
+                  // toggle the bit
+                  previousValue ^= mask;
+              }
+              trigger.classList.toggle(button);
+              styleObject['fontStyle'] = previousValue;
+              style = objectToStyle(styleObject);
+              graph.getModel().setStyle(cell, style);
+            }
+
             // Button - Bold
             var btn = document.createElement("button");
             btn.innerHTML = 'Bold';
@@ -1366,24 +1386,7 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-
-              var style = graph.getModel().getStyle(cell);
-              var trigger = document.getElementById('boldButton');
-              var styleObject = styleToObject(style);
-              var previousValue = 1;
-              if ('fontStyle' in styleObject) {
-                  previousValue = styleObject['fontStyle'];
-
-                  // To get a bit mask:
-                  var mask = 1 << 0; // Get the 0th element
-
-                  // toggle the bit
-                  previousValue ^= mask;
-              }
-              trigger.classList.toggle('boldButton');
-              styleObject['fontStyle'] = previousValue;
-              style = objectToStyle(styleObject);
-              graph.getModel().setStyle(cell, style);
+              getFontStyle(graph, cell, 'boldButton', 0);
             }
             myform.appendChild(btn);
 
@@ -1394,24 +1397,7 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-
-              var style = graph.getModel().getStyle(cell);
-              var trigger = document.getElementById('italicButton');
-              var styleObject = styleToObject(style);
-              var previousValue = 1;
-              if ('fontStyle' in styleObject) {
-                  previousValue = styleObject['fontStyle'];
-
-                  // To get a bit mask:
-                  var mask = 1 << 1; // Get the 1st element
-
-                  // toggle the bit
-                  previousValue ^= mask;
-              }
-              trigger.classList.toggle('italicButton');
-              styleObject['fontStyle'] = previousValue;
-              style = objectToStyle(styleObject);
-              graph.getModel().setStyle(cell, style);
+              getFontStyle(graph, cell, 'italicButton', 1);
             }
             myform.appendChild(btn);
 
@@ -1422,24 +1408,7 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-
-              var style = graph.getModel().getStyle(cell);
-              var trigger = document.getElementById('underlineButton');
-              var styleObject = styleToObject(style);
-              var previousValue = 1;
-              if ('fontStyle' in styleObject) {
-                  previousValue = styleObject['fontStyle'];
-
-                  // To get a bit mask:
-                  var mask = 1 << 2; // Get the 2nd element
-
-                  // toggle the bit
-                  previousValue ^= mask;
-              }
-              trigger.classList.toggle('underlineButton');
-              styleObject['fontStyle'] = previousValue;
-              style = objectToStyle(styleObject);
-              graph.getModel().setStyle(cell, style);
+              getFontStyle(graph, cell, 'underlineButton', 2);
             }
             myform.appendChild(btn);
 
