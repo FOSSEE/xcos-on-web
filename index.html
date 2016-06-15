@@ -1331,8 +1331,9 @@
                       }
 
                       var selectedFontFamily = 0;
-                      if (style.indexOf('fontFamily') > -1) {
-                          selectedFontFamily =  style.substring(style.lastIndexOf("fontFamily=") + "fontFamily=".length, style.lastIndexOf(";"));
+                      var styleObject = styleToObject(style);
+                      if ('fontFamily' in styleObject) {
+                          selectedFontFamily =  styleObject['fontFamily'];
                       }
                       newList.selectedIndex = dropdownItems[selectedFontFamily];
                       myform.appendChild(newList);
