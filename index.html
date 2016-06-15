@@ -988,6 +988,13 @@
           };
           var remainingStyle = style.substring(style.indexOf(';') + 1);
 
+          /*
+            remainingStyle is the string without the default style.
+            For every key:value pair in the string,
+            extract the key(string before '=') and the value
+            (string before ';'), set the key:value pair into styleObject
+            and remainingStyle is set to a string without the key:value pair.
+          */
           while(remainingStyle.length > 0) {
             var indexOfKey = remainingStyle.indexOf('=');
             var key = remainingStyle.substring(0, indexOfKey);
@@ -1012,7 +1019,7 @@
               style += object[key] + ';';
             }
             else {
-              style += key + '=' + object[key] + ';';
+              style += (key + '=' + object[key] + ';');
             }
           }
           return style;
@@ -1366,7 +1373,11 @@
               var previousValue = 1;
               if ('fontStyle' in styleObject) {
                   previousValue = styleObject['fontStyle'];
-                  var mask = 1 << 0;
+
+                  // To get a bit mask:
+                  var mask = 1 << 0; // Get the 0th element
+
+                  // toggle the bit
                   previousValue ^= mask;
               }
               trigger.classList.toggle('boldButton');
@@ -1390,7 +1401,11 @@
               var previousValue = 1;
               if ('fontStyle' in styleObject) {
                   previousValue = styleObject['fontStyle'];
-                  var mask = 1 << 1;
+
+                  // To get a bit mask:
+                  var mask = 1 << 1; // Get the 1st element
+
+                  // toggle the bit
                   previousValue ^= mask;
               }
               trigger.classList.toggle('italicButton');
@@ -1414,7 +1429,11 @@
               var previousValue = 1;
               if ('fontStyle' in styleObject) {
                   previousValue = styleObject['fontStyle'];
-                  var mask = 1 << 2;
+
+                  // To get a bit mask:
+                  var mask = 1 << 2; // Get the 2nd element
+
+                  // toggle the bit
                   previousValue ^= mask;
               }
               trigger.classList.toggle('underlineButton');
@@ -1475,17 +1494,21 @@
             if('fontStyle' in styleObject) {
               var previousValue = styleObject['fontStyle'];
               var mask = 1 << 0;
+
+              //To test if a bit is set:
               if ((previousValue & mask) != 0) {
                 var trigger = document.getElementById('boldButton');
                 trigger.classList.toggle('boldButton');
               }
 
               var mask = 1 << 1;
+              //To test if a bit is set:
               if ((previousValue & mask) != 0) {
                 var trigger = document.getElementById('italicButton');
                 trigger.classList.toggle('italicButton');
               }
 
+              //To test if a bit is set:
               var mask = 1 << 2;
               if ((previousValue & mask) != 0) {
                 var trigger = document.getElementById('underlineButton');
