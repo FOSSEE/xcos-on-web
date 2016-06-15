@@ -973,12 +973,21 @@
             }
         };
 
+        /*
+          @jiteshjha
+          styleToObject(style) converts style string into an object.
+          Format : First item in the object will be 'default: linkStyle',
+          and the rest of items will be of the style 'mxConstants:value'
+        */
+
         function styleToObject(style) {
+
           var defaultStyle = style.substring(0, style.indexOf(';'));
           var styleObject = {
             "default" : defaultStyle
           };
           var remainingStyle = style.substring(style.indexOf(';') + 1);
+
           while(remainingStyle.length > 0) {
             var indexOfKey = remainingStyle.indexOf('=');
             var key = remainingStyle.substring(0, indexOfKey);
@@ -988,9 +997,14 @@
             styleObject[key] = value;
             remainingStyle = remainingStyle.substring(indexOfValue + 1);
           }
+
           return styleObject;
         }
 
+        /*
+          @jiteshjha
+          styleToObject(style) converts the object back to the style string.
+        */
         function objectToStyle(object) {
           var style = "";
           for (var key in object) {
@@ -1234,6 +1248,13 @@
             var wind = showModalWindow(graph, 'Properties', content, 450, height);
         };
 
+        /*
+          @jiteshjha
+          Creates a dialog box related to the edge label properties.
+          The properties implemented are : edge label, label fontStyle,
+          label fontSize, label fontStyle.
+        */
+
 
         function showTextEditWindow(graph, cell) {
               var fontFamilyList = {
@@ -1260,25 +1281,31 @@
             // Create basic structure for the form
             var content = document.createElement('div');
             content.setAttribute("id", "contentProperties");
+
             // Heading of content
             var heading = document.createElement('h2');
             heading.innerHTML = "Text and Text Font";
             heading.id = "headingProperties"
             content.appendChild(heading);
+
             // Add Form
             var myform = document.createElement("form");
             myform.method = "post";
             myform.id = "formProperties";
+
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
+
             for (var key in defaultProperties) {
                 if (defaultProperties.hasOwnProperty(key)) {
+
                     // Input Title
                     var fieldName = defaultProperties[key];
                     var namelabel = document.createElement('label');
                     namelabel.innerHTML = defaultProperties[key][0];
                     myform.appendChild(namelabel);
+
                     if(key == "fontFamily") {
                       //Here we create a "select" element (a drop down list).
                       var newList = document.createElement("select");
@@ -1314,14 +1341,17 @@
                     // Line break
                     var linebreak = document.createElement('br');
                     myform.appendChild(linebreak);
+
                     // Line break
                     var linebreak = document.createElement('br');
                     myform.appendChild(linebreak);
                 }
             }
+
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
+
             // Button - Bold
             var btn = document.createElement("button");
             btn.innerHTML = 'Bold';
@@ -1369,6 +1399,7 @@
               graph.getModel().setStyle(cell, style);
             }
             myform.appendChild(btn);
+
             // Button - Underline
             var btn = document.createElement("button");
             btn.innerHTML = 'Underline';
@@ -1392,17 +1423,21 @@
               graph.getModel().setStyle(cell, style);
             }
             myform.appendChild(btn);
+
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
+
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
+
             // Button - Submit
             var btn = document.createElement("button");
             btn.innerHTML = 'Submit';
             btn.type = "button";
             btn.name = "submit";
+
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
                 var propertiesObject = {
@@ -1424,12 +1459,16 @@
             };
             myform.appendChild(btn);
 
-
             // Base heights without fields : 135 px
             height = 135 + 26 * defaultProperties.length + 15;
             content.appendChild(myform);
             var wind = showModalWindow(graph, 'Text and Text font', content, 450, height);
 
+            /*
+              @jiteshjha
+              If any fontStyle(Bold, Italic, Underline) has already been implemented
+              for the selected edge label, add the respective active class to that button.
+            */
             var style = graph.getModel().getStyle(cell);
             var styleObject = styleToObject(style);
 
