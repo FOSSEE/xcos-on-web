@@ -301,6 +301,15 @@ function getData() {
     return dataArray;
 }
 
+function modelica(){
+	var model=[];
+    var inputs=[];
+    var outputs=[];
+    var parameters=list([],list());
+    var mo=tlist(["modelica","model","inputs","outputs","parameters"],model,inputs,outputs,parameters);
+	return mo;
+}
+
 function CONST_m() {
 
     switch (arguments[0]) {
