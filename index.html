@@ -170,7 +170,7 @@
                               showTextEditWindow(graph, cell);
                             }, edgeformat);
                             menu.addItem('Text Color', 'images/edit.png', function() {
-                              //showColorWheel(graph, cell, 'edgeTextColor');
+                              showColorWheel(graph, cell, 'edgeTextColor');
                             }, edgeformat);
 
                         } else {
@@ -1249,10 +1249,9 @@
               };
 
             var style = graph.getModel().getStyle(cell);
-            if (style.indexOf('fontSize') > -1) {
-                var fontSize =  style.substring(style.lastIndexOf("fontSize=") + "fontSize=".length);
-                fontSize = fontSize.substring(0, fontSize.indexOf(';'));
-                defaultProperties['fontSize'][1] = fontSize;
+            var styleObject = styleToObject(style);
+            if ('fontSize' in styleObject) {
+                defaultProperties['fontSize'][1] = styleObject['fontSize'];
             }
             if (cell.value != "") {
                 defaultProperties['text'][1] = cell.value;
@@ -1333,20 +1332,20 @@
 
               var style = graph.getModel().getStyle(cell);
               var trigger = document.getElementById('boldButton');
-              if (style.indexOf('fontStyle') > -1) {
-                  var previousValue = parseInt(style.charAt(style.indexOf('fontStyle') + 'fontStyle='.length));
+              var styleObject = styleToObject(style);
+              var previousValue = 1;
+              if ('fontStyle' in styleObject) {
+                  previousValue = styleObject['fontStyle'];
                   var mask = 1 << 0;
                   previousValue ^= mask;
-                  trigger.classList.toggle('boldButton');
-                  style = style.replace(/fontStyle=(.*);/, "fontStyle=" + previousValue + ';');
-
-              } else {
-                  style += 'fontStyle=' + '1' + ';';
-                  trigger.classList.toggle('boldButton');
               }
+              trigger.classList.toggle('boldButton');
+              styleObject['fontStyle'] = previousValue;
+              style = objectToStyle(styleObject);
               graph.getModel().setStyle(cell, style);
             }
             myform.appendChild(btn);
+
             // Button - Italics
             var btn = document.createElement("button");
             btn.innerHTML = 'Italic';
@@ -1354,17 +1353,19 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-              var trigger = document.getElementById('italicButton');
-              trigger.classList.toggle('italicButton');
+
               var style = graph.getModel().getStyle(cell);
-              if (style.indexOf('fontStyle') > -1) {
-                  var previousValue = parseInt(style.charAt(style.indexOf('fontStyle') + 'fontStyle='.length));
+              var trigger = document.getElementById('italicButton');
+              var styleObject = styleToObject(style);
+              var previousValue = 1;
+              if ('fontStyle' in styleObject) {
+                  previousValue = styleObject['fontStyle'];
                   var mask = 1 << 1;
                   previousValue ^= mask;
-                  style = style.replace(/fontStyle=(.*);/, "fontStyle=" + previousValue + ';');
-              } else {
-                  style += 'fontStyle=' + '2' + ';';
               }
+              trigger.classList.toggle('italicButton');
+              styleObject['fontStyle'] = previousValue;
+              style = objectToStyle(styleObject);
               graph.getModel().setStyle(cell, style);
             }
             myform.appendChild(btn);
@@ -1375,17 +1376,19 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-              var trigger = document.getElementById('underlineButton');
-              trigger.classList.toggle('underlineButton');
+
               var style = graph.getModel().getStyle(cell);
-              if (style.indexOf('fontStyle') > -1) {
-                  var previousValue = parseInt(style.charAt(style.indexOf('fontStyle') + 'fontStyle='.length));
+              var trigger = document.getElementById('underlineButton');
+              var styleObject = styleToObject(style);
+              var previousValue = 1;
+              if ('fontStyle' in styleObject) {
+                  previousValue = styleObject['fontStyle'];
                   var mask = 1 << 2;
                   previousValue ^= mask;
-                  style = style.replace(/fontStyle=(.*);/, "fontStyle=" + previousValue + ';');
-              } else {
-                  style += 'fontStyle=' + '4' + ';';
               }
+              trigger.classList.toggle('underlineButton');
+              styleObject['fontStyle'] = previousValue;
+              style = objectToStyle(styleObject);
               graph.getModel().setStyle(cell, style);
             }
             myform.appendChild(btn);
@@ -1411,16 +1414,10 @@
                     }
                 }
                 var style = graph.getModel().getStyle(cell);
-                if (style.indexOf('fontSize') > -1) {
-                    style = style.replace(/fontSize=(.*);/, "fontSize=" + propertiesObject['fontSize'] + ';');
-                } else {
-                    style += 'fontSize=' + propertiesObject['fontSize'] + ';';
-                }
-                if (style.indexOf('fontFamily') > -1) {
-                    style = style.replace(/fontFamily=(.*);/, "fontFamily=" + propertiesObject['fontFamily'] + ';');
-                } else {
-                    style += 'fontFamily=' + propertiesObject['fontFamily'] + ';';
-                }
+                var styleObject = styleToObject(style);
+                styleObject['fontSize'] = propertiesObject['fontSize'];
+                styleObject['fontFamily'] = propertiesObject['fontFamily'];
+                style = objectToStyle(styleObject);
                 graph.getModel().setStyle(cell, style);
                 graph.getModel().setValue(cell, propertiesObject['text']);
                 wind.destroy();
@@ -1434,8 +1431,10 @@
             var wind = showModalWindow(graph, 'Text and Text font', content, 450, height);
 
             var style = graph.getModel().getStyle(cell);
-            if(style.indexOf('fontStyle') > -1) {
-              var previousValue = parseInt(style.charAt(style.indexOf('fontStyle') + 'fontStyle='.length));
+            var styleObject = styleToObject(style);
+
+            if('fontStyle' in styleObject) {
+              var previousValue = styleObject['fontStyle'];
               var mask = 1 << 0;
               if ((previousValue & mask) != 0) {
                 var trigger = document.getElementById('boldButton');
@@ -1676,46 +1675,22 @@
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
                 var input = document.getElementById('color').value;
+                var style = graph.getModel().getStyle(cell);
+                var styleObject = styleToObject(style);
                 if (selectProperty == "edgeStrokeColor") {
-                    var style = graph.getModel().getStyle(cell);
-                    if (style.indexOf('strokeColor') > -1) {
-                        style = style.replace(/strokeColor=#[a-fA-F0-9]{6,}/g, "strokeColor=" + input);
-                        graph.getModel().setStyle(cell, style);
-                    } else {
-                        style += 'strokeColor=' + input + ';';
-                        graph.getModel().setStyle(cell, style);
-                    }
+                    styleObject['strokeColor'] = input;
                 } else if (selectProperty == "bgColor") {
                     graph.container.style.backgroundColor = input;
                 } else if (selectProperty == "vertexStrokeColor") {
-                    var style = graph.getModel().getStyle(cell);
-                    if (style.indexOf('strokeColor') > -1) {
-                        style = style.replace(/strokeColor=#[a-fA-F0-9]{6,}/g, "strokeColor=" + input);
-                        graph.getModel().setStyle(cell, style);
-                    } else {
-                        style = style + ';' + 'strokeColor=' + input;
-                        graph.getModel().setStyle(cell, style);
-                    }
+                  styleObject['strokeColor'] = input;
                 } else if (selectProperty == "vertexFillColor") {
-                    var style = graph.getModel().getStyle(cell);
-                    if (style.indexOf('fillColor') > -1) {
-                        style = style.replace(/fillColor=#[a-fA-F0-9]{6,}/g, "fillColor=" + input);
-                        graph.getModel().setStyle(cell, style);
-                    } else {
-                        style = style + ';' + 'fillColor=' + input;
-                        graph.getModel().setStyle(cell, style);
-                    }
+                  styleObject['fillColor'] = input;
                 }
                 else if(selectProperty == "edgeTextColor") {
-                  var style = graph.getModel().getStyle(cell);
-                  if (style.indexOf('fontColor') > -1) {
-                      style = style.replace(/fontColor=#[a-fA-F0-9]{6,}/g, "fontColor=" + input);
-                      graph.getModel().setStyle(cell, style);
-                  } else {
-                      style = style + 'fontColor=' + input + ';';
-                      graph.getModel().setStyle(cell, style);
-                  }
+                  styleObject['fontColor'] = input;
                 }
+                style = objectToStyle(styleObject);
+                graph.getModel().setStyle(cell, style);
                 wind.destroy();
             };
             myform.appendChild(btn);
