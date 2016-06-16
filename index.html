@@ -278,31 +278,28 @@
                   }
                   else if(edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
                     alert("Explicit data output port must be connected to explicit data input port");
-                    return null;
                   }
                   else if(edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
                     alert("Explicit data input port must be connected to explicit data output port");
-                    return null;
                   }
                   else if(edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
                     alert("Implicit data output port must be connected to implicit data input port");
-                    return null;
                   }
                   else if(edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
                     alert("Implicit data input port must be connected to implicit data output port");
-                    return null;
                   }
                   else if(edgeSource.value == "CommandPort" && target.value != "ControlPort") {
                     alert("Command port must be connected to control port");
-                    return null;
                   }
                   else if(edgeSource.value == "ControlPort" && target.value != "CommandPort") {
                     alert("Control port must be connected to command port");
-                    return null;
+                  }
+                  else {
+                    // If the edge is legit, return the edge.
+                    return mxGraph.prototype.addEdge.apply(this, arguments);
                   }
 
-                  // If the edge is legit, return the edge.
-                  return mxGraph.prototype.addEdge.apply(this, arguments);
+                  return null;
                 }
 
                 // Disables drag-and-drop into non-swimlanes.
