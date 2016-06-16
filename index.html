@@ -383,13 +383,13 @@
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 // https://jgraph.github.io/mxgraph/docs/js-api/files/model/mxCell-js.html
                 // Uncomment this block to see XML tags work
-                graph.convertValueToString = function(cell)
+                /*graph.convertValueToString = function(cell)
                 {
                   if (mxUtils.isNode(cell.value))
                   {
                     return cell.getAttribute('label', '');
                   }
-                };
+                };*/
 
                 var cellLabelChanged = graph.cellLabelChanged;
                 graph.cellLabelChanged = function(cell, newValue, autoSize) {
@@ -432,159 +432,6 @@
                     var titleName = document.createTextNode(toggle.innerHTML);
                     button.appendChild(titleName);
                 });
-
-
-                /*
-                	@pooja, @jiteshjha
-					Create a custom rotate action for a selected cell.
-                */
-                editor.addAction('rotateCustom', function(editor, cell) {
-                    selectedCell = graph.getSelectionCell();
-                    if (selectedCell != null) {
-                        var cells = [];
-                        cells.push(selectedCell);
-                        for (var i = 0; i < selectedCell.getChildCount(); i++)
-                            cells.push(selectedCell.getChildAt(i));
-                        graph.getModel().beginUpdate();
-                        try {
-                            for (var i = 0; i < cells.length; i++) {
-                                var cell = cells[i];
-                                if (cell.isVertex() == true) {
-                                    var geo = graph.getCellGeometry(cell);
-
-                                    if (geo != null) {
-                                        // Rotates the size and position in the geometry
-                                        geo = geo.clone();
-                                        geo.x += geo.width / 2 - geo.height / 2;
-                                        geo.y += geo.height / 2 - geo.width / 2;
-                                        var tmp = geo.width;
-                                        geo.width = geo.height;
-                                        geo.height = tmp;
-                                        graph.getModel().setGeometry(cell, geo);
-                                        // Reads the current direction and advances by 90 degrees
-                                        var state = graph.view.getState(cell);
-
-                                        if (state != null) {
-                                            if (cell.isConnectable() == true) {
-                                                if (cell.value == "ExplicitOutputPort" || cell.value == "ImplicitOutputPort") {
-                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-                                                    var geoCell = cell.getGeometry();
-                                                    if (dir == 'east' || dir == 'west') {
-                                                        var temp = geoCell.x;
-                                                        geoCell.x = geoCell.y - 0.0625;
-                                                        geoCell.y = temp + 0.0625;
-                                                        cell.setGeometry(geoCell);
-                                                        if (dir == 'east')
-                                                            dir = 'south';
-                                                        else
-                                                            dir = 'north';
-                                                    } else if (dir == 'south' || dir == 'north') {
-
-                                                        geoCell.y = geoCell.x + 0.0625;
-                                                        if (dir == 'south') {
-                                                            dir = 'west';
-                                                            geoCell.x = 0 - 0.125;
-                                                        } else {
-                                                            dir = 'east';
-                                                            geoCell.x = 1;
-                                                        }
-                                                        cell.setGeometry(geoCell);
-                                                    }
-                                                } else if (cell.value == "ExplicitInputPort" || cell.value == "ImplicitInputPort") {
-                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-                                                    var geoCell = cell.getGeometry();
-                                                    if (dir == 'south' || dir == 'north') {
-                                                        geoCell.y = geoCell.x - 0.0625;
-                                                        if (dir == 'south') {
-                                                            dir = 'west';
-                                                            geoCell.x = 1 + 0.125;
-                                                        } else {
-                                                            dir = 'east';
-                                                            geoCell.x = 0;
-                                                        }
-                                                        cell.setGeometry(geoCell);
-                                                    } else if (dir == 'east' || dir == 'west') {
-                                                        geoCell = geoCell.clone();
-                                                        var temp = geoCell.x;
-                                                        geoCell.x = parseFloat(geoCell.y) + 0.0625;
-                                                        geoCell.y = temp - 0.0625;
-                                                        cell.setGeometry(geoCell);
-                                                        if (dir == 'east')
-                                                            dir = 'south';
-                                                        else
-                                                            dir = 'north';
-                                                    }
-                                                } else if (cell.value == 'CommandPort') {
-                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-                                                    var geoCell = cell.getGeometry();
-                                                    if (dir == 'south' || dir == 'north') {
-                                                        var temp = geoCell.x;
-                                                        geoCell.x = geoCell.y + 0.0625;
-                                                        geoCell.y = temp - 0.0625;
-                                                        cell.setGeometry(geoCell);
-                                                        if (dir == 'south')
-                                                            dir = 'west';
-                                                        else
-                                                            dir = 'east';
-                                                    } else if (dir == 'east' || dir == 'west') {
-                                                        geoCell.y = parseFloat(geoCell.x) - 0.0625;
-                                                        if (dir == 'east') {
-                                                            dir = 'south';
-                                                            geoCell.x = 0 - 0.0625;
-                                                        } else {
-                                                            dir = 'north';
-                                                            geoCell.x = 1 + 0.0625;
-                                                        }
-                                                        cell.setGeometry(geoCell);
-                                                    }
-                                                } else if (cell.value == 'ControlPort') {
-                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-                                                    var geoCell = cell.getGeometry();
-                                                    if (dir == 'south' || dir == 'north') {
-                                                        var temp = geoCell.x;
-                                                        geoCell.x = geoCell.y - 0.0625;
-                                                        geoCell.y = temp + 0.0625;
-                                                        cell.setGeometry(geoCell);
-                                                        if (dir == 'south')
-                                                            dir = 'west';
-                                                        else
-                                                            dir = 'east';
-                                                    } else if (dir == 'east' || dir == 'west') {
-                                                        geoCell.y = parseFloat(geoCell.x) + 0.0625;
-                                                        if (dir == 'east') {
-                                                            dir = 'south';
-
-                                                            geoCell.x = 1 + 0.0625;
-                                                        } else {
-                                                            dir = 'north';
-                                                            geoCell.x = 0 - 0.0625;
-                                                        }
-                                                        cell.setGeometry(geoCell);
-                                                    }
-                                                }
-                                            } else {
-                                                var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-
-                                                if (dir == 'east') {
-                                                    dir = 'south';
-                                                } else if (dir == 'south') {
-                                                    dir = 'west';
-                                                } else if (dir == 'west') {
-                                                    dir = 'north';
-                                                } else if (dir == 'north') {
-                                                    dir = 'east';
-                                                }
-                                            }
-                                            graph.setCellStyles(mxConstants.STYLE_DIRECTION, dir, [cell]);
-                                        }
-                                    }
-                                }
-                            }
-                        } finally {
-                            graph.getModel().endUpdate();
-                        }
-                    }
-                }, null, null, 'Ctrl+R');
 
 
                 // @jiteshjha, @pooja
