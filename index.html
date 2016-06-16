@@ -1458,6 +1458,14 @@
               If any fontStyle(Bold, Italic, Underline) has already been implemented
               for the selected edge label, add the respective active class to that button.
             */
+
+            // setFontStyle(fontStyle) toggles with the active class for the given fontStyle.
+            // Possible values for fontStyle -> (boldButton, italicButton, underlineButton)
+            function setFontStyle(fontStyle) {
+              var trigger = document.getElementById(fontStyle);
+              trigger.classList.toggle(fontStyle);
+            }
+
             var style = graph.getModel().getStyle(cell);
             var styleObject = styleToObject(style);
 
@@ -1467,22 +1475,19 @@
 
               //To test if a bit is set:
               if ((previousValue & mask) != 0) {
-                var trigger = document.getElementById('boldButton');
-                trigger.classList.toggle('boldButton');
+                setFontStyle('boldButton');
               }
 
               var mask = 1 << 1;
               //To test if a bit is set:
               if ((previousValue & mask) != 0) {
-                var trigger = document.getElementById('italicButton');
-                trigger.classList.toggle('italicButton');
+                setFontStyle('italicButton');
               }
 
               //To test if a bit is set:
               var mask = 1 << 2;
               if ((previousValue & mask) != 0) {
-                var trigger = document.getElementById('underlineButton');
-                trigger.classList.toggle('underlineButton');
+                setFontStyle('underlineButton');
               }
             }
         };
