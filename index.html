@@ -269,35 +269,36 @@
                       edgeSource = edgeSource.source;
                   }
 
-                  if (!(((edgeSource.value == "ExplicitOutputPort" && target.value == "ExplicitInputPort") ||
-                            (edgeSource.value == "ExplicitInputPort" && target.value == "ExplicitOutputPort") ||
-                            (edgeSource.value == "ImplicitOutputPort" && target.value == "ImplicitInputPort") ||
-                            (edgeSource.value == "ImplicitInputPort" && target.value == "ImplicitOutputPort") ||
-                            (edgeSource.value == "CommandPort" && target.value == "ControlPort") ||
-                            (edgeSource.value == "ControlPort" && target.value == "CommandPort")) &&
-                        ((edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() == true &&
-                            target.getEdgeCount() == 0 && target.isVertex() == true) ||
-                            (edgeSource.getEdgeCount() <= 1 && source.isEdge() == true ))
-                    )) {
-                      if (!(edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() == true &&
-                              target.getEdgeCount() == 0 && target.isVertex() == true)) {
-                          alert("Port is already connected, please select an please select an unconnected port or a valid link");
-                      } else if (edgeSource.value == "ImplicitInputPort") {
-                          alert("Implicit data input port must be connected to implicit data output port");
-                      } else if (edgeSource.value == "ImplicitOutputPort") {
-                          alert("Implicit data output port must be connected to implicit data input port");
-                      } else if (edgeSource.value == "ExplicitOutputPort") {
-                          alert("Explicit data output port must be connected to explicit data input port");
-                      } else if (edgeSource.value == "ExplicitInputPort") {
-                          alert("Explicit data input port must be connected to explicit data output port");
-                      } else if (edgeSource.value = "ControlPort") {
-                          alert("Control port must be connected to command port");
-                      } else if (edgeSource.value = "CommandPort") {
-                          alert("Command port must be connected to control port");
-                      }
-
-                      // If the edge violates any port constraints, return null.
+                  // If the edge violates any port constraints, return null.
+                  if(!((edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() &&
+                          target.getEdgeCount() == 0 && target.isVertex()) ||
+                    (edgeSource.getEdgeCount() <= 1 && source.isEdge()))) {
+                      alert("Port is already connected, please select an please select an unconnected port or a valid link");
                       return null;
+                  }
+                  else if(edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
+                    alert("Explicit data output port must be connected to explicit data input port");
+                    return null;
+                  }
+                  else if(edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
+                    alert("Explicit data input port must be connected to explicit data output port");
+                    return null;
+                  }
+                  else if(edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
+                    alert("Implicit data output port must be connected to implicit data input port");
+                    return null;
+                  }
+                  else if(edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
+                    alert("Implicit data input port must be connected to implicit data output port");
+                    return null;
+                  }
+                  else if(edgeSource.value == "CommandPort" && target.value != "ControlPort") {
+                    alert("Command port must be connected to control port");
+                    return null;
+                  }
+                  else if(edgeSource.value == "ControlPort" && target.value != "CommandPort") {
+                    alert("Control port must be connected to command port");
+                    return null;
                   }
 
                   // If the edge is legit, return the edge.
