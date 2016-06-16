@@ -302,22 +302,6 @@
                   return null;
                 }
 
-                // Disables drag-and-drop into non-swimlanes.
-                graph.isValidDropTarget = function(cell, cells, evt) {
-                    return this.isSwimlane(cell);
-                };
-
-
-                // Disables drilling into non-swimlanes.
-                graph.isValidRoot = function(cell) {
-                    return this.isValidDropTarget(cell);
-                }
-
-                // Does not allow selection of locked cells
-                graph.isCellSelectable = function(cell) {
-                    return !this.isCellLocked(cell);
-                };
-
                 // Shows a "modal" window when double clicking a vertex.
                 graph.dblClick = function(evt, cell) {
                     // Do not fire a DOUBLE_CLICK event here as mxEditor will
