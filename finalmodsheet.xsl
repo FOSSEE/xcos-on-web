@@ -150,6 +150,19 @@ Look for TAG:Break1!!!
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
+            <xsl:when test="@name">
+                <xsl:choose>
+                    <xsl:when test="@name='ExplicitLink'">
+                        <xsl:call-template name="ExplicitLink" />
+                    </xsl:when>
+                    <xsl:when test="@name='ImplicitLink'">
+                        <xsl:call-template name="ImplicitLink" />
+                    </xsl:when>
+                    <xsl:when test="@name='CommandControlLink'">
+                        <xsl:call-template name="CommandControlLink" />
+                    </xsl:when>
+                </xsl:choose>
+            </xsl:when>
             <xsl:otherwise>
                 <!-- Style not present -->
                 <xsl:copy-of select="." />
@@ -388,9 +401,19 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@id" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@style">
-                <xsl:attribute name="style">
-                    <xsl:value-of select="@style" />
+            <xsl:if test="@parent">
+                <xsl:attribute name="parent">
+                    <xsl:value-of select="@parent" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@source">
+                <xsl:attribute name="source">
+                    <xsl:value-of select="@source" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@target">
+                <xsl:attribute name="target">
+                    <xsl:value-of select="@target" />
                 </xsl:attribute>
             </xsl:if>
             <xsl:apply-templates />
@@ -638,14 +661,19 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@id" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@style">
-                <xsl:attribute name="style">
-                    <xsl:value-of select="@style" />
+            <xsl:if test="@parent">
+                <xsl:attribute name="parent">
+                    <xsl:value-of select="@parent" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@value">
-                <xsl:attribute name="value">
-                    <xsl:value-of select="@value" />
+            <xsl:if test="@source">
+                <xsl:attribute name="source">
+                    <xsl:value-of select="@source" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@target">
+                <xsl:attribute name="target">
+                    <xsl:value-of select="@target" />
                 </xsl:attribute>
             </xsl:if>
             <xsl:apply-templates />
@@ -878,14 +906,19 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@id" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@style">
-                <xsl:attribute name="style">
-                    <xsl:value-of select="@style" />
+            <xsl:if test="@parent">
+                <xsl:attribute name="parent">
+                    <xsl:value-of select="@parent" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@value">
-                <xsl:attribute name="value">
-                    <xsl:value-of select="@value" />
+            <xsl:if test="@source">
+                <xsl:attribute name="source">
+                    <xsl:value-of select="@source" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@target">
+                <xsl:attribute name="target">
+                    <xsl:value-of select="@target" />
                 </xsl:attribute>
             </xsl:if>
             <xsl:apply-templates />
