@@ -113,7 +113,7 @@
         <add as="shape" value="connector"/>
         <add as="labelBackgroundColor" value="white"/>
         <add as="endArrow" value="classicnone"/>
-        <add as="fontSize" value="10"/>
+        <add as="fontSize" value="20"/>
         <add as="fontStyle" value="0"/>
         <add as="align" value="center"/>
         <add as="verticalAlign" value="middle"/>
