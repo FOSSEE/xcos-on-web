@@ -274,7 +274,6 @@
                           target.getEdgeCount() == 0 && target.isVertex()) ||
                     (edgeSource.getEdgeCount() <= 1 && source.isEdge()))) {
                       alert("Port is already connected, please select an please select an unconnected port or a valid link");
-                      return null;
                   }
                   else if(edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
                     alert("Explicit data output port must be connected to explicit data input port");
