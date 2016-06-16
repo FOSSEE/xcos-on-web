@@ -256,113 +256,53 @@
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
                 editor.configure(config);
 
-                // @jiteshjha, @pooja
-                /*
-                   The code creates a function that informs the undoManager of an undoable edit
-                   and binds it to the undo event of mxGraphModel and mxGraphView
-                   using mxEventSource.addListener.
-                */
-                var undoManager = new mxUndoManager();
-                var listener = function(sender, evt) {
-                    undoManager.undoableEditHappened(evt.getProperty('edit'));
-                };
-                graph.getModel().addListener(mxEvent.UNDO, listener);
-                graph.getModel().addListener(mxEvent.REDO, listener);
-                graph.getView().addListener(mxEvent.UNDO, listener);
-                graph.getView().addListener(mxEvent.REDO, listener);
-
-                editor.addAction('undoCustom', function(editor, cell) {
-                    undoManager.undo();
-                });
-
-                editor.addAction('redoCustom', function(editor, cell) {
-                    undoManager.redo();
-                });
 
                 /*
-                  For every click on the graph, check if the selected mxCell is the recently created edge,
-                  and then check if that edge satisfies one of the port constraints.
-
+                  For a new edge on the graph, check if that edge satisfies one of the port constraints.
                 */
-                graph.addListener(mxEvent.CLICK, function(sender, evt) {
-                    var selectedEdgeObject = graph.getSelectionCell();
-                    if (selectedEdgeObject != null && selectedEdgeObject.isEdge() == true) {
+                graph.addEdge = function(edge, parent, source, target, index) {
 
-                        var selectedEdgeObject = graph.getSelectionCell();
-                        var target = selectedEdgeObject.target;
-                        var source;
+                  var edgeSource = source;
 
-                        if (selectedEdgeObject != null && selectedEdgeObject.isEdge() == true) {
-                            function getEdgeId(edgeObject) {
-                                while (edgeObject.source != null && edgeObject.source.isEdge() == true) {
-                                    edgeObject = edgeObject.source;
-                                }
-                                return edgeObject.source;
-                            }
+                  // If the source of the edge is also an edge, find the port.
+                  while (edgeSource.isEdge() == true) {
+                      edgeSource = edgeSource.source;
+                  }
 
-                            if (selectedEdgeObject.isEdge() == true) {
-                                source = getEdgeId(selectedEdgeObject);
-                            }
-                            if (source != null && target != null) {
-                                if (!(((source.value == "ExplicitOutputPort" && target.value == "ExplicitInputPort") ||
-                                            (source.value == "ExplicitInputPort" && target.value == "ExplicitOutputPort") ||
-                                            (source.value == "ImplicitOutputPort" && target.value == "ImplicitInputPort") ||
-                                            (source.value == "ImplicitInputPort" && target.value == "ImplicitOutputPort") ||
-                                            (source.value == "CommandPort" && target.value == "ControlPort") ||
-                                            (source.value == "ControlPort" && target.value == "CommandPort")) &&
-                                        (source.getEdgeCount() <= 1 && source.isVertex() == true &&
-                                            target.getEdgeCount() <= 1 && target.isVertex() == true)
-                                    )) {
+                  if (!(((edgeSource.value == "ExplicitOutputPort" && target.value == "ExplicitInputPort") ||
+                            (edgeSource.value == "ExplicitInputPort" && target.value == "ExplicitOutputPort") ||
+                            (edgeSource.value == "ImplicitOutputPort" && target.value == "ImplicitInputPort") ||
+                            (edgeSource.value == "ImplicitInputPort" && target.value == "ImplicitOutputPort") ||
+                            (edgeSource.value == "CommandPort" && target.value == "ControlPort") ||
+                            (edgeSource.value == "ControlPort" && target.value == "CommandPort")) &&
+                        ((edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() == true &&
+                            target.getEdgeCount() == 0 && target.isVertex() == true) ||
+                            (edgeSource.getEdgeCount() <= 1 && source.isEdge() == true ))
+                    )) {
+                      if (!(edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() == true &&
+                              target.getEdgeCount() == 0 && target.isVertex() == true)) {
+                          alert("Port is already connected, please select an please select an unconnected port or a valid link");
+                      } else if (edgeSource.value == "ImplicitInputPort") {
+                          alert("Implicit data input port must be connected to implicit data output port");
+                      } else if (edgeSource.value == "ImplicitOutputPort") {
+                          alert("Implicit data output port must be connected to implicit data input port");
+                      } else if (edgeSource.value == "ExplicitOutputPort") {
+                          alert("Explicit data output port must be connected to explicit data input port");
+                      } else if (edgeSource.value == "ExplicitInputPort") {
+                          alert("Explicit data input port must be connected to explicit data output port");
+                      } else if (edgeSource.value = "ControlPort") {
+                          alert("Control port must be connected to command port");
+                      } else if (edgeSource.value = "CommandPort") {
+                          alert("Command port must be connected to control port");
+                      }
 
-                                    if (!(source.getEdgeCount() <= 1 && source.isVertex() == true &&
-                                            target.getEdgeCount() <= 1 && target.isVertex() == true)) {
-                                        alert("Port is already connected, please select an please select an unconnected port or a valid link");
-                                    } else if (source.value == "ImplicitInputPort") {
-                                        alert("Implicit data input port must be connected to implicit data output port");
-                                    } else if (source.value == "ImplicitOutputPort") {
-                                        alert("Implicit data output port must be connected to implicit data input port");
-                                    } else if (source.value == "ExplicitOutputPort") {
-                                        alert("Explicit data output port must be connected to explicit data input port");
-                                    } else if (source.value == "ExplicitInputPort") {
-                                        alert("Explicit data input port must be connected to explicit data output port");
-                                    } else if (source.value = "ControlPort") {
-                                        alert("Control port must be connected to command port");
-                                    } else if (source.value = "CommandPort") {
-                                        alert("Command port must be connected to control port");
-                                    }
+                      // If the edge violates any port constraints, return null.
+                      return null;
+                  }
 
-                                    /*
-                                      Remove last mxEvent from the undoManager history stack,
-                                      Store all the remaining undo mxEvents into a temporary array,
-                                      clears the history, and readds the mxEvents into the undoManager history stack.
-                                    */
-                                    editor.execute('undo');
-
-                                    // Remove the last element from the history array.
-                                    undoManager.history.splice(-1, 1);
-
-                                    // storage[] -> temporary array
-                                    var storage = [];
-                                    for (i in undoManager.history) {
-                                        if (undoManager.history[i] != null) {
-                                            storage.push(undoManager.history[i])
-                                        }
-                                    }
-
-                                    // Clear the undoManager history, and reset the undoManager pointer to avoid any undo of null events.
-                                    undoManager.clear();
-
-                                    // Move the remaning mxEvents back into the undoManager history stack.
-                                    for (i in storage) {
-                                        if (storage[i] != null) {
-                                            undoManager.undoableEditHappened(storage[i]);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
+                  // If the edge is legit, return the edge.
+                  return mxGraph.prototype.addEdge.apply(this, arguments);
+                }
 
                 // Disables drag-and-drop into non-swimlanes.
                 graph.isValidDropTarget = function(cell, cells, evt) {
@@ -767,8 +707,8 @@
 
                 toolbar.appendChild(spacer.cloneNode(true));
 
-                addToolbarButton(editor, toolbar, 'undoCustom', '', 'images/undo.png');
-                addToolbarButton(editor, toolbar, 'redoCustom', '', 'images/redo.png');
+                addToolbarButton(editor, toolbar, 'undo', '', 'images/undo.png');
+                addToolbarButton(editor, toolbar, 'redo', '', 'images/redo.png');
                 toolbar.appendChild(spacer.cloneNode(true));
 
                 addToolbarButton(editor, toolbar, 'show', 'Show', 'images/camera.png');
@@ -816,7 +756,7 @@
                     var node = enc.encode(diagRoot);
 
                     var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"+mxUtils.getPrettyXml(node);
-                    
+
                     textarea.value=str;
 
                     if (arguments[2] == null) {
@@ -860,7 +800,7 @@
                             Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
                         */
                         var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n"+mxUtils.getPrettyXml(resultDocument.documentElement);
-                        
+
                         textarea.value=str.replace(/\n\n/g,"\n");
                         showModalWindow(graph, 'Xcos', textarea, 410, 440);
                     }
@@ -1099,13 +1039,13 @@
             var contextValue = handleContext("get");
 
             var displayValue = "";
-           
+
             /*
                 Maverick
                 Modified the for loop because only requirement was to
-                traverse the array of 'contextValue' and not all the 
+                traverse the array of 'contextValue' and not all the
                 elements of it.
-            */ 
+            */
             for (var i=0;i<contextValue.length;i++) {
                 displayValue += contextValue[i] + "\n";
             }
@@ -1248,7 +1188,7 @@
                 cell.value = node;
                 /*
                     Maverick
-                    We have changed the value of the cell, but the change won't be reflected 
+                    We have changed the value of the cell, but the change won't be reflected
                     unless the graph is refreshed.
                 */
                 graph.refresh();
