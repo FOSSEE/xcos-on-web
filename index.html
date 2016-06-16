@@ -256,168 +256,49 @@
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
                 editor.configure(config);
 
-                // @jiteshjha, @pooja
-                /*
-                   The code creates a function that informs the undoManager of an undoable edit
-                   and binds it to the undo event of mxGraphModel and mxGraphView
-                   using mxEventSource.addListener.
-                */
-                var undoManager = new mxUndoManager();
-                var listener = function(sender, evt) {
-                    undoManager.undoableEditHappened(evt.getProperty('edit'));
-                };
-                graph.getModel().addListener(mxEvent.UNDO, listener);
-                graph.getModel().addListener(mxEvent.REDO, listener);
-                graph.getView().addListener(mxEvent.UNDO, listener);
-                graph.getView().addListener(mxEvent.REDO, listener);
-
-                editor.addAction('undoCustom', function(editor, cell) {
-                    undoManager.undo();
-                });
-
-                editor.addAction('redoCustom', function(editor, cell) {
-                    undoManager.redo();
-                });
 
                 /*
-                  For every click on the graph, check if the selected mxCell is the recently created edge,
-                  and then check if that edge satisfies one of the port constraints.
-
+                  For a new edge on the graph, check if that edge satisfies one of the port constraints.
                 */
-                graph.addListener(mxEvent.CLICK, function(sender, evt) {
-                    var selectedEdgeObject = graph.getSelectionCell();
-                    if (selectedEdgeObject != null && selectedEdgeObject.isEdge() == true) {
+                graph.addEdge = function(edge, parent, source, target, index) {
 
-                        var selectedEdgeObject = graph.getSelectionCell();
-                        var target = selectedEdgeObject.target;
-                        var source;
+                  var edgeSource = source;
 
-                        if (selectedEdgeObject != null && selectedEdgeObject.isEdge() == true) {
-                            function getEdgeId(edgeObject) {
-                                while (edgeObject.source != null && edgeObject.source.isEdge() == true) {
-                                    edgeObject = edgeObject.source;
-                                }
-                                return edgeObject.source;
-                            }
+                  // If the source of the edge is also an edge, find the port.
+                  while (edgeSource.isEdge() == true) {
+                      edgeSource = edgeSource.source;
+                  }
 
-                            if (selectedEdgeObject.isEdge() == true) {
-                                source = getEdgeId(selectedEdgeObject);
-                            }
-                            if (source != null && target != null) {
-                                if (!(((source.value == "ExplicitOutputPort" && target.value == "ExplicitInputPort") ||
-                                            (source.value == "ExplicitInputPort" && target.value == "ExplicitOutputPort") ||
-                                            (source.value == "ImplicitOutputPort" && target.value == "ImplicitInputPort") ||
-                                            (source.value == "ImplicitInputPort" && target.value == "ImplicitOutputPort") ||
-                                            (source.value == "CommandPort" && target.value == "ControlPort") ||
-                                            (source.value == "ControlPort" && target.value == "CommandPort")) &&
-                                        (source.getEdgeCount() <= 1 && source.isVertex() == true &&
-                                            target.getEdgeCount() <= 1 && target.isVertex() == true)
-                                    )) {
+                  // If the edge violates any port constraints, return null.
+                  if(!((edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() &&
+                          target.getEdgeCount() == 0 && target.isVertex()) ||
+                    (edgeSource.getEdgeCount() <= 1 && source.isEdge()))) {
+                      alert("Port is already connected, please select an please select an unconnected port or a valid link");
+                  }
+                  else if(edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
+                    alert("Explicit data output port must be connected to explicit data input port");
+                  }
+                  else if(edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
+                    alert("Explicit data input port must be connected to explicit data output port");
+                  }
+                  else if(edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
+                    alert("Implicit data output port must be connected to implicit data input port");
+                  }
+                  else if(edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
+                    alert("Implicit data input port must be connected to implicit data output port");
+                  }
+                  else if(edgeSource.value == "CommandPort" && target.value != "ControlPort") {
+                    alert("Command port must be connected to control port");
+                  }
+                  else if(edgeSource.value == "ControlPort" && target.value != "CommandPort") {
+                    alert("Control port must be connected to command port");
+                  }
+                  else {
+                    // If the edge is legit, return the edge.
+                    return mxGraph.prototype.addEdge.apply(this, arguments);
+                  }
 
-                                    if (!(source.getEdgeCount() <= 1 && source.isVertex() == true &&
-                                            target.getEdgeCount() <= 1 && target.isVertex() == true)) {
-                                        alert("Port is already connected, please select an please select an unconnected port or a valid link");
-                                    } else if (source.value == "ImplicitInputPort") {
-                                        alert("Implicit data input port must be connected to implicit data output port");
-                                    } else if (source.value == "ImplicitOutputPort") {
-                                        alert("Implicit data output port must be connected to implicit data input port");
-                                    } else if (source.value == "ExplicitOutputPort") {
-                                        alert("Explicit data output port must be connected to explicit data input port");
-                                    } else if (source.value == "ExplicitInputPort") {
-                                        alert("Explicit data input port must be connected to explicit data output port");
-                                    } else if (source.value = "ControlPort") {
-                                        alert("Control port must be connected to command port");
-                                    } else if (source.value = "CommandPort") {
-                                        alert("Command port must be connected to control port");
-                                    }
-
-                                    /*
-                                      Remove last mxEvent from the undoManager history stack,
-                                      Store all the remaining undo mxEvents into a temporary array,
-                                      clears the history, and readds the mxEvents into the undoManager history stack.
-                                    */
-                                    editor.execute('undo');
-
-                                    // Remove the last element from the history array.
-                                    undoManager.history.splice(-1, 1);
-
-                                    // storage[] -> temporary array
-                                    var storage = [];
-                                    for (i in undoManager.history) {
-                                        if (undoManager.history[i] != null) {
-                                            storage.push(undoManager.history[i])
-                                        }
-                                    }
-
-                                    // Clear the undoManager history, and reset the undoManager pointer to avoid any undo of null events.
-                                    undoManager.clear();
-
-                                    // Move the remaning mxEvents back into the undoManager history stack.
-                                    for (i in storage) {
-                                        if (storage[i] != null) {
-                                            undoManager.undoableEditHappened(storage[i]);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-
-                // Disables drag-and-drop into non-swimlanes.
-                graph.isValidDropTarget = function(cell, cells, evt) {
-                    return this.isSwimlane(cell);
-                };
-
-
-                // Disables drilling into non-swimlanes.
-                graph.isValidRoot = function(cell) {
-                    return this.isValidDropTarget(cell);
-                }
-
-                // Does not allow selection of locked cells
-                graph.isCellSelectable = function(cell) {
-                    return !this.isCellLocked(cell);
-                };
-
-                // Returns a shorter label if the cell is collapsed and no
-                // label for expanded groups
-                graph.getLabel = function(cell) {
-                    var tmp = mxGraph.prototype.getLabel.apply(this, arguments); // "supercall"
-
-                    if (this.isCellLocked(cell)) {
-                        // Returns an empty label but makes sure an HTML
-                        // element is created for the label (for event
-                        // processing wrt the parent label)
-                        return '';
-                    } else if (this.isCellCollapsed(cell)) {
-                        var index = tmp.indexOf('</h1>');
-
-                        if (index > 0) {
-                            tmp = tmp.substring(0, index + 5);
-                        }
-                    }
-
-                    return tmp;
-                }
-
-                // Disables HTML labels for swimlanes to avoid conflict
-                // for the event processing on the child cells. HTML
-                // labels consume events before underlying cells get the
-                // chance to process those events.
-                //
-                // NOTE: Use of HTML labels is only recommended if the specific
-                // features of such labels are required, such as special label
-                // styles or interactive form fields. Otherwise non-HTML labels
-                // should be used by not overidding the following function.
-                // See also: configureStylesheet.
-                graph.isHtmlLabel = function(cell) {
-                    return !this.isSwimlane(cell);
-                }
-
-                // To disable the folding icon, use the following code:
-                graph.isCellFoldable = function(cell) {
-                    return false;
+                  return null;
                 }
 
                 // Shows a "modal" window when double clicking a vertex.
@@ -552,159 +433,6 @@
                 });
 
 
-                /*
-                	@pooja, @jiteshjha
-					Create a custom rotate action for a selected cell.
-                */
-                editor.addAction('rotateCustom', function(editor, cell) {
-                    selectedCell = graph.getSelectionCell();
-                    if (selectedCell != null) {
-                        var cells = [];
-                        cells.push(selectedCell);
-                        for (var i = 0; i < selectedCell.getChildCount(); i++)
-                            cells.push(selectedCell.getChildAt(i));
-                        graph.getModel().beginUpdate();
-                        try {
-                            for (var i = 0; i < cells.length; i++) {
-                                var cell = cells[i];
-                                if (cell.isVertex() == true) {
-                                    var geo = graph.getCellGeometry(cell);
-
-                                    if (geo != null) {
-                                        // Rotates the size and position in the geometry
-                                        geo = geo.clone();
-                                        geo.x += geo.width / 2 - geo.height / 2;
-                                        geo.y += geo.height / 2 - geo.width / 2;
-                                        var tmp = geo.width;
-                                        geo.width = geo.height;
-                                        geo.height = tmp;
-                                        graph.getModel().setGeometry(cell, geo);
-                                        // Reads the current direction and advances by 90 degrees
-                                        var state = graph.view.getState(cell);
-
-                                        if (state != null) {
-                                            if (cell.isConnectable() == true) {
-                                                if (cell.value == "ExplicitOutputPort" || cell.value == "ImplicitOutputPort") {
-                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-                                                    var geoCell = cell.getGeometry();
-                                                    if (dir == 'east' || dir == 'west') {
-                                                        var temp = geoCell.x;
-                                                        geoCell.x = geoCell.y - 0.0625;
-                                                        geoCell.y = temp + 0.0625;
-                                                        cell.setGeometry(geoCell);
-                                                        if (dir == 'east')
-                                                            dir = 'south';
-                                                        else
-                                                            dir = 'north';
-                                                    } else if (dir == 'south' || dir == 'north') {
-
-                                                        geoCell.y = geoCell.x + 0.0625;
-                                                        if (dir == 'south') {
-                                                            dir = 'west';
-                                                            geoCell.x = 0 - 0.125;
-                                                        } else {
-                                                            dir = 'east';
-                                                            geoCell.x = 1;
-                                                        }
-                                                        cell.setGeometry(geoCell);
-                                                    }
-                                                } else if (cell.value == "ExplicitInputPort" || cell.value == "ImplicitInputPort") {
-                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-                                                    var geoCell = cell.getGeometry();
-                                                    if (dir == 'south' || dir == 'north') {
-                                                        geoCell.y = geoCell.x - 0.0625;
-                                                        if (dir == 'south') {
-                                                            dir = 'west';
-                                                            geoCell.x = 1 + 0.125;
-                                                        } else {
-                                                            dir = 'east';
-                                                            geoCell.x = 0;
-                                                        }
-                                                        cell.setGeometry(geoCell);
-                                                    } else if (dir == 'east' || dir == 'west') {
-                                                        geoCell = geoCell.clone();
-                                                        var temp = geoCell.x;
-                                                        geoCell.x = parseFloat(geoCell.y) + 0.0625;
-                                                        geoCell.y = temp - 0.0625;
-                                                        cell.setGeometry(geoCell);
-                                                        if (dir == 'east')
-                                                            dir = 'south';
-                                                        else
-                                                            dir = 'north';
-                                                    }
-                                                } else if (cell.value == 'CommandPort') {
-                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-                                                    var geoCell = cell.getGeometry();
-                                                    if (dir == 'south' || dir == 'north') {
-                                                        var temp = geoCell.x;
-                                                        geoCell.x = geoCell.y + 0.0625;
-                                                        geoCell.y = temp - 0.0625;
-                                                        cell.setGeometry(geoCell);
-                                                        if (dir == 'south')
-                                                            dir = 'west';
-                                                        else
-                                                            dir = 'east';
-                                                    } else if (dir == 'east' || dir == 'west') {
-                                                        geoCell.y = parseFloat(geoCell.x) - 0.0625;
-                                                        if (dir == 'east') {
-                                                            dir = 'south';
-                                                            geoCell.x = 0 - 0.0625;
-                                                        } else {
-                                                            dir = 'north';
-                                                            geoCell.x = 1 + 0.0625;
-                                                        }
-                                                        cell.setGeometry(geoCell);
-                                                    }
-                                                } else if (cell.value == 'ControlPort') {
-                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-                                                    var geoCell = cell.getGeometry();
-                                                    if (dir == 'south' || dir == 'north') {
-                                                        var temp = geoCell.x;
-                                                        geoCell.x = geoCell.y - 0.0625;
-                                                        geoCell.y = temp + 0.0625;
-                                                        cell.setGeometry(geoCell);
-                                                        if (dir == 'south')
-                                                            dir = 'west';
-                                                        else
-                                                            dir = 'east';
-                                                    } else if (dir == 'east' || dir == 'west') {
-                                                        geoCell.y = parseFloat(geoCell.x) + 0.0625;
-                                                        if (dir == 'east') {
-                                                            dir = 'south';
-
-                                                            geoCell.x = 1 + 0.0625;
-                                                        } else {
-                                                            dir = 'north';
-                                                            geoCell.x = 0 - 0.0625;
-                                                        }
-                                                        cell.setGeometry(geoCell);
-                                                    }
-                                                }
-                                            } else {
-                                                var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-
-                                                if (dir == 'east') {
-                                                    dir = 'south';
-                                                } else if (dir == 'south') {
-                                                    dir = 'west';
-                                                } else if (dir == 'west') {
-                                                    dir = 'north';
-                                                } else if (dir == 'north') {
-                                                    dir = 'east';
-                                                }
-                                            }
-                                            graph.setCellStyles(mxConstants.STYLE_DIRECTION, dir, [cell]);
-                                        }
-                                    }
-                                }
-                            }
-                        } finally {
-                            graph.getModel().endUpdate();
-                        }
-                    }
-                }, null, null, 'Ctrl+R');
-
-
                 // @jiteshjha, @pooja
                 /*
                    On selection and deletion of any block, 'deleteBlock'
@@ -767,8 +495,9 @@
 
                 toolbar.appendChild(spacer.cloneNode(true));
 
-                addToolbarButton(editor, toolbar, 'undoCustom', '', 'images/undo.png');
-                addToolbarButton(editor, toolbar, 'redoCustom', '', 'images/redo.png');
+                addToolbarButton(editor, toolbar, 'delete', '', 'images/delete2.png');
+                addToolbarButton(editor, toolbar, 'undo', '', 'images/undo.png');
+                addToolbarButton(editor, toolbar, 'redo', '', 'images/redo.png');
                 toolbar.appendChild(spacer.cloneNode(true));
 
                 addToolbarButton(editor, toolbar, 'show', 'Show', 'images/camera.png');
@@ -816,7 +545,7 @@
                     var node = enc.encode(diagRoot);
 
                     var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"+mxUtils.getPrettyXml(node);
-                    
+
                     textarea.value=str;
 
                     if (arguments[2] == null) {
@@ -860,7 +589,7 @@
                             Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
                         */
                         var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n"+mxUtils.getPrettyXml(resultDocument.documentElement);
-                        
+
                         textarea.value=str.replace(/\n\n/g,"\n");
                         showModalWindow(graph, 'Xcos', textarea, 410, 440);
                     }
@@ -1099,13 +828,13 @@
             var contextValue = handleContext("get");
 
             var displayValue = "";
-           
+
             /*
                 Maverick
                 Modified the for loop because only requirement was to
-                traverse the array of 'contextValue' and not all the 
+                traverse the array of 'contextValue' and not all the
                 elements of it.
-            */ 
+            */
             for (var i=0;i<contextValue.length;i++) {
                 displayValue += contextValue[i] + "\n";
             }
@@ -1248,7 +977,7 @@
                 cell.value = node;
                 /*
                     Maverick
-                    We have changed the value of the cell, but the change won't be reflected 
+                    We have changed the value of the cell, but the change won't be reflected
                     unless the graph is refreshed.
                 */
                 graph.refresh();
