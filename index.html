@@ -1360,24 +1360,35 @@
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
-            function getFontStyle(graph, cell, button, bit) {
+            /*
+              changeFontStyle function sets the style for given fontStyle and toggles with the active class
+              for "set" type, and toggles with the active class for "get" type.
+            */
+            function changeFontStyle(type, graph, cell, button, bit) {
               var style = graph.getModel().getStyle(cell);
               var trigger = document.getElementById(button);
               var styleObject = styleToObject(style);
               var previousValue = 1;
-              if ('fontStyle' in styleObject) {
+              if ('fontStyle' in styleObjesct) {
                   previousValue = styleObject['fontStyle'];
 
                   // To get a bit mask:
                   var mask = 1 << bit; // Get the 1st element
 
-                  // toggle the bit
-                  previousValue ^= mask;
+                  if(type == "get") {
+                    // toggle the bit
+                    previousValue ^= mask;
+                    trigger.classList.toggle(button);
+                    styleObject['fontStyle'] = previousValue;
+                    style = objectToStyle(styleObject);
+                    graph.getModel().setStyle(cell, style);
+                  }
+                  else if(type == "set") {
+                    if ((previousValue & mask) != 0) {
+                      trigger.classList.toggle(button);
+                    }
+                  }
               }
-              trigger.classList.toggle(button);
-              styleObject['fontStyle'] = previousValue;
-              style = objectToStyle(styleObject);
-              graph.getModel().setStyle(cell, style);
             }
 
             // Button - Bold
@@ -1387,7 +1398,7 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-              getFontStyle(graph, cell, 'boldButton', 0);
+              changeFontStyle("get", graph, cell, 'boldButton', 0);
             }
             myform.appendChild(btn);
 
@@ -1398,7 +1409,7 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-              getFontStyle(graph, cell, 'italicButton', 1);
+              changeFontStyle("get", graph, cell, 'italicButton', 1);
             }
             myform.appendChild(btn);
 
@@ -1409,7 +1420,7 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-              getFontStyle(graph, cell, 'underlineButton', 2);
+              changeFontStyle("get", graph, cell, 'underlineButton', 2);
             }
             myform.appendChild(btn);
 
@@ -1459,36 +1470,10 @@
               for the selected edge label, add the respective active class to that button.
             */
 
-            // setFontStyle(fontStyle) toggles with the active class for the given fontStyle.
-            // Possible values for fontStyle -> (boldButton, italicButton, underlineButton)
-            function setFontStyle(fontStyle) {
-              var trigger = document.getElementById(fontStyle);
-              trigger.classList.toggle(fontStyle);
-            }
-
-            var style = graph.getModel().getStyle(cell);
-            var styleObject = styleToObject(style);
-
             if('fontStyle' in styleObject) {
-              var previousValue = styleObject['fontStyle'];
-              var mask = 1 << 0;
-
-              //To test if a bit is set:
-              if ((previousValue & mask) != 0) {
-                setFontStyle('boldButton');
-              }
-
-              var mask = 1 << 1;
-              //To test if a bit is set:
-              if ((previousValue & mask) != 0) {
-                setFontStyle('italicButton');
-              }
-
-              //To test if a bit is set:
-              var mask = 1 << 2;
-              if ((previousValue & mask) != 0) {
-                setFontStyle('underlineButton');
-              }
+              changeFontStyle("set", graph, cell, 'boldButton', 0);
+              changeFontStyle("set", graph, cell, 'italicButton', 1);
+              changeFontStyle("set", graph, cell, 'underlineButton', 2);
             }
         };
         /*
