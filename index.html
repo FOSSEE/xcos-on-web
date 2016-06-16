@@ -501,13 +501,13 @@
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 // https://jgraph.github.io/mxgraph/docs/js-api/files/model/mxCell-js.html
                 // Uncomment this block to see XML tags work
-                graph.convertValueToString = function(cell)
+                /*graph.convertValueToString = function(cell)
                 {
                   if (mxUtils.isNode(cell.value))
                   {
                     return cell.getAttribute('label', '');
                   }
-                };
+                };*/
 
                 var cellLabelChanged = graph.cellLabelChanged;
                 graph.cellLabelChanged = function(cell, newValue, autoSize) {
