@@ -4,19 +4,6 @@
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
     <title>Xcos</title>
-    <style type="text/css" media="screen">
-        BODY {
-            font-family: Arial;
-        }
-
-        H1 {
-            font-size: 18px;
-        }
-
-        H2 {
-            font-size: 16px;
-        }
-    </style>
 
     <!-- Loads and initializes the library -->
     <script type="text/javascript" src="jquery/jquery-1.8.2.js"></script>
@@ -32,6 +19,7 @@
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="json2.js"></script>
     <script type="text/javascript">
+
         function main(container, outline, toolbar, sidebar, status) {
             // Checks if the browser is supported
             if (!mxClient.isBrowserSupported()) {
@@ -122,33 +110,34 @@
                 graph.model.getStyle = function(cell) {
                     var style = null;
                     if (cell != null) {
-
                         // Get style for the recently created mxCell.
                         style = mxGraphModel.prototype.getStyle.apply(this, arguments);
-
                         // If the mxCell is an edge and if it's a fully formed edge
                         if (this.isEdge(cell) && cell.source != null) {
                             var target = this.getTerminal(cell, false);
-
                             if (target != null) {
-
                                 /* cell.name attribute defines the link name
                                    so that it can be parsed in the XML during
                                    XSLT transformation.
                                 */
-
                                 var cellSource = cell.source;
-                                while (cellSource.isEdge() == true) {
-                                    cellSource = cellSource.source;
+                                while(cellSource.isEdge() == true) {
+                                  cellSource = cellSource.source;
                                 }
                                 if (cellSource.value == "ExplicitOutputPort" || cellSource.value == "ExplicitInputPort") {
-                                    style += ';' + 'ExplicitLink';
+                                    if(style == null) {
+                                      style = 'ExplicitLink' + ';';
+                                    }
                                     cell.name = "ExplicitLink";
                                 } else if (cellSource.value == "ImplicitOutputPort" || cellSource.value == "ImplicitInputPort") {
-                                    style += ';' + 'ImplicitLink';
+                                    if(style == null) {
+                                      style = 'ImplicitLink' + ';';
+                                    }
                                     cell.name = "ImplicitLink";
                                 } else if (cellSource.value == "CommandPort" || cellSource.value == "ControlPort") {
-                                    style += ';' + 'CommandControlLink';
+                                    if(style == null) {
+                                      style = 'CommandControlLink' + ';';
+                                    }
                                     cell.name = "CommandControlLink";
                                 }
                             }
@@ -174,15 +163,14 @@
                             var edgeformat = menu.addItem('Format', null, null);
 
                             menu.addItem('Border Color', 'images/draw-brush.png', function() {
-                                // @ToDo: Pooja: Functionality to be put.
                                 showColorWheel(graph, cell, 'edgeStrokeColor');
 
                             }, edgeformat);
                             menu.addItem('Text and Text Font', 'images/edit.png', function() {
-                                alert('Edit...'); // @ToDo: Pooja: Functionality to be put.
+                              showTextEditWindow(graph, cell);
                             }, edgeformat);
                             menu.addItem('Text Color', 'images/edit.png', function() {
-                                alert('Edit...'); // @ToDo: Pooja: Functionality to be put.
+                              showColorWheel(graph, cell, 'edgeTextColor');
                             }, edgeformat);
 
                         } else {
@@ -448,7 +436,9 @@
                             content.innerHTML = this.convertValueToString(cell);
                             showModalWindow(this, 'Properties', content, 400, 300);
                             */
-                            showPropertiesWindow(graph, cell);
+                            if(cell.isVertex() == true) {
+                              showPropertiesWindow(graph, cell);
+                            }
                         }
                     }
 
@@ -987,6 +977,57 @@
             }
         };
 
+        /*
+          @jiteshjha
+          styleToObject(style) converts style string into an object.
+          Format : First item in the object will be 'default: linkStyle',
+          and the rest of items will be of the style 'mxConstants:value'
+        */
+
+        function styleToObject(style) {
+
+          var defaultStyle = style.substring(0, style.indexOf(';'));
+          var styleObject = {
+            "default" : defaultStyle
+          };
+          var remainingStyle = style.substring(style.indexOf(';') + 1);
+
+          /*
+            remainingStyle is the string without the default style.
+            For every key:value pair in the string,
+            extract the key(string before '=') and the value
+            (string before ';'), set the key:value pair into styleObject
+            and remainingStyle is set to a string without the key:value pair.
+          */
+          while(remainingStyle.length > 0) {
+            var indexOfKey = remainingStyle.indexOf('=');
+            var key = remainingStyle.substring(0, indexOfKey);
+            remainingStyle = remainingStyle.substring(indexOfKey + 1);
+            var indexOfValue = remainingStyle.indexOf(';');
+            var value = remainingStyle.substring(0, indexOfValue);
+            styleObject[key] = value;
+            remainingStyle = remainingStyle.substring(indexOfValue + 1);
+          }
+
+          return styleObject;
+        }
+
+        /*
+          @jiteshjha
+          styleToObject(style) converts the object back to the style string.
+        */
+        function objectToStyle(object) {
+          var style = "";
+          for (var key in object) {
+            if(key.toString() == "default") {
+              style += object[key] + ';';
+            }
+            else {
+              style += (key + '=' + object[key] + ';');
+            }
+          }
+          return style;
+        }
 
         /*
             Maverick
@@ -1075,7 +1116,6 @@
 
             }
 
-            var wind = null;
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
 
@@ -1111,7 +1151,7 @@
 
             myform.appendChild(btn);
             content.appendChild(myform);
-            wind = showModalWindow(graph, 'Set Context', content, 450, 350);
+            var wind = showModalWindow(graph, 'Set Context', content, 450, 350);
         };
 
         function showPropertiesWindow(graph, cell) {
@@ -1189,7 +1229,7 @@
             btn.innerHTML = 'Submit';
             btn.type = "button";
             btn.name = "submit";
-            var wind = null;
+
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
                 var propertiesObject = {
@@ -1237,9 +1277,230 @@
             height = 135 + 26 * defaultProperties.length + 15;
 
             content.appendChild(myform);
-            wind = showModalWindow(graph, 'Properties', content, 450, height);
+            var wind = showModalWindow(graph, 'Properties', content, 450, height);
         };
 
+        /*
+          @jiteshjha
+          Creates a dialog box related to the edge label properties.
+          The properties implemented are : edge label, label fontStyle,
+          label fontSize, label fontStyle.
+        */
+
+
+        function showTextEditWindow(graph, cell) {
+              var fontFamilyList = {
+                "Arial" : 0,
+                "Dialog" : 1,
+                "Verdana" : 2,
+                "Times New Roman" : 3
+              }
+              var defaultProperties = {
+                  text: ["Text", "text"],
+                  fontFamily : ["Font Family", fontFamilyList],
+                  fontSize: ["fontSize", 20]
+              };
+
+            var style = graph.getModel().getStyle(cell);
+            var styleObject = styleToObject(style);
+            if ('fontSize' in styleObject) {
+                defaultProperties['fontSize'][1] = styleObject['fontSize'];
+            }
+            if (cell.value != "") {
+                defaultProperties['text'][1] = cell.value;
+            }
+
+            // Create basic structure for the form
+            var content = document.createElement('div');
+            content.setAttribute("id", "contentProperties");
+
+            // Heading of content
+            var heading = document.createElement('h2');
+            heading.innerHTML = "Text and Text Font";
+            heading.id = "headingProperties"
+            content.appendChild(heading);
+
+            // Add Form
+            var myform = document.createElement("form");
+            myform.method = "post";
+            myform.id = "formProperties";
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            for (var key in defaultProperties) {
+                if (defaultProperties.hasOwnProperty(key)) {
+
+                    // Input Title
+                    var fieldName = defaultProperties[key];
+                    var namelabel = document.createElement('label');
+                    namelabel.innerHTML = defaultProperties[key][0];
+                    myform.appendChild(namelabel);
+
+                    if(key == "fontFamily") {
+                      //Here we create a "select" element (a drop down list).
+                      var newList = document.createElement("select");
+                      newList.style.cssText = "float:right";
+                      newList.setAttribute("id", key.toString());
+                      var dropdownItems = defaultProperties[key][1];
+
+                      for(var item in dropdownItems) {
+                        if (dropdownItems.hasOwnProperty(item)) {
+                          option = document.createElement('option');
+                          option.value = item;
+                          option.text = item;
+                          option.setAttribute("id", item);
+                          newList.appendChild(option);
+                        }
+                      }
+
+                      var selectedFontFamily = 0;
+                      var styleObject = styleToObject(style);
+                      if ('fontFamily' in styleObject) {
+                          selectedFontFamily =  styleObject['fontFamily'];
+                      }
+                      newList.selectedIndex = dropdownItems[selectedFontFamily];
+                      myform.appendChild(newList);
+                    }
+                    else {
+                      var input = document.createElement("input");
+                      input.name = key;
+                      input.value = defaultProperties[key][1];
+                      input.setAttribute("id", key.toString());
+                      input.setAttribute("class", "fieldInput");
+                      myform.appendChild(input);
+                    }
+                    // Line break
+                    var linebreak = document.createElement('br');
+                    myform.appendChild(linebreak);
+
+                    // Line break
+                    var linebreak = document.createElement('br');
+                    myform.appendChild(linebreak);
+                }
+            }
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            /*
+              changeFontStyle function sets the style for given fontStyle and toggles with the active class
+              for "set" type, and toggles with the active class for "get" type.
+            */
+            function changeFontStyle(type, graph, cell, button, bit) {
+              var style = graph.getModel().getStyle(cell);
+              var trigger = document.getElementById(button);
+              var styleObject = styleToObject(style);
+              var previousValue = 1;
+              if ('fontStyle' in styleObjesct) {
+                  previousValue = styleObject['fontStyle'];
+
+                  // To get a bit mask:
+                  var mask = 1 << bit; // Get the 1st element
+
+                  if(type == "get") {
+                    // toggle the bit
+                    previousValue ^= mask;
+                    trigger.classList.toggle(button);
+                    styleObject['fontStyle'] = previousValue;
+                    style = objectToStyle(styleObject);
+                    graph.getModel().setStyle(cell, style);
+                  }
+                  else if(type == "set") {
+                    if ((previousValue & mask) != 0) {
+                      trigger.classList.toggle(button);
+                    }
+                  }
+              }
+            }
+
+            // Button - Bold
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Bold';
+            btn.setAttribute("id", "boldButton");
+            btn.type = "button";
+            btn.name = "submit";
+            btn.onclick = function() {
+              changeFontStyle("get", graph, cell, 'boldButton', 0);
+            }
+            myform.appendChild(btn);
+
+            // Button - Italics
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Italic';
+            btn.setAttribute("id", "italicButton");
+            btn.type = "button";
+            btn.name = "submit";
+            btn.onclick = function() {
+              changeFontStyle("get", graph, cell, 'italicButton', 1);
+            }
+            myform.appendChild(btn);
+
+            // Button - Underline
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Underline';
+            btn.setAttribute("id", "underlineButton");
+            btn.type = "button";
+            btn.name = "submit";
+            btn.onclick = function() {
+              changeFontStyle("get", graph, cell, 'underlineButton', 2);
+            }
+            myform.appendChild(btn);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Button - Submit
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Submit';
+            btn.type = "button";
+            btn.name = "submit";
+
+            // Executes when button 'btn' is clicked
+            btn.onclick = function() {
+                var propertiesObject = {
+                    id: cell.id
+                };
+                for (var key in defaultProperties) {
+                    if (defaultProperties.hasOwnProperty(key)) {
+                        propertiesObject[key] = document.getElementById(key.toString()).value;
+                    }
+                }
+                var style = graph.getModel().getStyle(cell);
+                var styleObject = styleToObject(style);
+                styleObject['fontSize'] = propertiesObject['fontSize'];
+                styleObject['fontFamily'] = propertiesObject['fontFamily'];
+                style = objectToStyle(styleObject);
+                graph.getModel().setStyle(cell, style);
+                graph.getModel().setValue(cell, propertiesObject['text']);
+                wind.destroy();
+            };
+            myform.appendChild(btn);
+
+            // Base heights without fields : 135 px
+            height = 135 + 26 * defaultProperties.length + 15;
+            content.appendChild(myform);
+            var wind = showModalWindow(graph, 'Text and Text font', content, 450, height);
+
+            /*
+              @jiteshjha
+              If any fontStyle(Bold, Italic, Underline) has already been implemented
+              for the selected edge label, add the respective active class to that button.
+            */
+
+            if('fontStyle' in styleObject) {
+              changeFontStyle("set", graph, cell, 'boldButton', 0);
+              changeFontStyle("set", graph, cell, 'italicButton', 1);
+              changeFontStyle("set", graph, cell, 'underlineButton', 2);
+            }
+        };
         /*
           @jiteshjha, @pooja
           showSetupWindow dialog box
@@ -1359,8 +1620,6 @@
             btn.type = "button";
             btn.name = "submit";
 
-            var wind = null;
-
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
                 var propertiesObject = {};
@@ -1413,30 +1672,25 @@
             height = 135 + 26 * defaultProperties.length + 15;
 
             content.appendChild(myform);
-            wind = showModalWindow(graph, 'Set Parameters', content, 450, height);
+            var wind = showModalWindow(graph, 'Set Parameters', content, 450, height);
         };
 
         function showColorWheel(graph, cell, selectProperty) {
-
             // Create basic structure for the form
             var content = document.createElement('div');
             content.setAttribute("id", "colorProperties");
-
             // Add Form
             var myform = document.createElement("form");
             myform.method = "";
             myform.setAttribute("id", "formProperties");
-
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
-
             // Input Title
             var fieldName = 'Color';
             var namelabel = document.createElement('label');
             namelabel.innerHTML = fieldName;
             myform.appendChild(namelabel);
-
             // Input
             var input = document.createElement("input");
             input.name = fieldName;
@@ -1444,15 +1698,12 @@
             input.style.cssText = 'float: right;';
             input.setAttribute("id", "color");
             myform.appendChild(input);
-
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
-
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
-
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
@@ -1462,54 +1713,36 @@
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
-
             // Button - Submit
             var btn = document.createElement("button");
             btn.innerHTML = 'Submit';
             btn.type = "button";
             btn.name = "submit";
             btn.style.cssText = 'margin-left: 75px';
-
-            var wind = null;
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
                 var input = document.getElementById('color').value;
+                var style = graph.getModel().getStyle(cell);
+                var styleObject = styleToObject(style);
                 if (selectProperty == "edgeStrokeColor") {
-                    var style = graph.getModel().getStyle(cell);
-                    if (style == null) {
-                        style = 'strokeColor=' + input;
-                        graph.getModel().setStyle(cell, style);
-                    } else {
-                        style = style.replace(/strokeColor=#[a-fA-F0-9]{6,}/g, "strokeColor=" + input);
-                        graph.getModel().setStyle(cell, style);
-                    }
+                    styleObject['strokeColor'] = input;
                 } else if (selectProperty == "bgColor") {
                     graph.container.style.backgroundColor = input;
                 } else if (selectProperty == "vertexStrokeColor") {
-                    var style = graph.getModel().getStyle(cell);
-                    if (style.indexOf('strokeColor') > -1) {
-                        style = style.replace(/strokeColor=#[a-fA-F0-9]{6,}/g, "strokeColor=" + input);
-                        graph.getModel().setStyle(cell, style);
-                    } else {
-                        style = style + ';' + 'strokeColor=' + input;
-                        graph.getModel().setStyle(cell, style);
-                    }
+                  styleObject['strokeColor'] = input;
                 } else if (selectProperty == "vertexFillColor") {
-                    var style = graph.getModel().getStyle(cell);
-                    if (style.indexOf('fillColor') > -1) {
-                        style = style.replace(/fillColor=#[a-fA-F0-9]{6,}/g, "fillColor=" + input);
-                        graph.getModel().setStyle(cell, style);
-                    } else {
-                        style = style + ';' + 'fillColor=' + input;
-                        graph.getModel().setStyle(cell, style);
-                    }
+                  styleObject['fillColor'] = input;
                 }
+                else if(selectProperty == "edgeTextColor") {
+                  styleObject['fontColor'] = input;
+                }
+                style = objectToStyle(styleObject);
+                graph.getModel().setStyle(cell, style);
                 wind.destroy();
             };
             myform.appendChild(btn);
-
             content.appendChild(myform);
-            wind = showModalWindow(graph, 'Diagram background...', content, 285, 340);
+            var wind = showModalWindow(graph, 'Diagram background...', content, 285, 340);
             // Invokes the farbtastic functionality
             $(document).ready(function() {
                 $('#picker').farbtastic('#color');
@@ -2082,8 +2315,6 @@
             var root = req.getDocumentElement();
             var dec = new mxCodec(root.ownerDocument);
             dec.decode(root, graph.stylesheet);
-            var style = graph.getStylesheet().getDefaultEdgeStyle();
-            style['edgeStyle'] = 'wireEdgeStyle';
         };
     </script>
     <!--
