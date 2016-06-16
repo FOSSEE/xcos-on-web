@@ -511,13 +511,13 @@
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 // https://jgraph.github.io/mxgraph/docs/js-api/files/model/mxCell-js.html
                 // Uncomment this block to see XML tags work
-                /*graph.convertValueToString = function(cell)
+                graph.convertValueToString = function(cell)
                 {
                   if (mxUtils.isNode(cell.value))
                   {
                     return cell.getAttribute('label', '');
                   }
-                };*/
+                };
 
                 var cellLabelChanged = graph.cellLabelChanged;
                 graph.cellLabelChanged = function(cell, newValue, autoSize) {
@@ -825,7 +825,9 @@
                     var enc = new mxCodec(mxUtils.createXmlDocument());
                     var node = enc.encode(diagRoot);
 
-                    textarea.value = mxUtils.getPrettyXml(node);
+                    var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"+mxUtils.getPrettyXml(node);
+                    
+                    textarea.value=str;
 
                     if (arguments[2] == null) {
                         showModalWindow(graph, 'XML', textarea, 410, 440);
@@ -867,7 +869,9 @@
                             Maverick
                             Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
                         */
-                        textarea.value = mxUtils.getPrettyXml(resultDocument.documentElement);
+                        var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n"+mxUtils.getPrettyXml(resultDocument.documentElement);
+                        
+                        textarea.value=str.replace(/\n\n/g,"\n");
                         showModalWindow(graph, 'Xcos', textarea, 410, 440);
                     }
                 });
@@ -991,6 +995,7 @@
             using this function.
         */
 
+
         function XcosDiagram(context, model, attributes) {
             this.context = context;
             this.model = model;
@@ -1050,10 +1055,17 @@
             btn.name = "submit";
             btn.setAttribute("id", "buttonSetContext");
 
-            var contextValue = context("get");
+            var contextValue = handleContext("get");
 
             var displayValue = "";
-            for (i in contextValue) {
+           
+            /*
+                Maverick
+                Modified the for loop because only requirement was to
+                traverse the array of 'contextValue' and not all the 
+                elements of it.
+            */ 
+            for (var i=0;i<contextValue.length;i++) {
                 displayValue += contextValue[i] + "\n";
             }
             if (contextValue != "") {
@@ -1092,7 +1104,8 @@
                 }
 
                 diagRoot.context = contextValues;
-                context("set", contextValues);
+                diagRoot.context.scilabClass="String[]";
+                handleContext("set", contextValues);
                 wind.destroy();
             };
 
@@ -1103,8 +1116,9 @@
 
         function showPropertiesWindow(graph, cell) {
 
-
-            var defaultProperties = {
+            var name = cell.getAttribute('blockElementName');
+            var defaultProperties = window[name]("get");
+            /*{
                 nbr_curves: ["Number of curves", 1],
                 clrs: ["color (>0) or mark (<0)", [1, 2, 3, 4, 5, 6, 7, 13]],
                 siz: ["line or mark size", [1, 1, 1, 1, 1, 1, 1, 1]],
@@ -1116,7 +1130,7 @@
                 vec_z: ["Zmin and Zmax", [-15, 15]],
                 param3ds: ["Alpha and Theta", [50, 280]],
                 N: ["Buffer size", 2]
-            };
+            };*/
 
             //var defaultProperties=window["CONST_m"]("get");
 
@@ -1187,6 +1201,17 @@
                         propertiesObject[key] = document.getElementById(key.toString()).value;
                     }
                 }
+                var details = window[name]("set",cell.value,propertiesObject);
+                var enc = new mxCodec();
+                var node = enc.encode(details);
+                node.setAttribute('label',getData(details.exprs)[0]);
+                cell.value = node;
+                /*
+                    Maverick
+                    We have changed the value of the cell, but the change won't be reflected 
+                    unless the graph is refreshed.
+                */
+                graph.refresh();
                 wind.destroy();
             };
             myform.appendChild(btn);
@@ -1601,7 +1626,7 @@
                         var details = ANDBLK("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        //node.setAttribute('label',label);
+                        node.setAttribute('label',label);
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
@@ -1610,7 +1635,7 @@
                         var details = CMSCOPE("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        //node.setAttribute('label',label);
+                        node.setAttribute('label',label);
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CMSCOPE');
@@ -1619,6 +1644,7 @@
                         var details = CONST_m("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
+                        node.setAttribute('label',"1");
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CONST_m');
@@ -1747,7 +1773,7 @@
                         var details = CFSCOPE("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        //node.setAttribute('label',label);
+                        node.setAttribute('label',label);
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
@@ -1758,7 +1784,7 @@
                         var details = CLOCK_c("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        //node.setAttribute('label',label);
+                        node.setAttribute('label',label);
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CLOCK_c');
@@ -1974,7 +2000,7 @@
                     var x = 0;
                     var y = (i / (leftNumber + 1)).toFixed(4);
                     var portType = leftArray[i - 1];
-                    createInputPort(graph, block, x, y, portType, 'left');
+                    createInputPort(graph, block, x, y, portType, 'left', i);
                 }
             }
             if (topNumber != 0) {
@@ -1982,7 +2008,7 @@
                     var x = (i / (topNumber + 1)).toFixed(4);
                     var y = 0;
                     var portType = topArray[i - 1];
-                    createInputPort(graph, block, x, y, portType, 'top');
+                    createInputPort(graph, block, x, y, portType, 'top', i);
                 }
             }
         };
@@ -1995,7 +2021,7 @@
                     var x = 1;
                     var y = (i / (rightNumber + 1)).toFixed(4);
                     var portType = rightArray[i - 1];
-                    createOutputPort(graph, block, x, y, portType, 'right');
+                    createOutputPort(graph, block, x, y, portType, 'right', i);
                 }
             }
             if (bottomNumber != 0) {
@@ -2003,12 +2029,12 @@
                     var x = (i / (bottomNumber + 1)).toFixed(4);
                     var y = 1;
                     var portType = bottomArray[i - 1];
-                    createOutputPort(graph, block, x, y, portType, 'bottom');
+                    createOutputPort(graph, block, x, y, portType, 'bottom', i);
                 }
             }
         };
 
-        function createInputPort(graph, block, x, y, portType, position) {
+        function createInputPort(graph, block, x, y, portType, position, ordering) {
             var port = null;
             if (portType == 'COMMAND') {
                 port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
@@ -2025,10 +2051,11 @@
                 } else if (position == 'left') {
                     port.geometry.offset = new mxPoint(-10, -6);
                 }
+                port.ordering=ordering;
             }
         };
 
-        function createOutputPort(graph, block, x, y, portType, position) {
+        function createOutputPort(graph, block, x, y, portType, position, ordering) {
             var port = null;
             if (portType == 'COMMAND') {
                 port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
@@ -2046,6 +2073,7 @@
                 if (position == 'right') {
                     port.geometry.offset = new mxPoint(0, -6);
                 }
+                port.ordering=ordering;
             }
         };
 
