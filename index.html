@@ -327,6 +327,38 @@
                     mxEvent.consume(evt);
                 };
 
+                // Returns a shorter label if the cell is collapsed and no
+                // label for expanded groups
+                graph.getLabel = function(cell) {
+                    var tmp = mxGraph.prototype.getLabel.apply(this, arguments); // "supercall"
+                    if (this.isCellLocked(cell)) {
+                        // Returns an empty label but makes sure an HTML
+                        // element is created for the label (for event
+                        // processing wrt the parent label)
+                        return '';
+                    } else if (this.isCellCollapsed(cell)) {
+                        var index = tmp.indexOf('</h1>');
+                        if (index > 0) {
+                            tmp = tmp.substring(0, index + 5);
+                        }
+                    }
+                    return tmp;
+                }
+
+                // Disables HTML labels for swimlanes to avoid conflict
+                // for the event processing on the child cells. HTML
+                // labels consume events before underlying cells get the
+                // chance to process those events.
+                //
+                // NOTE: Use of HTML labels is only recommended if the specific
+                // features of such labels are required, such as special label
+                // styles or interactive form fields. Otherwise non-HTML labels
+                // should be used by not overidding the following function.
+                // See also: configureStylesheet.
+                graph.isHtmlLabel = function(cell) {
+                    return !this.isSwimlane(cell);
+                }
+
                 graph.getTooltipForCell = function(cell) {
                      var text = null;
                      if (cell.isVertex() == true && cell.isConnectable() == false) {
