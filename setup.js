@@ -48,7 +48,7 @@ function setup() {
     }
 }
 
-function context() {
+function handleContext() {
     if (arguments[0] == "get") {
         return expressionArray;
     } else if (arguments[0] == "set") {

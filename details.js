@@ -90,10 +90,10 @@ function scicos_graphics() {
     this.id = options.id || new ScilabString([""]);
     this.in_implicit = options.in_implicit || new ScilabDouble();
     this.out_implicit = options.out_implicit || new ScilabDouble(); // There is only one!
-    this.in_style = options.in_style || new ScilabString();
-    this.out_style = options.out_style || new ScilabString();
-    this.in_label = options.in_label || new ScilabString();
-    this.out_label = options.out_label || new ScilabString();
+    this.in_style = options.in_style || new ScilabDouble();
+    this.out_style = options.out_style || new ScilabDouble();
+    this.in_label = options.in_label || new ScilabDouble();
+    this.out_label = options.out_label || new ScilabDouble();
     this.style = options.style || new ScilabString();
 
     return mlist(graphics_type, this.graphics, this.orig, this.sz, this.flip, this.theta, this.exprs, this.pin, this.pout, this.pein, this.peout, this.gr_i, this.id, this.in_implicit, this.out_implicit, this.in_style, this.out_style, this.in_label, this.out_label, this.style);
@@ -270,7 +270,7 @@ function ScilabDouble() {
         for (i = 0; i < this.height; i++) {
             for (j = 0; j < this.width; j++) {
                 this["data" + i + j] = new data();
-                this["data" + i + j].realPart = array[i][j];
+                this["data" + i + j].realPart = array[i][j].toFixed(1);
                 this["data" + i + j].line = i;
                 this["data" + i + j].column = j;
             }
@@ -299,6 +299,15 @@ function getData() {
         }
     }
     return dataArray;
+}
+
+function modelica(){
+	var model=[];
+    var inputs=[];
+    var outputs=[];
+    var parameters=list([],list());
+    var mo=tlist(["modelica","model","inputs","outputs","parameters"],model,inputs,outputs,parameters);
+	return mo;
 }
 
 function CONST_m() {
@@ -809,47 +818,47 @@ function BasicBlock() {
         if (options.model.sim instanceof Array) {
             this.simulationFunctionName = getData(options.model.sim[0])[0];
             var func_type;
-            switch (getData(options.model.sim[1])[0]) {
-                case -2:
+            switch (getData(options.model.sim[1])[0].toString()) {
+                case "-2.0":
                     func_type = "ESELECT";
                     break;
-                case -1:
+                case "-1.0":
                     func_type = "IFTHENELSE";
                     break;
-                case 1:
+                case "1.0":
                     func_type = "TYPE_1";
                     break;
-                case 2:
+                case "2.0":
                     func_type = "TYPE_2";
                     break;
-                case 3:
+                case "3.0":
                     func_type = "TYPE_3";
                     break;
-                case 4:
+                case "4.0":
                     func_type = "C_OR_FORTRAN";
                     break;
-                case 5:
+                case "5.0":
                     func_type = "SCILAB";
                     break;
-                case 99:
+                case "99.0":
                     func_type = "DEBUG";
                     break;
-                case 1001:
+                case "1001.0":
                     func_type = "DYNAMIC_FORTRAN_1";
                     break;
-                case 2001:
+                case "2001.0":
                     func_type = "DYNAMIC_C_1";
                     break;
-                case 2004:
+                case "2004.0":
                     func_type = "DYNAMIC_EXPLICIT_4";
                     break;
-                case 10001:
+                case "10001.0":
                     func_type = "OLDBLOCKS";
                     break;
-                case 10004:
+                case "10004.0":
                     func_type = "IMPLICIT_C_OR_FORTRAN";
                     break;
-                case 30004:
+                case "30004.0":
                     func_type = "MODELICA";
                     break;
             }
