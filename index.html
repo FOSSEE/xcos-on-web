@@ -256,12 +256,26 @@
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
                 editor.configure(config);
 
+                graph.isCellSelectable = function(cell)
+                {
+                  if(cell.getStyle() == 'Split') {
+                    return false;
+                  }
+                  return true;
+                };
+
+                graph.resizeCell = function(cell, bounds, recurse) {
+                  if(cell.getStyle() == 'Split') {
+                    return null;
+                  }
+
+                  return mxGraph.prototype.resizeCell.apply(this, arguments);
+                }
 
                 /*
                   For a new edge on the graph, check if that edge satisfies one of the port constraints.
                 */
                 graph.addEdge = function(edge, parent, source, target, index) {
-
                   var edgeSource = source;
 
                   // If the source of the edge is also an edge, find the port.
@@ -270,7 +284,7 @@
                   }
 
                   // If the edge violates any port constraints, return null.
-                  if(!((edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() &&
+                  /*if(!((edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() &&
                           target.getEdgeCount() == 0 && target.isVertex()) ||
                     (edgeSource.getEdgeCount() <= 1 && source.isEdge()))) {
                       alert("Port is already connected, please select an please select an unconnected port or a valid link");
@@ -292,11 +306,63 @@
                   }
                   else if(edgeSource.value == "ControlPort" && target.value != "CommandPort") {
                     alert("Control port must be connected to command port");
-                  }
-                  else {
+                  }*/
+                  //else {
                     // If the edge is legit, return the edge.
+                    if(source.isEdge() == true) {
+                      graph.getModel().beginUpdate();
+                			try
+                			{
+                        var edgeSource = source;
+                        while (edgeSource.isEdge() == true) {
+                            edgeSource = edgeSource.source;
+                        }
+
+                        var cell = graph.insertVertex(graph.getDefaultParent(), null, '', source.sourcePoint.x, source.sourcePoint.y, 5, 5,'Split', false);
+
+                        if (edgeSource.value == 'ExplicitOutputPort') {
+                          createPorts(graph, cell, ['EXPLICIT'], [], ['EXPLICIT'], ['EXPLICIT']);
+                          cell.name = 'SPLIT_f';
+                          graph.insertEdge(parent, null, '', cell.getChildAt(1), source.target,'ExplicitLink;');
+                          graph.insertEdge(parent, null, '', cell.getChildAt(2), target,'ExplicitLink;');
+                        }
+                        else if (edgeSource.value == 'ImplicitOutputPort') {
+                          createPorts(graph, cell, ['IMPLICIT'], [], ['IMPLICIT', 'IMPLICIT'], []);
+                          cell.name = 'IMPSPLIT_f';
+                          graph.insertEdge(parent, null, '', cell.getChildAt(1), source.target,'ImplicitLink;');
+                          graph.insertEdge(parent, null, '', cell.getChildAt(2), target,'ImplicitLink;');
+                        }
+                        else {
+                          createPorts(graph, cell, ['CONTROL'], [], ['COMMAND', 'COMMAND'], []);
+                          cell.name = 'CLKSPLIT_f';
+                          graph.insertEdge(parent, null, '', cell.getChildAt(1), source.target,'CommandControlLink;');
+                          graph.insertEdge(parent, null, '', cell.getChildAt(2), target,'CommandControlLink;');
+                        }
+                        console.log(cell);
+                        cell.getChildAt(0).setVisible(false);
+                        cell.getChildAt(1).setVisible(false);
+                        cell.getChildAt(2).setVisible(false);
+
+                        //graph.insertEdge(parent, null, '', source.source, cell.getChildAt(0));
+                        graph.getModel().setTerminal(source, cell.getChildAt(0), false);
+
+
+
+                        cell.getChildAt(0).setConnectable(false);
+                        cell.getChildAt(1).setConnectable(false);
+                        cell.getChildAt(2).setConnectable(false);
+                        cell.setConnectable(false);
+                        graph.refresh();
+                      }
+                      finally
+                      {
+                        graph.getModel().endUpdate();
+                      }
+                      return null;
+                    }
+
                     return mxGraph.prototype.addEdge.apply(this, arguments);
-                  }
+                  //}
 
                   return null;
                 }
@@ -2288,7 +2354,7 @@
             var hint = null;
 
             // Gets the initial connection from the source terminal or edge
-            if (source != null && state.view.graph.model.isEdge(source.cell)) {
+            if (source != null && (state.view.graph.model.isEdge(source.cell) || source.cell.name == 'SPLIT_f')) {
                 horizontal = state.style['sourceConstraint'] == 'horizontal';
             } else if (source != null) {
                 horizontal = source.style['portConstraint'] != 'vertical';
@@ -2303,6 +2369,12 @@
 
             // Adds the first point
             var pt = pts[0];
+
+            /* @jiteshjha splitBlock
+            */
+            if(source.cell != null && !('sourcePoint' in source.cell)) {
+              source.cell['sourcePoint'] = pt;
+            }
 
             if (pt == null && source != null) {
                 pt = new mxPoint(state.view.getRoutingCenterX(source), state.view.getRoutingCenterY(source));

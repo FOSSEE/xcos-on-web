@@ -28,6 +28,7 @@
     <add as="Affiche" extend="blockWithLabel"/>
     <add as="Split" extend="block">
         <add as="shape" value="rectangle"/>
+        <add as="perimeter" value="rectanglePerimeter"/>
         <add as="strokeColor" value="black"/>
         <add as="fillColor" value="orange"/>
         <remove as="gradientColor"/>
