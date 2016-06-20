@@ -11,6 +11,7 @@ function CLKOUTV_f () {
 	model.firing = new ScilabDouble();
 	model.dep_ut = new ScilabBoolean([false,false]);
 
-	var exprs = prt.toString();
+	var exprs = string(prt);
 	this.x=new standard_define(new ScilabDouble([1,1]),model,exprs," ");
+	return new  EventOutBlock (this.x)
 }

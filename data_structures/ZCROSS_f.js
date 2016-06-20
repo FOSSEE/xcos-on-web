@@ -6,7 +6,7 @@ function ZCROSS_f () {
 	var in = 1;
 
 	var model = scicos_model();
-	model.sim=list("zcross",1);
+	model.sim=list(new ScilabString(["zcross"]),new ScilabDouble([1]));
 	model.in=new ScilabDouble([in]);
 	model.nzcross=new ScilabDouble([in]);
 	model.evtout = new ScilabDouble([1]);
@@ -19,4 +19,5 @@ function ZCROSS_f () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

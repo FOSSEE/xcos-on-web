@@ -24,7 +24,7 @@ function CANIMXY3D () {
 	var nbr_curves = 1;
 
 	var model = scicos_model();
-	model.sim=list("canimxy3d",4);
+	model.sim=list(new ScilabString(["canimxy3d"]),new ScilabDouble([4]));
 	model.in = new ScilabDouble([1],[1],[1]);
 	model.evtin = new ScilabDouble([1]);
 	model.in2 = new ScilabDouble([1],[1],[1]);
@@ -35,8 +35,9 @@ function CANIMXY3D () {
 	model.firing = new ScilabDouble();
 	model.dep_ut = new ScilabBoolean([false,false]);
 
-	var exprs = [[nbr_curves.toString();strcat(clrs.toString()," ");strcat(siz.toString()," ");win.toString();"[]";"[]";strcat(vec_x.toString()," ");strcat(vec_y.toString()," ");strcat(vec_z.toString()," ");strcat(param3ds.toString()," ")],[N.toString()]];
+	var exprs = [[string(nbr_curves);strcat(string(clrs)," ");strcat(string(siz)," ");string(win);"[]";"[]";strcat(string(vec_x)," ");strcat(string(vec_y)," ");strcat(string(vec_z)," ");strcat(string(param3ds)," ")],[string(N)]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

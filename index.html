@@ -14,7 +14,7 @@
 
     <link rel="stylesheet" href="jquery/farbtastic.css" type="text/css" />
     <link rel="stylesheet" href="jquery/jquery-ui.css">
-
+    <script type="text/javascript" src="math.js"></script>
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="json2.js"></script>
@@ -1643,6 +1643,15 @@
                         node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CONST_m');
                         createPorts(graph, v1, [], [], ['EXPLICIT'], []);
+                    }  else if (name == 'AFFICH_m') {
+                        var details = AFFICH_m("define");
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
+                        node.setAttribute('label',label);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'AFFICH_m');
+                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], [], []);
                     } else if (name == 'CONVERT') {
                         v1 = graph.insertVertex(parent, null, 'Convert to', x, y, 80, 80, 'CONVERT');
                         createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
@@ -1868,7 +1877,12 @@
                     }
                     // MATHEMATICAL OPERATIONS
                     else if (name == 'ABS_VALUE') {
-                        v1 = graph.insertVertex(parent, null, 'ABS', x, y, 80, 80, 'ABS_VALUE');
+                        var details = ABS_VALUE("define");
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
+                        node.setAttribute('label',label);
+                        var temp = enc.encode(parent);
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ABS_VALUE');
                         createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
                     } else if (name == 'BIGSOM_f') {
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'BIGSOM_f');

@@ -28,7 +28,7 @@ function READC_f () {
 	var ipar = [[,length(fname)],[,_str2code(frmt)],[,ievt],[,N],[,M],[,swap],[offset],[,_str2code(fname)],[,tmask],[,outmask,]];
 
 	var model = scicos_model();
-	model.sim=list("readc",2);
+	model.sim=list(new ScilabString(["readc"]),new ScilabDouble([2]));
 	model.out=nout;
 	model.evtin = new ScilabDouble([1]);
 	model.evtout = new ScilabDouble();
@@ -38,8 +38,9 @@ function READC_f () {
 	model.firing = new ScilabDouble([-1]);
 	model.dep_ut = new ScilabBoolean([false,false]);
 
-	var exprs = [[,"[]"],[,sci2exp(outmask)],[,fname],[,frmt],[,M.toString()],[,N.toString()],[,offset.toString()],[swap.toString(),]];
+	var exprs = [[,"[]"],[,sci2exp(outmask)],[,fname],[,frmt],[,string(M)],[,string(N)],[,string(offset)],[string(swap),]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([4,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

@@ -20,10 +20,11 @@ function OpAmp () {
 	model.out=ones(size(mo.outputs,"*"),1);
 	model.rpar=Z;
 
-	var exprs = Z.toString();
+	var exprs = string(Z);
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,5]),model,exprs,gr_i);
 	this.x.graphics.in_implicit = new ScilabString(["I";"I"]);
 	this.x.graphics.out_implicit = new ScilabString(["I"]);
+	return new  BasicBlock (this.x)
 }

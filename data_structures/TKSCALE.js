@@ -8,7 +8,7 @@ function TKSCALE () {
 	var f = 1;
 
 	var model = scicos_model();
-	model.sim=list("tkscaleblk",5);
+	model.sim=list(new ScilabString(["tkscaleblk"]),new ScilabDouble([5]));
 	model.out = new ScilabDouble([1]);
 	model.evtin = new ScilabDouble([1]);
 	model.rpar = new ScilabDouble([a],[b],[f]);
@@ -19,4 +19,5 @@ function TKSCALE () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

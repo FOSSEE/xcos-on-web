@@ -1,7 +1,7 @@
 function SRFLIPFLOP () {
 
 
-	var scs_m = [scicos_diagram(version="scicos4.2",props=scicos_params(wpar=[600,450,0,0,600,450],Title=["SRFLIPFLOP"],tol=[0.0001;0.000001;1.000E-10;100001;0;0;0],tf=60,context=" ",void1=[],options=tlist(["scsopt","3D","Background","Link","ID","Cmap"],list(%t,33),[8,1],[1,5],list([5,1],[4,1]),[0.8,0.8,0.8]),void2=[],void3=[],doc=list()))];
+	var scs_m = scicos_diagram(version="scicos4.2",props=scicos_params(wpar=[600,450,0,0,600,450],Title=["SRFLIPFLOP"],tol=[0.0001;0.000001;1.000E-10;100001;0;0;0],tf=60,context=" ",void1=[],options=tlist(["scsopt","3D","Background","Link","ID","Cmap"],list(%t,33),[8,1],[1,5],list([5,1],[4,1]),[0.8,0.8,0.8]),void2=[],void3=[],doc=list()));
 	scs_m.objs.push(scicos_block(gui="LOGIC",graphics=scicos_graphics(orig=[298.504,201.45067],sz=[40,40],flip=%t,theta=0,exprs=["[0,1;1,0;1,0;1,0;0,1;0,1;0,0;0,0]";"1"],pin=[4;10;12],pout=[3;8],pein=[],peout=[],gr_i=[],id="",in_implicit=["E";"E";"E"],out_implicit=["E";"E"]),model=scicos_model(sim=list("logic",4),in=[1],[1],[1],in2=[1],[1],[1],intyp=[5],[5],[5],out=[1],[1],out2=[1],[1],outtyp=[5],[5],evtin=[],evtout=[],state=[],dstate=[],odstate=list(),rpar=[],ipar=[],opar=list(int8([0,1);
 	1,0;
 	1,0;
@@ -40,4 +40,5 @@ function SRFLIPFLOP () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,3]),model,[],gr_i);
+	return new  BasicBlock (this.x)
 }

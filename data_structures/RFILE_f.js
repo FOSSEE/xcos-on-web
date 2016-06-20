@@ -32,8 +32,9 @@ function RFILE_f () {
 	model.blocktype = new ScilabString(["d"]);
 	model.dep_ut = new ScilabBoolean([false,false]);
 
-	var exprs = [[sci2exp([])],[sci2exp(outmask)],[fname],[frmt],[N.toString()],[sci2exp(out)]];
+	var exprs = [[sci2exp([])],[sci2exp(outmask)],[fname],[frmt],[string(N)],[sci2exp(out)]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

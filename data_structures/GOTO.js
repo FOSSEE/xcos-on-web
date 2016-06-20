@@ -19,4 +19,5 @@ function GOTO () {
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,1]),model,exprs,gr_i);
 	this.x.graphics.id = new ScilabString(["Goto"]);
+	return new  BasicBlock (this.x)
 }

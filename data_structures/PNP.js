@@ -26,4 +26,5 @@ function PNP () {
 	var if P(i,3) = =1, then;
 	Typein = new ScilabDouble([Typein;,"E"]);
 	MI = new ScilabDouble([MI],[PortName(i)]);
+	return new  BasicBlock (this.x)
 }

@@ -8,7 +8,7 @@ function DEADBAND () {
 	var rpar = [[maxp],[minp]];
 
 	var model = scicos_model();
-	model.sim=list("deadband",4);
+	model.sim=list(new ScilabString(["deadband"]),new ScilabDouble([4]));
 	model.in = new ScilabDouble([1]);
 	model.nzcross = new ScilabDouble([2]);
 	model.nmode = new ScilabDouble([1]);
@@ -17,8 +17,9 @@ function DEADBAND () {
 	model.blocktype = new ScilabString(["c"]);
 	model.dep_ut = new ScilabBoolean([true,false]);
 
-	var exprs = [[maxp.toString()],[minp.toString()],[model.nmode.toString()]];
+	var exprs = [[string(maxp)],[string(minp)],[string(model.nmode)]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

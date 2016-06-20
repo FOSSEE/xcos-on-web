@@ -4,7 +4,7 @@ function CONST_m () {
 	var C = [1];
 
 	var model = scicos_model();
-	model.sim=list("cstblk4",4);
+	model.sim=list(new ScilabString(["cstblk4"]),new ScilabDouble([4]));
 	model.in = new ScilabDouble();
 	model.out=size(C,1);
 	model.in2 = new ScilabDouble();
@@ -18,4 +18,5 @@ function CONST_m () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

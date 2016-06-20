@@ -17,15 +17,16 @@ function VanneReglante () {
 	mo.model = new ScilabString(["VanneReglante"]);
 	mo.inputs = new ScilabString(["C1" "Ouv"]);
 	mo.outputs = new ScilabString(["C2"]);
-	mo.parameters=list(["Cvmax";"p_rho"],[Cvmax],[p_rho]);
+	mo.parameters=list(new ScilabString(["Cvmax";"p_rho"]),[Cvmax],[p_rho]);
 	model.equations=mo;
 	model.in=ones(size(mo.inputs,"*"),1);
 	model.out=ones(size(mo.outputs,"*"),1);
 
-	var exprs = [[Cvmax.toString()],[p_rho.toString()]];
+	var exprs = [[string(Cvmax)],[string(p_rho)]];
 
 	var gr_i = [];
-	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,list(gr_i,0));
+	this.x=standard_define([2,2],model,exprs,list(gr_i,0));
 	this.x.graphics.in_implicit = new ScilabString(["I";"E"]);
 	this.x.graphics.out_implicit = new ScilabString(["I"]);
+	return new  BasicBlock (this.x)
 }

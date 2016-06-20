@@ -14,8 +14,9 @@ function OUT_f () {
 	model.blocktype = new ScilabString(["c"]);
 	model.dep_ut = new ScilabBoolean([false,false]);
 
-	var exprs = prt.toString();
+	var exprs = string(prt);
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([1,1]),model,exprs,gr_i);
+	return new  ExplicitOutBlock (this.x)
 }

@@ -15,13 +15,14 @@ function Inductor () {
 	mo.model = new ScilabString(["Inductor"]);
 	mo.inputs = new ScilabString(["p"]);
 	mo.outputs = new ScilabString(["n"]);
-	mo.parameters=list("L",list(L));
+	mo.parameters=list(new ScilabString(["L"]),list(L));
 	model.equations=mo;
 
-	var exprs = L.toString();
+	var exprs = string(L);
 
 	var gr_i = [];
-	this.x=new standard_define(new ScilabDouble([2,0.9]),model,exprs,list(gr_i,0));
+	this.x=standard_define([2,0.9],model,exprs,list(gr_i,0));
 	this.x.graphics.in_implicit = new ScilabString(["I"]);
 	this.x.graphics.out_implicit = new ScilabString(["I"]);
+	return new  BasicBlock (this.x)
 }

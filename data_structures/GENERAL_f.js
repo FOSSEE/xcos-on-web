@@ -8,7 +8,7 @@ function GENERAL_f () {
 	var out = 1;
 
 	var model = scicos_model();
-	model.sim=list("zcross",1);
+	model.sim=list(new ScilabString(["zcross"]),new ScilabDouble([1]));
 	model.nzcross=new ScilabDouble([in]);
 	model.in=new ScilabDouble([in]);
 	model.evtout=ones(out,1);
@@ -21,4 +21,5 @@ function GENERAL_f () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,2]),model,exprs,,gr_i);
+	return new  BasicBlock (this.x)
 }

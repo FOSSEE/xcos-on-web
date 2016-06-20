@@ -18,7 +18,7 @@ function CSCOPE () {
 	var per = 30;
 
 	var model = scicos_model();
-	model.sim=list("cscope",4);
+	model.sim=list(new ScilabString(["cscope"]),new ScilabDouble([4]));
 	model.in = new ScilabDouble([-1]);
 	model.in2 = new ScilabDouble([1]);
 	model.evtin = new ScilabDouble([1]);
@@ -27,8 +27,9 @@ function CSCOPE () {
 	model.blocktype = new ScilabString(["c"]);
 	model.dep_ut = new ScilabBoolean([true,false]);
 
-	var exprs = [[strcat(clrs.toString()," ")],[win.toString()],[sci2exp([])],[sci2exp(wdim)],[ymin.toString()],[ymax.toString()],[per.toString()],[N.toString()],[0.toString()'],[emptystr()]];
+	var exprs = [[strcat(string(clrs)," ")],[string(win)],[sci2exp([])],[sci2exp(wdim)],[string(ymin)],[string(ymax)],[string(per)],[string(N)],[string(0)'],[emptystr()]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

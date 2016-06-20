@@ -68,4 +68,5 @@ function DELAY_f () {
 	this.x.graphics.in_style = new ScilabString([""]);
 	this.x.graphics.out_implicit = new ScilabString(["E"]);
 	this.x.graphics.out_style = new ScilabString([""]);
+	return new  BasicBlock (this.x)
 }

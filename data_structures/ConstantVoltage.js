@@ -14,13 +14,14 @@ function ConstantVoltage () {
 	mo.model = new ScilabString(["ConstantVoltage"]);
 	mo.inputs = new ScilabString(["p"]);
 	mo.outputs = new ScilabString(["n"]);
-	mo.parameters=list("V",list(V));
+	mo.parameters=list(new ScilabString(["V"]),list(V));
 	model.equations=mo;
 
-	var exprs = V.toString();
+	var exprs = string(V);
 
 	var gr_i = [];
-	this.x=new standard_define(new ScilabDouble([1.5,1.1]),model,exprs,list(gr_i,0));
+	this.x=standard_define([1.5,1.1],model,exprs,list(gr_i,0));
 	this.x.graphics.in_implicit = new ScilabString(["I"]);
 	this.x.graphics.out_implicit = new ScilabString(["I"]);
+	return new  BasicBlock (this.x)
 }

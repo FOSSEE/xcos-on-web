@@ -21,13 +21,14 @@ function Diode () {
 	mo.model = new ScilabString(["Diode"]);
 	mo.inputs = new ScilabString(["p"]);
 	mo.outputs = new ScilabString(["n"]);
-	mo.parameters=list(["Ids","Vt","Maxexp","R"],list(Ids,Vt,Maxexp,R));
+	mo.parameters=list(new ScilabString(["Ids"),new ScilabString(["Vt"]),new ScilabString(["Maxexp"]),new ScilabString(["R"]]),list(Ids,Vt,Maxexp,R));
 	model.equations=mo;
 
-	var exprs = [[Ids],[Vt],[Maxexp],[R].toString()];
+	var exprs = string([Ids],[Vt],[Maxexp],[R]);
 
 	var gr_i = [];
-	this.x=new standard_define(new ScilabDouble([2,1]),model,exprs,list(gr_i,0));
+	this.x=standard_define([2,1],model,exprs,list(gr_i,0));
 	this.x.graphics.in_implicit = new ScilabString(["I"]);
 	this.x.graphics.out_implicit = new ScilabString(["I"]);
+	return new  BasicBlock (this.x)
 }

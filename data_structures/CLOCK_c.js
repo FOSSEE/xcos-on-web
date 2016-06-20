@@ -44,4 +44,5 @@ function CLOCK_c () {
 	this.x.model.firing = new ScilabBoolean([false]);
 	this.x.model.dep_ut = new ScilabBoolean([false,false]);
 	this.x.model.rpar=diagram;
+	return new  BasicBlock (this.x)
 }

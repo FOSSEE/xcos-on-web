@@ -10,7 +10,7 @@ function DELAYV_f () {
 	var T = 1;
 
 	var model = scicos_model();
-	model.sim=list("delayv",1);
+	model.sim=list(new ScilabString(["delayv"]),new ScilabDouble([1]));
 	model.in = new ScilabDouble([nin],[1]);
 	model.out=new ScilabDouble([nin]);
 	model.evtin = new ScilabDouble([1]);
@@ -21,8 +21,9 @@ function DELAYV_f () {
 	model.firing = new ScilabDouble([0,-1]);
 	model.dep_ut = new ScilabBoolean([true,false]);
 
-	var exprs = [[nin....colon_operator(toString,);strcat(z0(1,$-1.toString()),";")],[T.toString()]];
+	var exprs = [[...colon_operator(string,nin);strcat(string(z0(1,$-1)),";")],[string(T)]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

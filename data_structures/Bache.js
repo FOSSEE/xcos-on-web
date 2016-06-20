@@ -35,15 +35,16 @@ function Bache () {
 	mo.model = new ScilabString(["Bache"]);
 	mo.inputs = new ScilabString(["Ce1" "Ce2"]);
 	mo.outputs = new ScilabString(["Cs1" "Cs2" "yNiveau"]);
-	mo.parameters=list(["Patm";"A";"ze1";"ze2";"zs1";"zs2";"z0";"T0";"p_rho"],[Patm],[A],[ze1],[ze2],[zs1],[zs2],[z0],[T0],[p_rho]);
+	mo.parameters=list(new ScilabString(["Patm";"A";"ze1";"ze2";"zs1";"zs2";"z0";"T0";"p_rho"]),[Patm],[A],[ze1],[ze2],[zs1],[zs2],[z0],[T0],[p_rho]);
 	model.equations=mo;
 	model.in=ones(size(mo.inputs,"*"),1);
 	model.out=ones(size(mo.outputs,"*"),1);
 
-	var exprs = [[Patm.toString()],[A.toString()],[ze1.toString()],[ze2.toString()],[zs1.toString()],[zs2.toString()],[z0.toString()],[T0.toString()],[p_rho.toString()]];
+	var exprs = [[string(Patm)],[string(A)],[string(ze1)],[string(ze2)],[string(zs1)],[string(zs2)],[string(z0)],[string(T0)],[string(p_rho)]];
 
 	var gr_i = [];
-	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,list(gr_i,0));
+	this.x=standard_define([2,2],model,exprs,list(gr_i,0));
 	this.x.graphics.in_implicit = new ScilabString(["I";"I"]);
 	this.x.graphics.out_implicit = new ScilabString(["I";"I";"E"]);
+	return new  BasicBlock (this.x)
 }

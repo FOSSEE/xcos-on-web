@@ -11,4 +11,5 @@ function CLKSOMV_f () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,[],gr_i);
+	return new  RoundBlock (this.x)
 }

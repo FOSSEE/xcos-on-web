@@ -22,8 +22,9 @@ function WFILE_f () {
 	model.blocktype = new ScilabString(["d"]);
 	model.dep_ut = new ScilabBoolean([true,false]);
 
-	var exprs = [[sci2exp(in)],[fname],[frmt],[N.toString()]];
+	var exprs = [[sci2exp(in)],[fname],[frmt],[string(N)]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

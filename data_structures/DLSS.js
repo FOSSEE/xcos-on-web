@@ -12,7 +12,7 @@ function DLSS () {
 	var D = 0;
 
 	var model = scicos_model();
-	model.sim=list("dsslti4",4);
+	model.sim=list(new ScilabString(["dsslti4"]),new ScilabDouble([4]));
 	model.in = new ScilabDouble([1]);
 	model.out = new ScilabDouble([1]);
 	model.evtin = new ScilabDouble([1]);
@@ -25,4 +25,5 @@ function DLSS () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([4,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

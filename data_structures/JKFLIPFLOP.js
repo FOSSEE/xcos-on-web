@@ -1,10 +1,10 @@
 function JKFLIPFLOP () {
 
 
-	var scs_m = [scicos_diagram(version="scicos4.2",props=scicos_params(wpar=[600,450,0,0,600,450],Title=["JKFLIPFLOP"],tol=[0.0001;0.000001;1.000E-10;100001;0;0;0],tf=60,context=" ",void1=[],options=tlist(["scsopt","3D","Background","Link","ID","Cmap"],list(%t,33),[8,1],[1,5],list([5,1],[4,1]),[0.8,0.8,0.8]),void2=[],void3=[],doc=list()))];
+	var scs_m = scicos_diagram(version="scicos4.2",props=scicos_params(wpar=[600,450,0,0,600,450],Title=["JKFLIPFLOP"],tol=[0.0001;0.000001;1.000E-10;100001;0;0;0],tf=60,context=" ",void1=[],options=tlist(["scsopt","3D","Background","Link","ID","Cmap"],list(%t,33),[8,1],[1,5],list([5,1],[4,1]),[0.8,0.8,0.8]),void2=[],void3=[],doc=list()));
 	scs_m.objs.push(scicos_block(gui="DOLLAR_m",graphics=scicos_graphics(orig=[299.96961,261.584],sz=[40,40],flip=%f,theta=0,exprs=["int8(0)";"1"],pin=7,pout=5,pein=[],peout=[],gr_i=[],id="",in_implicit="E",out_implicit="E"),model=scicos_model(sim=list("dollar4_m",4),in=1,in2=1,intyp=5,out=1,out2=1,outtyp=5,evtin=[],evtout=[],state=[],dstate=[],odstate=list(int8(0)),rpar=[],ipar=[],opar=list(),blocktype="d",firing=[],dep_ut=[%f,%f],label="",nzcross=0,nmode=0,equations=list()),doc=list()));
 
-	var scs_m_1 = [scicos_diagram(version="scicos4.2",props=scicos_params(wpar=[600,450,0,0,600,450],Title=["EDGE_TRIGGER","./"],tol=[0.0001;0.000001;1.000E-10;100001;0;0;0],tf=30,context=" ",void1=[],options=tlist(["scsopt","3D","Background","Link","ID","Cmap"],list(%t,33),[8,1],[1,5],list([5,1],[4,1]),[0.8,0.8,0.8]),void2=[],void3=[],doc=list()))];
+	var scs_m_1 = scicos_diagram(version="scicos4.2",props=scicos_params(wpar=[600,450,0,0,600,450],Title=["EDGE_TRIGGER","./"],tol=[0.0001;0.000001;1.000E-10;100001;0;0;0],tf=30,context=" ",void1=[],options=tlist(["scsopt","3D","Background","Link","ID","Cmap"],list(%t,33),[8,1],[1,5],list([5,1],[4,1]),[0.8,0.8,0.8]),void2=[],void3=[],doc=list()));
 	scs_m_1.objs.push(scicos_block(gui="EDGETRIGGER",graphics=scicos_graphics(orig=[288.58631,257.1131],sz=[60,40],flip=%t,theta=0,exprs="-1",pin=5,pout=3,pein=[],peout=[],gr_i=[],id="",in_implicit="E",out_implicit="E"),model=scicos_model(sim=list("edgetrig",4),in=1,in2=[],intyp=1,out=1,out2=[],outtyp=1,evtin=[],evtout=[],state=[],dstate=0,odstate=list(),rpar=[],ipar=-1,opar=list(),blocktype="c",firing=[],dep_ut=[%t,%f],label="",nzcross=1,nmode=0,equations=list()),doc=list()));
 	scs_m_1.objs.push(scicos_block(gui="IFTHEL_f",graphics=scicos_graphics(orig=[388.28869,247.1131],sz=[60,60],flip=%t,theta=0,exprs=["0";"0"],pin=3,pout=[],pein=[],peout=[7;0],gr_i=[],id="",in_implicit="E",out_implicit=[]),model=scicos_model(sim=list("ifthel",-1),in=1,in2=[],intyp=1,out=[],out2=1,outtyp=[],evtin=[],evtout=[1;1],state=[],dstate=[],odstate=list(),rpar=[],ipar=[],opar=list(),blocktype="l",firing=[-1,-1],dep_ut=[%t,%f],label="",nzcross=0,nmode=0,equations=list()),doc=list()));
 	scs_m_1.objs.push(scicos_link({xx: new ScilabDouble([357.15774),yy: new ScilabDouble([277.1131),thick: new ScilabDouble([0,0]),ct: new ScilabDouble([1,1]),from: new ScilabDouble([1,1,0]),to: new ScilabDouble([2,1,1])}));
@@ -49,4 +49,5 @@ function JKFLIPFLOP () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,3]),model,[],gr_i);
+	return new  BasicBlock (this.x)
 }

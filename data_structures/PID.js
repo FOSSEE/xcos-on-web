@@ -1,7 +1,7 @@
 function PID () {
 
 
-	var scs_m = [scicos_diagram(version="scicos4.2",props=scicos_params(wpar=[600,450,0,0,600,450],Title=["PID"],tol=[0.0001,0.000001,1.000E-10,100001,0,0],tf=100000,context=" ",void1=[],options=tlist(["scsopt","3D","Background","Link","ID","Cmap"],list(%t,33),[8,1],[1,5],list([5,1],[4,1]),[0.8,0.8,0.8]),void2=[],void3=[],doc=list()))];
+	var scs_m = scicos_diagram(version="scicos4.2",props=scicos_params(wpar=[600,450,0,0,600,450],Title=["PID"],tol=[0.0001,0.000001,1.000E-10,100001,0,0],tf=100000,context=" ",void1=[],options=tlist(["scsopt","3D","Background","Link","ID","Cmap"],list(%t,33),[8,1],[1,5],list([5,1],[4,1]),[0.8,0.8,0.8]),void2=[],void3=[],doc=list()));
 	scs_m.objs.push(scicos_block(gui="INTEGRAL_m",graphics=scicos_graphics(orig=[318.304,183.11733],sz=[40,40],flip=%t,theta=0,exprs=["0";"0";"0";"1";"-1"],pin=7,pout=9,pein=[],peout=[],gr_i=[],id="1/s",in_implicit="E",out_implicit="E"),model=scicos_model(sim=list("integral_func",4),in=1,in2=1,intyp=1,out=1,out2=1,outtyp=1,evtin=[],evtout=[],state=0,dstate=[],odstate=list(),rpar=[],ipar=[],opar=list(),blocktype="c",firing=[],dep_ut=[%f,%t],label="",nzcross=0,nmode=0,equations=list()),doc=list()));
 	scs_m.objs.push(scicos_block(gui="SUMMATION",graphics=scicos_graphics(orig=[387.97067,172.85067],sz=[40,60],flip=%t,theta=0,exprs=["1";"[1;1;1]"],pin=[10;9;11],pout=19,pein=[],peout=[],gr_i=[],id="",in_implicit=["E";"E";"E"],out_implicit="E"),model=scicos_model(sim=list("summation",4),in=[-1;-1;-1],in2=[-2;-2;-2],intyp=[1;1;1],out=-1,out2=-2,outtyp=1,evtin=[],evtout=[],state=[],dstate=[],odstate=list(),rpar=[],ipar=[1;1;1],opar=list(),blocktype="c",firing=[],dep_ut=[%t,%f],label="",nzcross=0,nmode=0,equations=list()),doc=list()));
 	scs_m.objs.push(scicos_block(gui="GAINBLK",graphics=scicos_graphics(orig=[321.23733,235.91733],sz=[40,40],flip=%t,theta=0,exprs="1",pin=17,pout=10,pein=[],peout=[],gr_i=[],id="",in_implicit="E",out_implicit="E"),model=scicos_model(sim=list("gainblk",4),in=-1,in2=-2,intyp=1,out=-1,out2=-2,outtyp=1,evtin=[],evtout=[],state=[],dstate=[],odstate=list(),rpar=1,ipar=[],opar=list(),blocktype="c",firing=[],dep_ut=[%t,%f],label="",nzcross=0,nmode=0,equations=list()),doc=list()));
@@ -39,4 +39,5 @@ function PID () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,[],gr_i);
+	return new  BasicBlock (this.x)
 }

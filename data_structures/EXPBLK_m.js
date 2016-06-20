@@ -6,7 +6,7 @@ function EXPBLK_m () {
 	var a = %e;
 
 	var model = scicos_model();
-	model.sim=list("expblk_m",4);
+	model.sim=list(new ScilabString(["expblk_m"]),new ScilabDouble([4]));
 	model.in = new ScilabDouble([-1]);
 	model.in2 = new ScilabDouble([-2]);
 	model.out = new ScilabDouble([-1]);
@@ -21,4 +21,5 @@ function EXPBLK_m () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

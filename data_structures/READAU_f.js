@@ -24,7 +24,7 @@ function READAU_f () {
 	var nout = size(outmask,"*");
 
 	var model = scicos_model();
-	model.sim=list("readau",2);
+	model.sim=list(new ScilabString(["readau"]),new ScilabDouble([2]));
 	model.out=nout;
 	model.evtin = new ScilabDouble([1]);
 	model.dstate = new ScilabDouble([1],[1],[lunit],[zeros(N*M,1)]);
@@ -32,8 +32,9 @@ function READAU_f () {
 	model.blocktype = new ScilabString(["d"]);
 	model.dep_ut = new ScilabBoolean([false,false]);
 
-	var exprs = [[fname],[N.toString()],[swap.toString()]];
+	var exprs = [[fname],[string(N)],[string(swap)]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([5,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

@@ -26,7 +26,7 @@ function CBLOCK () {
 	var ng = 0;
 
 	var model = scicos_model();
-	model.sim=list(" ",2004);
+	model.sim=list(new ScilabString([" "]),new ScilabDouble([2004]));
 	model.in=new ScilabDouble([in]);
 	model.out=new ScilabDouble([out]);
 	model.evtin=clkin;
@@ -40,8 +40,9 @@ function CBLOCK () {
 	model.dep_ut = new ScilabBoolean([true,false]);
 	model.nzcross=new ScilabDouble([ng]);
 
-	var label = [list([funam,"n",sci2exp(in),sci2exp(out),sci2exp(clkin),sci2exp(clkout),sci2exp(x0),sci2exp(0),sci2exp(z0),sci2exp(rpar),sci2exp(ipar),sci2exp(auto),"y","n"]',[])];
+	var label = list([funam,"n",sci2exp(in),sci2exp(out),sci2exp(clkin),sci2exp(clkout),sci2exp(x0),sci2exp(0),sci2exp(z0),sci2exp(rpar),sci2exp(ipar),sci2exp(auto),"y","n"]',[]);
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([4,2]),model,label,gr_i);
+	return new  BasicBlock (this.x)
 }

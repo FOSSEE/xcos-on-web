@@ -2,7 +2,7 @@ function NEGTOPOS_f () {
 
 
 	var model = scicos_model();
-	model.sim=list("zcross",1);
+	model.sim=list(new ScilabString(["zcross"]),new ScilabDouble([1]));
 	model.nzcross = new ScilabDouble([1]);
 	model.in = new ScilabDouble([1]);
 	model.evtout = new ScilabDouble([1]);
@@ -13,4 +13,5 @@ function NEGTOPOS_f () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,[],gr_i);
+	return new  BasicBlock (this.x)
 }

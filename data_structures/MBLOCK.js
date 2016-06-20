@@ -17,7 +17,7 @@ function MBLOCK () {
 
 	var nameF = "generic";
 
-	var exprs = [...colon_operator(tlist,["MBLOCK","in","intype","out","outtype","param","paramv","pprop","nameF","funtxt"],sci2exp(...in),sci2exp(...intype),sci2exp(...out),sci2exp(...outtype),sci2exp(...param),list(0.1.toString(),.0001.toString()),sci2exp(pprop(,)),nameF,[])];
+	var exprs = ...colon_operator(tlist,["MBLOCK","in","intype","out","outtype","param","paramv","pprop","nameF","funtxt"],sci2exp(...in),sci2exp(...intype),sci2exp(...out),sci2exp(...outtype),sci2exp(...param),list(string(0.1),string(.0001)),sci2exp(pprop(,)),nameF,[]);
 
 	var model = scicos_model();
 	model.blocktype = new ScilabString(["c"]);
@@ -26,4 +26,5 @@ function MBLOCK () {
 
 	var for i = 1:lstsize(paramv);
 	model.rpar = new ScilabDouble([model.rpar],[paramv(i)(:)]);
+	return new  BasicBlock (this.x)
 }

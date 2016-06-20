@@ -18,7 +18,7 @@ function BOUNCEXY () {
 	var ymax = 15;
 
 	var model = scicos_model();
-	model.sim=list("bouncexy",4);
+	model.sim=list(new ScilabString(["bouncexy"]),new ScilabDouble([4]));
 	model.in = new ScilabDouble([-1],[-1]);
 	model.in2 = new ScilabDouble([1],[1]);
 	model.intyp = new ScilabDouble([1],[1]);
@@ -39,4 +39,5 @@ function BOUNCEXY () {
 	var z(6*(i-1)+5) = 0.000;
 
 	var z(6*(i-1)+6) = 64.0*360.000;
+	return new  BasicBlock (this.x)
 }

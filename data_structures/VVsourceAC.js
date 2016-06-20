@@ -17,13 +17,14 @@ function VVsourceAC () {
 	mo.model = new ScilabString(["VVsourceAC"]);
 	mo.inputs = new ScilabString(["p","VA"]);
 	mo.outputs = new ScilabString(["n"]);
-	mo.parameters=list(["f"],list(FR));
+	mo.parameters=list(new ScilabString(["f"]),list(FR));
 	model.equations=mo;
 
-	var exprs = [FR.toString()];
+	var exprs = [string(FR)];
 
 	var gr_i = [];
-	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,list(gr_i,0));
+	this.x=standard_define([2,2],model,exprs,list(gr_i,0));
 	this.x.graphics.in_implicit = new ScilabString(["I","E"]);
 	this.x.graphics.out_implicit = new ScilabString(["I"]);
+	return new  BasicBlock (this.x)
 }

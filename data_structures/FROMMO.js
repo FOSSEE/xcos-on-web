@@ -23,4 +23,5 @@ function FROMMO () {
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,1]),model,exprs,gr_i);
 	this.x.graphics.out_implicit = new ScilabString(["I"]);
+	return new  BasicBlock (this.x)
 }

@@ -3,7 +3,7 @@ function PDE () {
 
 	var model = scicos_model();
 	model.state=zeros(10,1);
-	model.sim=list("PDE",0);
+	model.sim=list(new ScilabString(["PDE"]),new ScilabDouble([0]));
 	model.in = new ScilabDouble([1],[1],[1],[1],[1]);
 	model.out = new ScilabDouble([10],[0]);
 	model.blocktype = new ScilabString(["c"]);
@@ -15,4 +15,5 @@ function PDE () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,3]),model,label,gr_i);
+	return new  BasicBlock (this.x)
 }

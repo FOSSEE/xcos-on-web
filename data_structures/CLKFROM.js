@@ -12,4 +12,5 @@ function CLKFROM () {
 	var exprs = "A";
 	this.x=new standard_define(new ScilabDouble([2,1]),model,exprs," ");
 	this.x.graphics.id = new ScilabString(["From"]);
+	return new  BasicBlock (this.x)
 }

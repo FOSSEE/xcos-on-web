@@ -16,7 +16,7 @@ function WRITEAU_f () {
 	var N = 2;
 
 	var model = scicos_model();
-	model.sim=list("writeau",2);
+	model.sim=list(new ScilabString(["writeau"]),new ScilabDouble([2]));
 	model.in=new ScilabDouble([in]);
 	model.evtin = new ScilabDouble([1]);
 	model.dstate = new ScilabDouble([-1],[lunit],[zeros((nin+1)*N,1)]);
@@ -24,8 +24,9 @@ function WRITEAU_f () {
 	model.blocktype = new ScilabString(["d"]);
 	model.dep_ut = new ScilabBoolean([true,false]);
 
-	var exprs = [N.toString()swap.toString()];
+	var exprs = [string(N)string(swap)];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([4,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

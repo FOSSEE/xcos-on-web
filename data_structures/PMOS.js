@@ -28,15 +28,16 @@ function PMOS () {
 	mo.model = new ScilabString(["PMOS"]);
 	mo.outputs = new ScilabString(["D";"B";"S"]);
 	mo.inputs = new ScilabString(["G"]);
-	mo.parameters=list(["W";"L";"Beta";"Vt";"K2";"K5";"dW";"dL";"RDS"],[W],[L],[Beta],[Vt],[K2],[K5],[dW],[dL],[RDS]);
+	mo.parameters=list(new ScilabString(["W";"L";"Beta";"Vt";"K2";"K5";"dW";"dL";"RDS"]),[W],[L],[Beta],[Vt],[K2],[K5],[dW],[dL],[RDS]);
 	model.equations=mo;
 	model.in=ones(size(mo.inputs,"*"),1);
 	model.out=ones(size(mo.outputs,"*"),1);
 
-	var exprs = [[W.toString()],[L.toString()],[Beta.toString()],[Vt.toString()],[K2.toString()],[K5.toString()],[dW.toString()],[dL.toString()],[RDS.toString()]];
+	var exprs = [[string(W)],[string(L)],[string(Beta)],[string(Vt)],[string(K2)],[string(K5)],[string(dW)],[string(dL)],[string(RDS)]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
 	this.x.graphics.in_implicit = new ScilabString(["I"]);
 	this.x.graphics.out_implicit = new ScilabString(["I";"I";"I"]);
+	return new  BasicBlock (this.x)
 }

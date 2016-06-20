@@ -11,7 +11,7 @@ function EXPRESSION () {
 	var [%ok1,ipar,rpar,nz] = compile_expr(%foo);
 
 	var model = scicos_model();
-	model.sim=list("evaluate_expr",4);
+	model.sim=list(new ScilabString(["evaluate_expr"]),new ScilabDouble([4]));
 	model.in=new ScilabDouble([in]);
 	model.out=new ScilabDouble([out]);
 	model.rpar=rpar;
@@ -20,8 +20,9 @@ function EXPRESSION () {
 	model.nmode=nz;
 	model.dep_ut = new ScilabBoolean([true,false]);
 
-	var exprs = [size(in,"*".toString());txt;"1"];
+	var exprs = [string(size(in,"*"));txt;"1"];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([5,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

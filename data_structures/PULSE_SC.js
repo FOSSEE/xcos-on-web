@@ -1,10 +1,10 @@
 function PULSE_SC () {
 
 
-	var scs_m_1 = [scicos_diagram(version="scicos4.2",props=scicos_params(wpar=[-162.7581,435.54369,67.607292,416.67644,827,479,0,15,827,480,715,167,1.4],Title=["SuperBlock","/home/fady/Scicos_examples/"],tol=[0.0001;0.000001;1.000D-10;100001;0;0;0],tf=10,context=["E2=E+W/100*F"];
+	var scs_m_1 = scicos_diagram(version="scicos4.2",props=scicos_params(wpar=[-162.7581,435.54369,67.607292,416.67644,827,479,0,15,827,480,715,167,1.4],Title=["SuperBlock","/home/fady/Scicos_examples/"],tol=[0.0001;0.000001;1.000D-10;100001;0;0;0],tf=10,context=["E2=E+W/100*F";
 	"if (W<0 | W>100) then error(''Width must be between 0 and 100'');end";
 
-	var "if (E2 > = [F),then,error,(''Offset,must,be,lower,than,(frequency*(1-Width/100))'');,end"],void1=[],options=tlist(["scsopt","3D","Background","Link","ID","Cmap"],list(%t,33),[8,1],[1,5],list([5,1],[4,1]),[0.8,0.8,0.8]),void2=[],void3=[],doc=list()))];
+	var "if (E2 > = F),then,error,(''Offset,must,be,lower,than,(frequency*(1-Width/100))'');,end"],void1=[],options=tlist(["scsopt","3D","Background","Link","ID","Cmap"],list(%t,33),[8,1],[1,5],list([5,1],[4,1]),[0.8,0.8,0.8]),void2=[],void3=[],doc=list()));
 	scs_m_1.objs.push(scicos_block(gui="CONST_m",graphics=scicos_graphics(orig=[30.801202,158.91733],sz=[40,40],flip=%t,theta=0,exprs="A",pin=[],pout=5,pein=[],peout=[],gr_i=[],id="",in_implicit=[],out_implicit="E"),model=scicos_model(sim=list("cstblk4_m",4),in=[],in2=[],intyp=1,out=1,out2=1,outtyp=1,evtin=[],evtout=[],state=[],dstate=[],odstate=list(),rpar=[],ipar=[],opar=list(1),blocktype="d",firing=[],dep_ut=[%f,%f],label="",nzcross=0,nmode=0,equations=list()),doc=list()));
 	scs_m_1.objs.push(scicos_block(gui="Ground_g",graphics=scicos_graphics(orig=[31.534535,215.384],sz=[40,40],flip=%t,theta=0,exprs=[],pin=[],pout=4,pein=[],peout=[],gr_i=[],id="",in_implicit=[],out_implicit="E"),model=scicos_model(sim=list("cstblk4_m",4),in=[],in2=[],intyp=1,out=1,out2=1,outtyp=-1,evtin=[],evtout=[],state=[],dstate=[],odstate=list(),rpar=[],ipar=[],opar=list(0),blocktype="d",firing=[],dep_ut=[%f,%f],label="",nzcross=0,nmode=0,equations=list()),doc=list()));
 	scs_m_1.objs.push(scicos_block(gui="SELECT_m",graphics=scicos_graphics(orig=[106.00652,186.09381],sz=[40,40],flip=%t,theta=0,exprs=["-1";"2";"1"],pin=[4;5],pout=11,pein=[9;8],peout=[],gr_i=[],id="",in_implicit=["E";"E"],out_implicit="E"),model=scicos_model(sim=list("selector_m",4),in=[-1;-1],in2=[-2;-2],intyp=[-1;-1],out=-1,out2=-2,outtyp=-1,evtin=[1;1],evtout=[],state=[],dstate=1,odstate=list(),rpar=[],ipar=[],opar=list(),blocktype="c",firing=[],dep_ut=[%t,%f],label="",nzcross=0,nmode=0,equations=list()),doc=list()));
@@ -53,4 +53,5 @@ function PULSE_SC () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

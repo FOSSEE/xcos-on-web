@@ -7,7 +7,7 @@ function DOLLAR_f () {
 
 	var in = 1;
 
-	var exprs = [[z],[inh].toString()];
+	var exprs = string([z],[inh]);
 
 	var model = scicos_model();
 	model.sim = new ScilabString(["dollar"]);
@@ -20,4 +20,5 @@ function DOLLAR_f () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }

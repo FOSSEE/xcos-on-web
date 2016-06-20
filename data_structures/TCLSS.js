@@ -1,7 +1,7 @@
 function TCLSS () {
 
 
-	var x0 = [0],[A=0],[B=1],[C=1],[D=0];
+	var x0 = 0],[A=0],[B=1],[C=1],[D=0;
 
 	var in = 1;
 
@@ -10,7 +10,7 @@ function TCLSS () {
 	var out = 1;
 
 	var model = scicos_model();
-	model.sim=list("tcslti4",4);
+	model.sim=list(new ScilabString(["tcslti4"]),new ScilabDouble([4]));
 	model.in = new ScilabDouble([in],[nx]);
 	model.out=new ScilabDouble([out]);
 	model.evtin = new ScilabDouble([1]);
@@ -23,4 +23,5 @@ function TCLSS () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,2]),model,exprs,gr_i);
+	return new  BasicBlock (this.x)
 }
