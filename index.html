@@ -1743,7 +1743,14 @@
                     }
                     // DISCRETE
                     else if (name == 'AUTOMAT') {
-                        v1 = graph.insertVertex(parent, null, 'Automaton<BR>nM=2, nX=1', x, y, 80, 80, 'AUTOMAT');
+                        var details = AUTOMAT();
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
+                        node.setAttribute('label',label);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
+
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'AUTOMAT');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], ['COMMAND']);
                     } else if (name == 'DELAY_f') {
                         v1 = graph.insertVertex(parent, null, 'Delay', x, y, 80, 80, 'DELAYV_f');
