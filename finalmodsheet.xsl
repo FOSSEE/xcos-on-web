@@ -7,14 +7,103 @@ Authors: Maverick & Karma
 <!-- 
 NOTES:
 Look for TAG:Break1!!!
+         TAG:Break2!!!
 -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-    <xsl:output method="xml" indent="no"/>
+    <xsl:output method="xml" indent="no" />
     <xsl:template match="/">
+        <xsl:apply-templates />
+    </xsl:template>
+    <xsl:template name="XcosDiagram" match="XcosDiagram">
         <xsl:element name="XcosDiagram">
+            <!-- <xsl:if test="@background">
+            <xsl:attribute name="background">
+            <xsl:value-of select="@background"/>
+            </xsl:attribute>
+            </xsl:if> -->
             <xsl:attribute name="background">-1</xsl:attribute>
-            <xsl:attribute name="title">Maverick XSL</xsl:attribute>
+            <xsl:if test="@debugLevel">
+                <xsl:attribute name="debugLevel">
+                    <xsl:value-of select="@debugLevel" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@finalIntegrationTime">
+                <xsl:attribute name="finalIntegrationTime">
+                    <xsl:value-of select="@finalIntegrationTime" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@gridEnabled">
+                <xsl:attribute name="gridEnabled">
+                    <xsl:value-of select="@gridEnabled" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@integratorAbsoluteTolerance">
+                <xsl:attribute name="integratorAbsoluteTolerance">
+                    <xsl:value-of select="@integratorAbsoluteTolerance" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@integratorRelativeTolerance">
+                <xsl:attribute name="integratorRelativeTolerance">
+                    <xsl:value-of select="@integratorRelativeTolerance" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@maxIntegrationTimeInterval">
+                <xsl:attribute name="maxIntegrationTimeInterval">
+                    <xsl:value-of select="@maxIntegrationTimeInterval" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@maxIntegrationTimeinterval">
+                <xsl:attribute name="maxIntegrationTimeinterval">
+                    <xsl:value-of select="@maxIntegrationTimeinterval" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@maximumStepSize">
+                <xsl:attribute name="maximumStepSize">
+                    <xsl:value-of select="@maximumStepSize" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@modified">
+                <xsl:attribute name="modified">
+                    <xsl:value-of select="@modified" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@opened">
+                <xsl:attribute name="opened">
+                    <xsl:value-of select="@opened" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@realTimeScaling">
+                <xsl:attribute name="realTimeScaling">
+                    <xsl:value-of select="@realTimeScaling" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@savedFile">
+                <xsl:attribute name="savedFile">
+                    <xsl:value-of select="@savedFile" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@solver">
+                <xsl:attribute name="solver">
+                    <xsl:value-of select="@solver" />
+                </xsl:attribute>
+            </xsl:if>
+            <!-- <xsl:if test="@title">
+            <xsl:attribute name="title">
+            <xsl:value-of select="@title"/>
+            </xsl:attribute>
+            </xsl:if> -->
+            <xsl:attribute name="title">MavXcos</xsl:attribute>
+            <xsl:if test="@toleranceOnTime">
+                <xsl:attribute name="toleranceOnTime">
+                    <xsl:value-of select="@toleranceOnTime" />
+                </xsl:attribute>
+            </xsl:if>
             <xsl:apply-templates />
+            <xsl:element name="mxCell">
+                <xsl:attribute name="id">1</xsl:attribute>
+                <xsl:attribute name="parent">0</xsl:attribute>
+                <xsl:attribute name="as">defaultParent</xsl:attribute>
+            </xsl:element>
         </xsl:element>
     </xsl:template>
     <xsl:template match="root">
@@ -49,17 +138,30 @@ Look for TAG:Break1!!!
                         <xsl:call-template name="CommandPort" />
                     </xsl:when>
                     <xsl:otherwise>
-                    <!-- Maverick -->
-                    <!-- TAG:Break1 
-					 This line has been commented because Javascript was having
-					 some problem with the function call. 
+                        <!-- Maverick -->
+                        <!-- TAG:Break1 
+                             This line has been commented because Javascript was having
+                             some problem with the function call. 
 
-					 Commenting doesn't bring any change to the result now, but
-					 may cause some problems in the future. 
-    				-->
-                    <!-- <xsl:apply-templates select="name(*[1])"/> -->
-                    <xsl:apply-templates/>
+                             Commenting doesn't bring any change to the result now, but
+                             may cause some problems in the future. 
+                        -->
+                        <!-- <xsl:apply-templates select="name(*[1])"/> -->
+                        <xsl:apply-templates />
                     </xsl:otherwise>
+                </xsl:choose>
+            </xsl:when>
+            <xsl:when test="@name">
+                <xsl:choose>
+                    <xsl:when test="@name='ExplicitLink'">
+                        <xsl:call-template name="ExplicitLink" />
+                    </xsl:when>
+                    <xsl:when test="@name='ImplicitLink'">
+                        <xsl:call-template name="ImplicitLink" />
+                    </xsl:when>
+                    <xsl:when test="@name='CommandControlLink'">
+                        <xsl:call-template name="CommandControlLink" />
+                    </xsl:when>
                 </xsl:choose>
             </xsl:when>
             <xsl:otherwise>
@@ -82,17 +184,23 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@scilabClass" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@varName">
+            <!-- <xsl:if test="@varName">
                 <xsl:attribute name="varName">
                     <xsl:value-of select="@varName" />
                 </xsl:attribute>
-            </xsl:if>
+            </xsl:if> -->
             <xsl:apply-templates />
         </xsl:element>
     </xsl:template>
+
+    <!-- Maverick -->
+    <!-- TAG:Break2 
+         The template handles the 'as' attribute rather loosely and demands
+         proper handling.
+    -->
     <xsl:template name="Array" match="Array">
         <xsl:element name="Array">
-            <xsl:if test="name(..)='BasicBlock'">
+            <xsl:if test="name(..)='BasicBlock' or @as='context'">
                 <xsl:if test="@as">
                     <xsl:attribute name="as">
                         <xsl:value-of select="@as" />
@@ -300,9 +408,19 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@id" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@style">
-                <xsl:attribute name="style">
-                    <xsl:value-of select="@style" />
+            <xsl:if test="@parent">
+                <xsl:attribute name="parent">
+                    <xsl:value-of select="@parent" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@source">
+                <xsl:attribute name="source">
+                    <xsl:value-of select="@source" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@target">
+                <xsl:attribute name="target">
+                    <xsl:value-of select="@target" />
                 </xsl:attribute>
             </xsl:if>
             <xsl:apply-templates />
@@ -550,14 +668,19 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@id" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@style">
-                <xsl:attribute name="style">
-                    <xsl:value-of select="@style" />
+            <xsl:if test="@parent">
+                <xsl:attribute name="parent">
+                    <xsl:value-of select="@parent" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@value">
-                <xsl:attribute name="value">
-                    <xsl:value-of select="@value" />
+            <xsl:if test="@source">
+                <xsl:attribute name="source">
+                    <xsl:value-of select="@source" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@target">
+                <xsl:attribute name="target">
+                    <xsl:value-of select="@target" />
                 </xsl:attribute>
             </xsl:if>
             <xsl:apply-templates />
@@ -790,14 +913,19 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@id" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@style">
-                <xsl:attribute name="style">
-                    <xsl:value-of select="@style" />
+            <xsl:if test="@parent">
+                <xsl:attribute name="parent">
+                    <xsl:value-of select="@parent" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@value">
-                <xsl:attribute name="value">
-                    <xsl:value-of select="@value" />
+            <xsl:if test="@source">
+                <xsl:attribute name="source">
+                    <xsl:value-of select="@source" />
+                </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@target">
+                <xsl:attribute name="target">
+                    <xsl:value-of select="@target" />
                 </xsl:attribute>
             </xsl:if>
             <xsl:apply-templates />
@@ -1346,60 +1474,60 @@ Look for TAG:Break1!!!
         </xsl:element>
     </xsl:template>
     <!--  <xsl:template name="mxCell" match="mxCell">
-			<xsl:element name="mxCell">
-			
+            <xsl:element name="mxCell">
+            
 
-			<xsl:if test="name(..)='BasicBlock'">
-			<xsl:if test="@as">
-			<xsl:attribute name="as">
-			<xsl:value-of select="@as"/>
-			</xsl:attribute>
-			</xsl:if>
-				</xsl:if>
+            <xsl:if test="name(..)='BasicBlock'">
+            <xsl:if test="@as">
+            <xsl:attribute name="as">
+            <xsl:value-of select="@as"/>
+            </xsl:attribute>
+            </xsl:if>
+                </xsl:if>
 
-			<xsl:if test="@connectable">
-			<xsl:attribute name="connectable">
-			<xsl:value-of select="@connectable"/>
-			</xsl:attribute>
-			</xsl:if>
-			<xsl:if test="@edge">
-			<xsl:attribute name="edge">
-			<xsl:value-of select="@edge"/>
-			</xsl:attribute>
-			</xsl:if>
-			<xsl:if test="@id">
-			<xsl:attribute name="id">
-			<xsl:value-of select="@id"/>
-			</xsl:attribute>
-			</xsl:if>
-			<xsl:if test="@parent">
-			<xsl:attribute name="parent">
-			<xsl:value-of select="@parent"/>
-			</xsl:attribute>
-			</xsl:if>
-			<xsl:if test="@source">
-			<xsl:attribute name="source">
-			<xsl:value-of select="@source"/>
-			</xsl:attribute>
-			</xsl:if>
-			<xsl:if test="@style">
-			<xsl:attribute name="style">
-			<xsl:value-of select="@style"/>
-			</xsl:attribute>
-			</xsl:if>
-			<xsl:if test="@value">
-			<xsl:attribute name="value">
-			<xsl:value-of select="@value"/>
-			</xsl:attribute>
-			</xsl:if>
-			<xsl:if test="@vertex">
-			<xsl:attribute name="vertex">
-			<xsl:value-of select="@vertex"/>
-			</xsl:attribute>
-			</xsl:if>
-			<xsl:apply-templates/>
-			</xsl:element>
-	</xsl:template> -->
+            <xsl:if test="@connectable">
+            <xsl:attribute name="connectable">
+            <xsl:value-of select="@connectable"/>
+            </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@edge">
+            <xsl:attribute name="edge">
+            <xsl:value-of select="@edge"/>
+            </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@id">
+            <xsl:attribute name="id">
+            <xsl:value-of select="@id"/>
+            </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@parent">
+            <xsl:attribute name="parent">
+            <xsl:value-of select="@parent"/>
+            </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@source">
+            <xsl:attribute name="source">
+            <xsl:value-of select="@source"/>
+            </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@style">
+            <xsl:attribute name="style">
+            <xsl:value-of select="@style"/>
+            </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@value">
+            <xsl:attribute name="value">
+            <xsl:value-of select="@value"/>
+            </xsl:attribute>
+            </xsl:if>
+            <xsl:if test="@vertex">
+            <xsl:attribute name="vertex">
+            <xsl:value-of select="@vertex"/>
+            </xsl:attribute>
+            </xsl:if>
+            <xsl:apply-templates/>
+            </xsl:element>
+    </xsl:template> -->
     <xsl:template name="mxPoint" match="mxPoint">
         <xsl:element name="mxPoint">
             <xsl:if test="@as">
@@ -1538,11 +1666,12 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@connectedLinkId" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@dataType">
+            <!-- <xsl:if test="@dataType">
                 <xsl:attribute name="dataType">
                     <xsl:value-of select="@dataType" />
                 </xsl:attribute>
-            </xsl:if>
+            </xsl:if> -->
+            <xsl:attribute name="dataType">UNKNOW_TYPE</xsl:attribute>
             <xsl:if test="@id">
                 <xsl:attribute name="id">
                     <xsl:value-of select="@id" />
@@ -1563,11 +1692,12 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@style" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@value">
+            <!-- <xsl:if test="@value">
                 <xsl:attribute name="value">
                     <xsl:value-of select="@value" />
                 </xsl:attribute>
-            </xsl:if>
+            </xsl:if> -->
+            
             <xsl:if test="@visbile">
                 <xsl:attribute name="visbile">
                     <xsl:value-of select="@visbile" />
@@ -1640,11 +1770,16 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@dataLines" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@dataType">
-                <xsl:attribute name="dataType">
-                    <xsl:value-of select="@dataType" />
-                </xsl:attribute>
-            </xsl:if>
+            <xsl:choose>
+                <xsl:when test="@dataType">
+                    <xsl:attribute name="dataType">
+                        <xsl:value-of select="@dataType" />
+                    </xsl:attribute>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:attribute name="dataType">REAL_MATRIX</xsl:attribute>
+                </xsl:otherwise>
+            </xsl:choose>
             <xsl:if test="@id">
                 <xsl:attribute name="id">
                     <xsl:value-of select="@id" />
@@ -1665,11 +1800,11 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@style" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@value">
+            <!-- <xsl:if test="@value">
                 <xsl:attribute name="value">
                     <xsl:value-of select="@value" />
                 </xsl:attribute>
-            </xsl:if>
+            </xsl:if> -->
             <xsl:if test="@visible">
                 <xsl:attribute name="visible">
                     <xsl:value-of select="@visible" />
@@ -1707,11 +1842,16 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@dataLines" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@dataType">
-                <xsl:attribute name="dataType">
-                    <xsl:value-of select="@dataType" />
-                </xsl:attribute>
-            </xsl:if>
+            <xsl:choose>
+                <xsl:when test="@dataType">
+                    <xsl:attribute name="dataType">
+                        <xsl:value-of select="@dataType" />
+                    </xsl:attribute>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:attribute name="dataType">REAL_MATRIX</xsl:attribute>
+                </xsl:otherwise>
+            </xsl:choose>
             <xsl:if test="@id">
                 <xsl:attribute name="id">
                     <xsl:value-of select="@id" />
@@ -1732,11 +1872,11 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@style" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@value">
+           <!--  <xsl:if test="@value">
                 <xsl:attribute name="value">
                     <xsl:value-of select="@value" />
                 </xsl:attribute>
-            </xsl:if>
+            </xsl:if> -->
             <xsl:if test="@visible">
                 <xsl:attribute name="visible">
                     <xsl:value-of select="@visible" />
@@ -1774,11 +1914,16 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@dataLines" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@dataType">
-                <xsl:attribute name="dataType">
-                    <xsl:value-of select="@dataType" />
-                </xsl:attribute>
-            </xsl:if>
+            <xsl:choose>
+                <xsl:when test="@dataType">
+                    <xsl:attribute name="dataType">
+                        <xsl:value-of select="@dataType" />
+                    </xsl:attribute>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:attribute name="dataType">REAL_MATRIX</xsl:attribute>
+                </xsl:otherwise>
+            </xsl:choose>
             <xsl:if test="@id">
                 <xsl:attribute name="id">
                     <xsl:value-of select="@id" />
@@ -1799,11 +1944,11 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@style" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@value">
+           <!--  <xsl:if test="@value">
                 <xsl:attribute name="value">
                     <xsl:value-of select="@value" />
                 </xsl:attribute>
-            </xsl:if>
+            </xsl:if> -->
             <xsl:if test="@visible">
                 <xsl:attribute name="visible">
                     <xsl:value-of select="@visible" />
@@ -1841,11 +1986,16 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@dataLines" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@dataType">
-                <xsl:attribute name="dataType">
-                    <xsl:value-of select="@dataType" />
-                </xsl:attribute>
-            </xsl:if>
+            <xsl:choose>
+                <xsl:when test="@dataType">
+                    <xsl:attribute name="dataType">
+                        <xsl:value-of select="@dataType" />
+                    </xsl:attribute>
+                </xsl:when>
+                <xsl:otherwise>
+                    <xsl:attribute name="dataType">REAL_MATRIX</xsl:attribute>
+                </xsl:otherwise>
+            </xsl:choose>
             <xsl:if test="@id">
                 <xsl:attribute name="id">
                     <xsl:value-of select="@id" />
@@ -1866,11 +2016,11 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@style" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@value">
+            <!-- <xsl:if test="@value">
                 <xsl:attribute name="value">
                     <xsl:value-of select="@value" />
                 </xsl:attribute>
-            </xsl:if>
+            </xsl:if> -->
             <xsl:if test="@visible">
                 <xsl:attribute name="visible">
                     <xsl:value-of select="@visible" />
@@ -1985,11 +2135,12 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@connectedLinkId" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@dataType">
+            <!-- <xsl:if test="@dataType">
                 <xsl:attribute name="dataType">
                     <xsl:value-of select="@dataType" />
                 </xsl:attribute>
-            </xsl:if>
+            </xsl:if> -->
+            <xsl:attribute name="dataType">UNKNOW_TYPE</xsl:attribute>
             <xsl:if test="@id">
                 <xsl:attribute name="id">
                     <xsl:value-of select="@id" />

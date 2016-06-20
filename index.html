@@ -4,19 +4,6 @@
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
     <meta content="utf-8" http-equiv="encoding">
     <title>Xcos</title>
-    <style type="text/css" media="screen">
-        BODY {
-            font-family: Arial;
-        }
-        
-        H1 {
-            font-size: 18px;
-        }
-        
-        H2 {
-            font-size: 16px;
-        }
-    </style>
 
     <!-- Loads and initializes the library -->
     <script type="text/javascript" src="jquery/jquery-1.8.2.js"></script>
@@ -29,8 +16,10 @@
     <link rel="stylesheet" href="jquery/jquery-ui.css">
 
     <script type="text/javascript" src="details.js"></script>
+    <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="json2.js"></script>
     <script type="text/javascript">
+
         function main(container, outline, toolbar, sidebar, status) {
             // Checks if the browser is supported
             if (!mxClient.isBrowserSupported()) {
@@ -81,6 +70,13 @@
                 var graph = editor.graph;
                 var model = graph.getModel();
 
+                /*
+                    Maverick
+                    The following variable 'diagRoot' serves as the root element for the entire
+                    diagram.
+                */
+                var diagRoot = new XcosDiagram(null, model, null);
+
                 graph.setPanning(true);
                 graph.setConnectable(true);
                 graph.setConnectableEdges(true);
@@ -105,6 +101,52 @@
                 // Configures automatic expand on mouseover
                 graph.panningHandler.autoExpand = true;
 
+                /*
+                  @jiteshjha, @pooja
+        				  Overrides mxGraphModel.getStyle to return a specific style
+        				  for edges that reflects their target terminal.
+                */
+
+                graph.model.getStyle = function(cell) {
+                    var style = null;
+                    if (cell != null) {
+                        // Get style for the recently created mxCell.
+                        style = mxGraphModel.prototype.getStyle.apply(this, arguments);
+                        // If the mxCell is an edge and if it's a fully formed edge
+                        if (this.isEdge(cell) && cell.source != null) {
+                            var target = this.getTerminal(cell, false);
+                            if (target != null) {
+                                /* cell.name attribute defines the link name
+                                   so that it can be parsed in the XML during
+                                   XSLT transformation.
+                                */
+                                var cellSource = cell.source;
+                                while(cellSource.isEdge() == true) {
+                                  cellSource = cellSource.source;
+                                }
+                                if (cellSource.value == "ExplicitOutputPort" || cellSource.value == "ExplicitInputPort") {
+                                    if(style == null) {
+                                      style = 'ExplicitLink' + ';';
+                                    }
+                                    cell.name = "ExplicitLink";
+                                } else if (cellSource.value == "ImplicitOutputPort" || cellSource.value == "ImplicitInputPort") {
+                                    if(style == null) {
+                                      style = 'ImplicitLink' + ';';
+                                    }
+                                    cell.name = "ImplicitLink";
+                                } else if (cellSource.value == "CommandPort" || cellSource.value == "ControlPort") {
+                                    if(style == null) {
+                                      style = 'CommandControlLink' + ';';
+                                    }
+                                    cell.name = "CommandControlLink";
+                                }
+                            }
+                        }
+                    }
+                    return style;
+                };
+
+
                 // Creates a right-click menu
                 graph.panningHandler.factoryMethod = function(menu, cell, evt) {
 
@@ -121,15 +163,14 @@
                             var edgeformat = menu.addItem('Format', null, null);
 
                             menu.addItem('Border Color', 'images/draw-brush.png', function() {
-                                // @ToDo: Pooja: Functionality to be put.   
                                 showColorWheel(graph, cell, 'edgeStrokeColor');
 
                             }, edgeformat);
                             menu.addItem('Text and Text Font', 'images/edit.png', function() {
-                                alert('Edit...'); // @ToDo: Pooja: Functionality to be put.
+                              showTextEditWindow(graph, cell);
                             }, edgeformat);
                             menu.addItem('Text Color', 'images/edit.png', function() {
-                                alert('Edit...'); // @ToDo: Pooja: Functionality to be put.
+                              showColorWheel(graph, cell, 'edgeTextColor');
                             }, edgeformat);
 
                         } else {
@@ -176,15 +217,28 @@
                         menu.addItem('Paste', 'images/paste.png', function() {
                             editor.execute('paste');
                         });
+
                         menu.addItem('Select all', 'images/selectall.png', function() {
                             editor.execute('selectAll');
                         });
+
+                        /*
+                            Maverick
+                            Added one more parameter to the setContext function.
+                        */
                         menu.addItem('Set Context', null, function() {
-                            // @ToDo: Pooja: Functionality to be put.
+                            showSetContext(graph, diagRoot);
                         });
+
+                        /*
+                            Maverick
+                            Added one more parameter to the setContext function.
+                        */
                         menu.addItem('Setup', 'images/setup.png', function() {
-                            // @ToDo: Pooja: Functionality to be put.
+                            showSetupWindow(graph, diagRoot);
                         });
+
+
                         menu.addItem('Zoom In', 'images/zoom_in.png', function() {
                             editor.execute('zoomIn');
                         });
@@ -202,168 +256,49 @@
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
                 editor.configure(config);
 
-                // @jiteshjha, @pooja
-                /*
-                   The code creates a function that informs the undoManager of an undoable edit
-                   and binds it to the undo event of mxGraphModel and mxGraphView
-                   using mxEventSource.addListener.
-                */
-                var undoManager = new mxUndoManager();
-                var listener = function(sender, evt) {
-                    undoManager.undoableEditHappened(evt.getProperty('edit'));
-                };
-                graph.getModel().addListener(mxEvent.UNDO, listener);
-                graph.getModel().addListener(mxEvent.REDO, listener);
-                graph.getView().addListener(mxEvent.UNDO, listener);
-                graph.getView().addListener(mxEvent.REDO, listener);
-
-                editor.addAction('undoCustom', function(editor, cell) {
-                    undoManager.undo();
-                });
-
-                editor.addAction('redoCustom', function(editor, cell) {
-                    undoManager.redo();
-                });
 
                 /*
-                  For every click on the graph, check if the selected mxCell is the recently created edge,
-                  and then check if that edge satisfies one of the port constraints.
-
+                  For a new edge on the graph, check if that edge satisfies one of the port constraints.
                 */
-                graph.addListener(mxEvent.CLICK, function(sender, evt) {
-                    var selectedEdgeObject = graph.getSelectionCell();
-                    if (selectedEdgeObject != null && selectedEdgeObject.isEdge() == true) {
+                graph.addEdge = function(edge, parent, source, target, index) {
 
-                        var selectedEdgeObject = graph.getSelectionCell();
-                        var target = selectedEdgeObject.target;
-                        var source;
+                  var edgeSource = source;
 
-                        if (selectedEdgeObject != null && selectedEdgeObject.isEdge() == true) {
-                            function getEdgeId(edgeObject) {
-                                while (edgeObject.source != null && edgeObject.source.isEdge() == true) {
-                                    edgeObject = edgeObject.source;
-                                }
-                                return edgeObject.source;
-                            }
+                  // If the source of the edge is also an edge, find the port.
+                  while (edgeSource.isEdge() == true) {
+                      edgeSource = edgeSource.source;
+                  }
 
-                            if (selectedEdgeObject.isEdge() == true) {
-                                source = getEdgeId(selectedEdgeObject);
-                            }
-                            if (source != null && target != null) {
-                                if (!(((source.value == "ExplicitOutputPort" && target.value == "ExplicitInputPort") ||
-                                            (source.value == "ExplicitInputPort" && target.value == "ExplicitOutputPort") ||
-                                            (source.value == "ImplicitOutputPort" && target.value == "ImplicitInputPort") ||
-                                            (source.value == "ImplicitInputPort" && target.value == "ImplicitOutputPort") ||
-                                            (source.value == "CommandPort" && target.value == "ControlPort") ||
-                                            (source.value == "ControlPort" && target.value == "CommandPort")) &&
-                                        (source.getEdgeCount() <= 1 && source.isVertex() == true &&
-                                            target.getEdgeCount() <= 1 && target.isVertex() == true)
-                                    )) {
+                  // If the edge violates any port constraints, return null.
+                  if(!((edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() &&
+                          target.getEdgeCount() == 0 && target.isVertex()) ||
+                    (edgeSource.getEdgeCount() <= 1 && source.isEdge()))) {
+                      alert("Port is already connected, please select an please select an unconnected port or a valid link");
+                  }
+                  else if(edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
+                    alert("Explicit data output port must be connected to explicit data input port");
+                  }
+                  else if(edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
+                    alert("Explicit data input port must be connected to explicit data output port");
+                  }
+                  else if(edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
+                    alert("Implicit data output port must be connected to implicit data input port");
+                  }
+                  else if(edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
+                    alert("Implicit data input port must be connected to implicit data output port");
+                  }
+                  else if(edgeSource.value == "CommandPort" && target.value != "ControlPort") {
+                    alert("Command port must be connected to control port");
+                  }
+                  else if(edgeSource.value == "ControlPort" && target.value != "CommandPort") {
+                    alert("Control port must be connected to command port");
+                  }
+                  else {
+                    // If the edge is legit, return the edge.
+                    return mxGraph.prototype.addEdge.apply(this, arguments);
+                  }
 
-                                    if (!(source.getEdgeCount() <= 1 && source.isVertex() == true &&
-                                            target.getEdgeCount() <= 1 && target.isVertex() == true)) {
-                                        alert("Port is already connected, please select an please select an unconnected port or a valid link");
-                                    } else if (source.value == "ImplicitInputPort") {
-                                        alert("Implicit data input port must be connected to implicit data output port");
-                                    } else if (source.value == "ImplicitOutputPort") {
-                                        alert("Implicit data output port must be connected to implicit data input port");
-                                    } else if (source.value == "ExplicitOutputPort") {
-                                        alert("Explicit data output port must be connected to explicit data input port");
-                                    } else if (source.value == "ExplicitInputPort") {
-                                        alert("Explicit data input port must be connected to explicit data output port");
-                                    } else if (source.value = "ControlPort") {
-                                        alert("Control port must be connected to command port");
-                                    } else if (source.value = "CommandPort") {
-                                        alert("Command port must be connected to control port");
-                                    }
-
-                                    /*
-                                      Remove last mxEvent from the undoManager history stack, 
-                                      Store all the remaining undo mxEvents into a temporary array, 
-                                      clears the history, and readds the mxEvents into the undoManager history stack.
-                                    */
-                                    editor.execute('undo');
-
-                                    // Remove the last element from the history array.
-                                    undoManager.history.splice(-1, 1);
-
-                                    // storage[] -> temporary array
-                                    var storage = [];
-                                    for (i in undoManager.history) {
-                                        if (undoManager.history[i] != null) {
-                                            storage.push(undoManager.history[i])
-                                        }
-                                    }
-
-                                    // Clear the undoManager history, and reset the undoManager pointer to avoid any undo of null events.
-                                    undoManager.clear();
-
-                                    // Move the remaning mxEvents back into the undoManager history stack.
-                                    for (i in storage) {
-                                        if (storage[i] != null) {
-                                            undoManager.undoableEditHappened(storage[i]);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-
-                // Disables drag-and-drop into non-swimlanes.
-                graph.isValidDropTarget = function(cell, cells, evt) {
-                    return this.isSwimlane(cell);
-                };
-
-
-                // Disables drilling into non-swimlanes.
-                graph.isValidRoot = function(cell) {
-                    return this.isValidDropTarget(cell);
-                }
-
-                // Does not allow selection of locked cells
-                graph.isCellSelectable = function(cell) {
-                    return !this.isCellLocked(cell);
-                };
-
-                // Returns a shorter label if the cell is collapsed and no
-                // label for expanded groups
-                graph.getLabel = function(cell) {
-                    var tmp = mxGraph.prototype.getLabel.apply(this, arguments); // "supercall"
-
-                    if (this.isCellLocked(cell)) {
-                        // Returns an empty label but makes sure an HTML
-                        // element is created for the label (for event
-                        // processing wrt the parent label)
-                        return '';
-                    } else if (this.isCellCollapsed(cell)) {
-                        var index = tmp.indexOf('</h1>');
-
-                        if (index > 0) {
-                            tmp = tmp.substring(0, index + 5);
-                        }
-                    }
-
-                    return tmp;
-                }
-
-                // Disables HTML labels for swimlanes to avoid conflict
-                // for the event processing on the child cells. HTML
-                // labels consume events before underlying cells get the
-                // chance to process those events.
-                //
-                // NOTE: Use of HTML labels is only recommended if the specific
-                // features of such labels are required, such as special label
-                // styles or interactive form fields. Otherwise non-HTML labels
-                // should be used by not overidding the following function.
-                // See also: configureStylesheet.
-                graph.isHtmlLabel = function(cell) {
-                    return !this.isSwimlane(cell);
-                }
-
-                // To disable the folding icon, use the following code:
-                graph.isCellFoldable = function(cell) {
-                    return false;
+                  return null;
                 }
 
                 // Shows a "modal" window when double clicking a vertex.
@@ -382,7 +317,9 @@
                             content.innerHTML = this.convertValueToString(cell);
                             showModalWindow(this, 'Properties', content, 400, 300);
                             */
-                            showPropertiesWindow(graph, cell);
+                            if(cell.isVertex() == true) {
+                              showPropertiesWindow(graph, cell);
+                            }
                         }
                     }
 
@@ -390,27 +327,88 @@
                     mxEvent.consume(evt);
                 };
 
-                graph.getTooltipForCell = function(cell) {
-                    var text = null;
-                    // If cell is a block or port
-                    if (cell.source == null && cell.target == null) {
-                        if (cell.connectable) { // Cell is a port
-                            // @ToDo: Port Number
-                            text = 'Style : ' + cell.style + "\n";
-                        } else { //Cell is a block
-                            // @ToDo: Block Name, Simulation, Flip, Mirror
-                            // @ToDo: Number of Input, Output, Control, Command Ports
-                            var geometry = cell.getGeometry();
-                            text = 'UID : ' + cell.id + "\n" +
-                                'Style : ' + cell.style + "\n" +
-                                'x : ' + geometry.x + "\n" +
-                                'y : ' + geometry.y + "\n" +
-                                'w : ' + geometry.width + "\n" +
-                                'h : ' + geometry.height + "\n";
+                // Returns a shorter label if the cell is collapsed and no
+                // label for expanded groups
+                graph.getLabel = function(cell) {
+                    var tmp = mxGraph.prototype.getLabel.apply(this, arguments); // "supercall"
+                    if (this.isCellLocked(cell)) {
+                        // Returns an empty label but makes sure an HTML
+                        // element is created for the label (for event
+                        // processing wrt the parent label)
+                        return '';
+                    } else if (this.isCellCollapsed(cell)) {
+                        var index = tmp.indexOf('</h1>');
+                        if (index > 0) {
+                            tmp = tmp.substring(0, index + 5);
                         }
                     }
-                    return text;
-                };
+                    return tmp;
+                }
+
+                // Disables HTML labels for swimlanes to avoid conflict
+                // for the event processing on the child cells. HTML
+                // labels consume events before underlying cells get the
+                // chance to process those events.
+                //
+                // NOTE: Use of HTML labels is only recommended if the specific
+                // features of such labels are required, such as special label
+                // styles or interactive form fields. Otherwise non-HTML labels
+                // should be used by not overidding the following function.
+                // See also: configureStylesheet.
+                graph.isHtmlLabel = function(cell) {
+                    return !this.isSwimlane(cell);
+                }
+
+                graph.getTooltipForCell = function(cell) {
+                     var text = null;
+                     if (cell.isVertex() == true && cell.isConnectable() == false) {
+                         var name = cell.value.getAttribute('blockElementName');
+                         var cellvar = window[name]('details');
+                         // If cell is a block or port
+                         if (cell.source == null && cell.target == null) {
+                             if (cell.connectable) { // Cell is a port
+                                 // @ToDo: Port Number
+                                 text = 'Style : ' + cell.style + "\n";
+                             } else { //Cell is a block
+                                 // @ToDo: Block Name, Simulation, Flip, Mirror
+                                 // @ToDo: Number of Input, Output, Control, Command Ports
+                                 var inputport, outputport, controlport, commandport;
+                                 if (cellvar.model.in.height == null)
+                                     inputport = 0;
+                                 else
+                                     inputport = cellvar.model.in.height;
+                                 if (cellvar.model.out.height == null)
+                                     outputport = 0;
+                                 else
+                                     outputport = cellvar.model.out.height;
+                                 if (cellvar.model.evtin.width == null)
+                                     controlport = 0;
+                                 else
+                                     controlport = cellvar.model.evtin.width;
+                                 if (cellvar.model.evtout.width == null)
+                                     commandport = 0;
+                                 else
+                                     commandport = cellvar.model.evtout.width;
+                                 var geometry = cell.getGeometry();
+                                 text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
+                                     'Simulation : ' + cell.value.getAttribute('simulationFunctionName') + "\n" +
+                                     'UID : ' + cell.id + "\n" +
+                                     'Style : ' + cell.style + "\n" +
+                                     'Flip : ' + getData(cellvar.graphics.flip)[0] + "\n" +
+                                     'Mirror : false' + "\n" +
+                                     'Input Ports : ' + inputport + "\n" +
+                                     'Output Ports : ' + outputport + "\n" +
+                                     'Control Ports : ' + controlport + "\n" +
+                                     'Command Ports : ' + commandport + "\n" +
+                                     'x : ' + geometry.x + "\n" +
+                                     'y : ' + geometry.y + "\n" +
+                                     'w : ' + geometry.width + "\n" +
+                                     'h : ' + geometry.height + "\n";
+                             }
+                         }
+                     }
+                     return text;
+                 };
 
                 // Create XML tags!
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -465,159 +463,6 @@
                     var titleName = document.createTextNode(toggle.innerHTML);
                     button.appendChild(titleName);
                 });
-
-
-                /*
-                	@pooja, @jiteshjha
-					Create a custom rotate action for a selected cell.
-                */
-                editor.addAction('rotateCustom', function(editor, cell) {
-                    selectedCell = graph.getSelectionCell();
-                    if (selectedCell != null) {
-                        var cells = [];
-                        cells.push(selectedCell);
-                        for (var i = 0; i < selectedCell.getChildCount(); i++)
-                            cells.push(selectedCell.getChildAt(i));
-                        graph.getModel().beginUpdate();
-                        try {
-                            for (var i = 0; i < cells.length; i++) {
-                                var cell = cells[i];
-                                if (cell.isVertex() == true) {
-                                    var geo = graph.getCellGeometry(cell);
-
-                                    if (geo != null) {
-                                        // Rotates the size and position in the geometry
-                                        geo = geo.clone();
-                                        geo.x += geo.width / 2 - geo.height / 2;
-                                        geo.y += geo.height / 2 - geo.width / 2;
-                                        var tmp = geo.width;
-                                        geo.width = geo.height;
-                                        geo.height = tmp;
-                                        graph.getModel().setGeometry(cell, geo);
-                                        // Reads the current direction and advances by 90 degrees
-                                        var state = graph.view.getState(cell);
-
-                                        if (state != null) {
-                                            if (cell.isConnectable() == true) {
-                                                if (cell.value == "ExplicitOutputPort" || cell.value == "ImplicitOutputPort") {
-                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-                                                    var geoCell = cell.getGeometry();
-                                                    if (dir == 'east' || dir == 'west') {
-                                                        var temp = geoCell.x;
-                                                        geoCell.x = geoCell.y - 0.0625;
-                                                        geoCell.y = temp + 0.0625;
-                                                        cell.setGeometry(geoCell);
-                                                        if (dir == 'east')
-                                                            dir = 'south';
-                                                        else
-                                                            dir = 'north';
-                                                    } else if (dir == 'south' || dir == 'north') {
-
-                                                        geoCell.y = geoCell.x + 0.0625;
-                                                        if (dir == 'south') {
-                                                            dir = 'west';
-                                                            geoCell.x = 0 - 0.125;
-                                                        } else {
-                                                            dir = 'east';
-                                                            geoCell.x = 1;
-                                                        }
-                                                        cell.setGeometry(geoCell);
-                                                    }
-                                                } else if (cell.value == "ExplicitInputPort" || cell.value == "ImplicitInputPort") {
-                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-                                                    var geoCell = cell.getGeometry();
-                                                    if (dir == 'south' || dir == 'north') {
-                                                        geoCell.y = geoCell.x - 0.0625;
-                                                        if (dir == 'south') {
-                                                            dir = 'west';
-                                                            geoCell.x = 1 + 0.125;
-                                                        } else {
-                                                            dir = 'east';
-                                                            geoCell.x = 0;
-                                                        }
-                                                        cell.setGeometry(geoCell);
-                                                    } else if (dir == 'east' || dir == 'west') {
-                                                        geoCell = geoCell.clone();
-                                                        var temp = geoCell.x;
-                                                        geoCell.x = parseFloat(geoCell.y) + 0.0625;
-                                                        geoCell.y = temp - 0.0625;
-                                                        cell.setGeometry(geoCell);
-                                                        if (dir == 'east')
-                                                            dir = 'south';
-                                                        else
-                                                            dir = 'north';
-                                                    }
-                                                } else if (cell.value == 'CommandPort') {
-                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-                                                    var geoCell = cell.getGeometry();
-                                                    if (dir == 'south' || dir == 'north') {
-                                                        var temp = geoCell.x;
-                                                        geoCell.x = geoCell.y + 0.0625;
-                                                        geoCell.y = temp - 0.0625;
-                                                        cell.setGeometry(geoCell);
-                                                        if (dir == 'south')
-                                                            dir = 'west';
-                                                        else
-                                                            dir = 'east';
-                                                    } else if (dir == 'east' || dir == 'west') {
-                                                        geoCell.y = parseFloat(geoCell.x) - 0.0625;
-                                                        if (dir == 'east') {
-                                                            dir = 'south';
-                                                            geoCell.x = 0 - 0.0625;
-                                                        } else {
-                                                            dir = 'north';
-                                                            geoCell.x = 1 + 0.0625;
-                                                        }
-                                                        cell.setGeometry(geoCell);
-                                                    }
-                                                } else if (cell.value == 'ControlPort') {
-                                                    var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-                                                    var geoCell = cell.getGeometry();
-                                                    if (dir == 'south' || dir == 'north') {
-                                                        var temp = geoCell.x;
-                                                        geoCell.x = geoCell.y - 0.0625;
-                                                        geoCell.y = temp + 0.0625;
-                                                        cell.setGeometry(geoCell);
-                                                        if (dir == 'south')
-                                                            dir = 'west';
-                                                        else
-                                                            dir = 'east';
-                                                    } else if (dir == 'east' || dir == 'west') {
-                                                        geoCell.y = parseFloat(geoCell.x) + 0.0625;
-                                                        if (dir == 'east') {
-                                                            dir = 'south';
-
-                                                            geoCell.x = 1 + 0.0625;
-                                                        } else {
-                                                            dir = 'north';
-                                                            geoCell.x = 0 - 0.0625;
-                                                        }
-                                                        cell.setGeometry(geoCell);
-                                                    }
-                                                }
-                                            } else {
-                                                var dir = state.style[mxConstants.STYLE_DIRECTION] || 'east';
-
-                                                if (dir == 'east') {
-                                                    dir = 'south';
-                                                } else if (dir == 'south') {
-                                                    dir = 'west';
-                                                } else if (dir == 'west') {
-                                                    dir = 'north';
-                                                } else if (dir == 'north') {
-                                                    dir = 'east';
-                                                }
-                                            }
-                                            graph.setCellStyles(mxConstants.STYLE_DIRECTION, dir, [cell]);
-                                        }
-                                    }
-                                }
-                            }
-                        } finally {
-                            graph.getModel().endUpdate();
-                        }
-                    }
-                }, null, null, 'Ctrl+R');
 
 
                 // @jiteshjha, @pooja
@@ -682,8 +527,9 @@
 
                 toolbar.appendChild(spacer.cloneNode(true));
 
-                addToolbarButton(editor, toolbar, 'undoCustom', '', 'images/undo.png');
-                addToolbarButton(editor, toolbar, 'redoCustom', '', 'images/redo.png');
+                addToolbarButton(editor, toolbar, 'delete', '', 'images/delete2.png');
+                addToolbarButton(editor, toolbar, 'undo', '', 'images/undo.png');
+                addToolbarButton(editor, toolbar, 'redo', '', 'images/redo.png');
                 toolbar.appendChild(spacer.cloneNode(true));
 
                 addToolbarButton(editor, toolbar, 'show', 'Show', 'images/camera.png');
@@ -713,11 +559,11 @@
                 }
 
 
-                /*              
+                /*
 				Maverick
                 The Export buttons in toolbar call this function with varying
-                arguments. 
-                The third argument is used to decide which button is being 
+                arguments.
+                The third argument is used to decide which button is being
                 pressed.
 				exportXML : 2 arguments
 				exportXcos: 3 arguments
@@ -728,18 +574,17 @@
                     textarea.style.height = '400px';
 
                     var enc = new mxCodec(mxUtils.createXmlDocument());
-                    var node = enc.encode(arguments[0].graph.getModel());
+                    var node = enc.encode(diagRoot);
 
+                    var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"+mxUtils.getPrettyXml(node);
 
-                    //console.log(mxUtils.getPrettyXml(node));
-                    textarea.value = mxUtils.getPrettyXml(node);
-
+                    textarea.value=str;
 
                     if (arguments[2] == null) {
                         showModalWindow(graph, 'XML', textarea, 410, 440);
                     } else {
-                        xmlFromExportXML = mxUtils.getXml(node);
-                        return xmlFromExportXML;
+
+                        return mxUtils.getPrettyXml(node);
                     }
                 }
 
@@ -758,12 +603,8 @@
                     var xmlFromExportXML = displayXMLorXcos(editor, cell, true);
                     if (xmlFromExportXML == null) alert('First create the XML file.');
                     else {
-                        /* 
-                         Maverick
-                         Adding <mxGraphModel> tag to make up for the missing tag.
-                        */
 
-                        var xml = mxUtils.parseXml("<mxGraphModel>" + xmlFromExportXML + "</mxGraphModel>");
+                        var xml = mxUtils.parseXml(xmlFromExportXML);
 
                         var xsl = loadXMLDoc("finalmodsheet.xsl");
 
@@ -779,7 +620,9 @@
                             Maverick
                             Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
                         */
-                        textarea.value = mxUtils.getPrettyXml(resultDocument.documentElement);
+                        var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n"+mxUtils.getPrettyXml(resultDocument.documentElement);
+
+                        textarea.value=str.replace(/\n\n/g,"\n");
                         showModalWindow(graph, 'Xcos', textarea, 410, 440);
                     }
                 });
@@ -895,10 +738,188 @@
             }
         };
 
+        /*
+          @jiteshjha
+          styleToObject(style) converts style string into an object.
+          Format : First item in the object will be 'default: linkStyle',
+          and the rest of items will be of the style 'mxConstants:value'
+        */
+
+        function styleToObject(style) {
+
+          var defaultStyle = style.substring(0, style.indexOf(';'));
+          var styleObject = {
+            "default" : defaultStyle
+          };
+          var remainingStyle = style.substring(style.indexOf(';') + 1);
+
+          /*
+            remainingStyle is the string without the default style.
+            For every key:value pair in the string,
+            extract the key(string before '=') and the value
+            (string before ';'), set the key:value pair into styleObject
+            and remainingStyle is set to a string without the key:value pair.
+          */
+          while(remainingStyle.length > 0) {
+            var indexOfKey = remainingStyle.indexOf('=');
+            var key = remainingStyle.substring(0, indexOfKey);
+            remainingStyle = remainingStyle.substring(indexOfKey + 1);
+            var indexOfValue = remainingStyle.indexOf(';');
+            var value = remainingStyle.substring(0, indexOfValue);
+            styleObject[key] = value;
+            remainingStyle = remainingStyle.substring(indexOfValue + 1);
+          }
+
+          return styleObject;
+        }
+
+        /*
+          @jiteshjha
+          styleToObject(style) converts the object back to the style string.
+        */
+        function objectToStyle(object) {
+          var style = "";
+          for (var key in object) {
+            if(key.toString() == "default") {
+              style += object[key] + ';';
+            }
+            else {
+              style += (key + '=' + object[key] + ';');
+            }
+          }
+          return style;
+        }
+
+        /*
+            Maverick
+            The following function is used to define a tag for entire diagram.
+            We can set context, model and setup parameters for the entire diagram
+            using this function.
+        */
+
+
+        function XcosDiagram(context, model, attributes) {
+            this.context = context;
+            this.model = model;
+            this.finalIntegrationTime = attributes;
+        }
+
+
+        /*
+          @jiteshjha, @pooja
+          setContext dialog box
+          Includes a set context instruction text and input text area.
+        */
+
+        /*
+            Maverick
+            Added 'diagRoot' parameter.
+        */
+        function showSetContext(graph, diagRoot) {
+
+            // Create basic structure for the form
+            var content = document.createElement('div');
+            content.setAttribute("id", "setContext");
+
+            // Add Form
+            var myform = document.createElement("form");
+            myform.method = "";
+            myform.setAttribute("id", "formProperties");
+
+            // Add set context string
+            var descriptionSetContext = document.createElement("div");
+            descriptionSetContext.innerHTML = "You may enter here scilab instructions to define symbolic parameters used in block definitions using Scilab instructions. These instructions are evaluated once confirmed(i.e. you click on OK and every time the diagram is loaded)";
+            descriptionSetContext.setAttribute("id", "descriptionSetContext");
+            myform.appendChild(descriptionSetContext);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // input text area
+            var textareaSetContext = document.createElement("textarea");
+            textareaSetContext.setAttribute("id", "textareaSetContext");
+
+            myform.appendChild(textareaSetContext);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Button - Submit
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Ok';
+            btn.type = "button";
+            btn.name = "submit";
+            btn.setAttribute("id", "buttonSetContext");
+
+            var contextValue = handleContext("get");
+
+            var displayValue = "";
+
+            /*
+                Maverick
+                Modified the for loop because only requirement was to
+                traverse the array of 'contextValue' and not all the
+                elements of it.
+            */
+            for (var i=0;i<contextValue.length;i++) {
+                displayValue += contextValue[i] + "\n";
+            }
+            if (contextValue != "") {
+                textareaSetContext.value = displayValue;
+            } else {
+                textareaSetContext.value = "";
+
+            }
+
+            // Executes when button 'btn' is clicked
+            btn.onclick = function() {
+
+                var input = document.getElementById('textareaSetContext').value;
+
+                /*
+                    Maverick
+                    Code to extract context parameter values from the text area
+                    containing the input.
+                */
+                var contextValues = [];
+                var i = 0,
+                    temp = "";
+                for (i = 0; i < input.length; i++) {
+                    if (input[i] == '\n') {
+                        if (temp != "") {
+                            contextValues.push(temp);
+                        }
+                        temp = "";
+                        continue;
+                    }
+                    temp += input[i];
+                }
+                if (temp != "") {
+                    contextValues.push(temp);
+                }
+
+                diagRoot.context = contextValues;
+                diagRoot.context.scilabClass="String[]";
+                handleContext("set", contextValues);
+                wind.destroy();
+            };
+
+            myform.appendChild(btn);
+            content.appendChild(myform);
+            var wind = showModalWindow(graph, 'Set Context', content, 450, 350);
+        };
 
         function showPropertiesWindow(graph, cell) {
 
-            var defaultProperties = {
+            var name = cell.getAttribute('blockElementName');
+            var defaultProperties = window[name]("get");
+            /*{
                 nbr_curves: ["Number of curves", 1],
                 clrs: ["color (>0) or mark (<0)", [1, 2, 3, 4, 5, 6, 7, 13]],
                 siz: ["line or mark size", [1, 1, 1, 1, 1, 1, 1, 1]],
@@ -910,7 +931,9 @@
                 vec_z: ["Zmin and Zmax", [-15, 15]],
                 param3ds: ["Alpha and Theta", [50, 280]],
                 N: ["Buffer size", 2]
-            };
+            };*/
+
+            //var defaultProperties=window["CONST_m"]("get");
 
             // Create basic structure for the form
             var content = document.createElement('div');
@@ -979,6 +1002,18 @@
                         propertiesObject[key] = document.getElementById(key.toString()).value;
                     }
                 }
+                var details = window[name]("set",cell.value,propertiesObject);
+                var enc = new mxCodec();
+                var node = enc.encode(details);
+                node.setAttribute('label',getData(details.exprs)[0]);
+                cell.value = node;
+                /*
+                    Maverick
+                    We have changed the value of the cell, but the change won't be reflected
+                    unless the graph is refreshed.
+                */
+                graph.refresh();
+                wind.destroy();
             };
             myform.appendChild(btn);
 
@@ -1003,54 +1038,182 @@
             height = 135 + 26 * defaultProperties.length + 15;
 
             content.appendChild(myform);
-            showModalWindow(graph, 'Properties', content, 450, height);
+            var wind = showModalWindow(graph, 'Properties', content, 450, height);
         };
 
+        /*
+          @jiteshjha
+          Creates a dialog box related to the edge label properties.
+          The properties implemented are : edge label, label fontStyle,
+          label fontSize, label fontStyle.
+        */
 
 
-        function showColorWheel(graph, cell, selectProperty) {
+        function showTextEditWindow(graph, cell) {
+              var fontFamilyList = {
+                "Arial" : 0,
+                "Dialog" : 1,
+                "Verdana" : 2,
+                "Times New Roman" : 3
+              }
+              var defaultProperties = {
+                  text: ["Text", "text"],
+                  fontFamily : ["Font Family", fontFamilyList],
+                  fontSize: ["fontSize", 20]
+              };
+
+            var style = graph.getModel().getStyle(cell);
+            var styleObject = styleToObject(style);
+            if ('fontSize' in styleObject) {
+                defaultProperties['fontSize'][1] = styleObject['fontSize'];
+            }
+            if (cell.value != "") {
+                defaultProperties['text'][1] = cell.value;
+            }
 
             // Create basic structure for the form
             var content = document.createElement('div');
-            content.setAttribute("id", "colorProperties");
+            content.setAttribute("id", "contentProperties");
+
+            // Heading of content
+            var heading = document.createElement('h2');
+            heading.innerHTML = "Text and Text Font";
+            heading.id = "headingProperties"
+            content.appendChild(heading);
 
             // Add Form
             var myform = document.createElement("form");
-            myform.method = "";
-            myform.setAttribute("id", "formProperties");
+            myform.method = "post";
+            myform.id = "formProperties";
 
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
-            // Input Title
-            var fieldName = 'Color';
-            var namelabel = document.createElement('label');
-            namelabel.innerHTML = fieldName;
-            myform.appendChild(namelabel);
+            for (var key in defaultProperties) {
+                if (defaultProperties.hasOwnProperty(key)) {
 
-            // Input
-            var input = document.createElement("input");
-            input.name = fieldName;
-            input.value = 0;
-            input.style.cssText = 'float: right;';
-            input.setAttribute("id", "color");
-            myform.appendChild(input);
+                    // Input Title
+                    var fieldName = defaultProperties[key];
+                    var namelabel = document.createElement('label');
+                    namelabel.innerHTML = defaultProperties[key][0];
+                    myform.appendChild(namelabel);
+
+                    if(key == "fontFamily") {
+                      //Here we create a "select" element (a drop down list).
+                      var newList = document.createElement("select");
+                      newList.style.cssText = "float:right";
+                      newList.setAttribute("id", key.toString());
+                      var dropdownItems = defaultProperties[key][1];
+
+                      for(var item in dropdownItems) {
+                        if (dropdownItems.hasOwnProperty(item)) {
+                          option = document.createElement('option');
+                          option.value = item;
+                          option.text = item;
+                          option.setAttribute("id", item);
+                          newList.appendChild(option);
+                        }
+                      }
+
+                      var selectedFontFamily = 0;
+                      var styleObject = styleToObject(style);
+                      if ('fontFamily' in styleObject) {
+                          selectedFontFamily =  styleObject['fontFamily'];
+                      }
+                      newList.selectedIndex = dropdownItems[selectedFontFamily];
+                      myform.appendChild(newList);
+                    }
+                    else {
+                      var input = document.createElement("input");
+                      input.name = key;
+                      input.value = defaultProperties[key][1];
+                      input.setAttribute("id", key.toString());
+                      input.setAttribute("class", "fieldInput");
+                      myform.appendChild(input);
+                    }
+                    // Line break
+                    var linebreak = document.createElement('br');
+                    myform.appendChild(linebreak);
+
+                    // Line break
+                    var linebreak = document.createElement('br');
+                    myform.appendChild(linebreak);
+                }
+            }
 
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
 
-            // Line break
-            var linebreak = document.createElement('br');
-            myform.appendChild(linebreak);
+            /*
+              changeFontStyle function sets the style for given fontStyle and toggles with the active class
+              for "set" type, and toggles with the active class for "get" type.
+            */
+            function changeFontStyle(type, graph, cell, button, bit) {
+              var style = graph.getModel().getStyle(cell);
+              var trigger = document.getElementById(button);
+              var styleObject = styleToObject(style);
+              var previousValue = 1;
+              if ('fontStyle' in styleObjesct) {
+                  previousValue = styleObject['fontStyle'];
+
+                  // To get a bit mask:
+                  var mask = 1 << bit; // Get the 1st element
+
+                  if(type == "get") {
+                    // toggle the bit
+                    previousValue ^= mask;
+                    trigger.classList.toggle(button);
+                    styleObject['fontStyle'] = previousValue;
+                    style = objectToStyle(styleObject);
+                    graph.getModel().setStyle(cell, style);
+                  }
+                  else if(type == "set") {
+                    if ((previousValue & mask) != 0) {
+                      trigger.classList.toggle(button);
+                    }
+                  }
+              }
+            }
+
+            // Button - Bold
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Bold';
+            btn.setAttribute("id", "boldButton");
+            btn.type = "button";
+            btn.name = "submit";
+            btn.onclick = function() {
+              changeFontStyle("get", graph, cell, 'boldButton', 0);
+            }
+            myform.appendChild(btn);
+
+            // Button - Italics
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Italic';
+            btn.setAttribute("id", "italicButton");
+            btn.type = "button";
+            btn.name = "submit";
+            btn.onclick = function() {
+              changeFontStyle("get", graph, cell, 'italicButton', 1);
+            }
+            myform.appendChild(btn);
+
+            // Button - Underline
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Underline';
+            btn.setAttribute("id", "underlineButton");
+            btn.type = "button";
+            btn.name = "submit";
+            btn.onclick = function() {
+              changeFontStyle("get", graph, cell, 'underlineButton', 2);
+            }
+            myform.appendChild(btn);
 
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
-            var picker = document.createElement('div');
-            picker.setAttribute("id", "picker");
-            myform.appendChild(picker);
+
             // Line break
             var linebreak = document.createElement('br');
             myform.appendChild(linebreak);
@@ -1060,50 +1223,288 @@
             btn.innerHTML = 'Submit';
             btn.type = "button";
             btn.name = "submit";
-            btn.style.cssText = 'margin-left: 75px';
 
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
-                var input = document.getElementById('color').value;
-                if (selectProperty == "edgeStrokeColor") {
-                    var style = graph.getModel().getStyle(cell);
-                    if (style == null) {
-                        style = 'strokeColor=' + input;
-                        graph.getModel().setStyle(cell, style);
-                    } else {
-                        style = style.replace(/strokeColor=#[a-fA-F0-9]{6,}/g, "strokeColor=" + input);
-                        graph.getModel().setStyle(cell, style);
-                    }
-                } else if (selectProperty == "bgColor") {
-                    graph.container.style.backgroundColor = input;
-                } else if (selectProperty == "vertexStrokeColor") {
-                    var style = graph.getModel().getStyle(cell);
-                    if (style.indexOf('strokeColor') > -1) {
-                        style = style.replace(/strokeColor=#[a-fA-F0-9]{6,}/g, "strokeColor=" + input);
-                        graph.getModel().setStyle(cell, style);
-                    } else {
-                        style = style + ';' + 'strokeColor=' + input;
-                        graph.getModel().setStyle(cell, style);
-                    }
-                } else if (selectProperty == "vertexFillColor") {
-                    var style = graph.getModel().getStyle(cell);
-                    if (style.indexOf('fillColor') > -1) {
-                        style = style.replace(/fillColor=#[a-fA-F0-9]{6,}/g, "fillColor=" + input);
-                        graph.getModel().setStyle(cell, style);
-                    } else {
-                        style = style + ';' + 'fillColor=' + input;
-                        graph.getModel().setStyle(cell, style);
+                var propertiesObject = {
+                    id: cell.id
+                };
+                for (var key in defaultProperties) {
+                    if (defaultProperties.hasOwnProperty(key)) {
+                        propertiesObject[key] = document.getElementById(key.toString()).value;
                     }
                 }
-
-
-
+                var style = graph.getModel().getStyle(cell);
+                var styleObject = styleToObject(style);
+                styleObject['fontSize'] = propertiesObject['fontSize'];
+                styleObject['fontFamily'] = propertiesObject['fontFamily'];
+                style = objectToStyle(styleObject);
+                graph.getModel().setStyle(cell, style);
+                graph.getModel().setValue(cell, propertiesObject['text']);
+                wind.destroy();
             };
             myform.appendChild(btn);
 
+            // Base heights without fields : 135 px
+            height = 135 + 26 * defaultProperties.length + 15;
             content.appendChild(myform);
-            showModalWindow(graph, 'Diagram background...', content, 285, 340);
-            // Invokes the farbtastic functionality 
+            var wind = showModalWindow(graph, 'Text and Text font', content, 450, height);
+
+            /*
+              @jiteshjha
+              If any fontStyle(Bold, Italic, Underline) has already been implemented
+              for the selected edge label, add the respective active class to that button.
+            */
+
+            if('fontStyle' in styleObject) {
+              changeFontStyle("set", graph, cell, 'boldButton', 0);
+              changeFontStyle("set", graph, cell, 'italicButton', 1);
+              changeFontStyle("set", graph, cell, 'underlineButton', 2);
+            }
+        };
+        /*
+          @jiteshjha, @pooja
+          showSetupWindow dialog box
+        */
+
+        /*
+            Maverick
+            Added 'diagRoot' parameter.
+        */
+        function showSetupWindow(graph, diagRoot) {
+
+            /*
+                Maverick
+                Added one more element in the list for each key to be used in the <XcosDiagram>
+                tag.
+            */
+
+            var defaultProperties = setup("get");
+
+            // Create basic structure for the form
+            var content = document.createElement('div');
+            content.setAttribute("id", "contentProperties");
+
+            // Heading of content
+            var heading = document.createElement('h2');
+            heading.innerHTML = "Setup";
+            heading.id = "headingProperties"
+            content.appendChild(heading);
+
+            // Add Form
+            var myform = document.createElement("form");
+            myform.method = "post";
+            myform.id = "formProperties";
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            for (var key in defaultProperties) {
+                if (defaultProperties.hasOwnProperty(key)) {
+
+                    // Input Title
+                    var fieldName = defaultProperties[key];
+                    var namelabel = document.createElement('label');
+                    namelabel.innerHTML = defaultProperties[key][0];
+                    myform.appendChild(namelabel);
+
+                    if (key == "solv_kind") {
+
+                        //Here we create a "select" element (a drop down list).
+                        var newList = document.createElement("select");
+                        newList.style.cssText = "float:right";
+                        newList.setAttribute("id", key.toString());
+                        var dropdownItems = setup("getArray");
+
+                        // Iterate over the dropdown options and create html elements
+                        dropdownItems.forEach(function(value, i) {
+                            option = document.createElement('option');
+                            option.value = i.toFixed(1);
+                            option.text = value;
+                            newList.appendChild(option);
+                        });
+                        newList.selectedIndex = defaultProperties[key][2];
+                        myform.appendChild(newList);
+
+                    } else {
+                        var input = document.createElement("input");
+                        input.name = key;
+                        input.value = defaultProperties[key][2];
+                        input.setAttribute("id", key.toString());
+                        input.setAttribute("class", "fieldInput");
+                        myform.appendChild(input);
+                    }
+
+                    // Line break
+                    var linebreak = document.createElement('br');
+                    myform.appendChild(linebreak);
+
+                    // Line break
+                    var linebreak = document.createElement('br');
+                    myform.appendChild(linebreak);
+                }
+            }
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Button - Set Context
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Set Context';
+            btn.style.cssText = 'float: left';
+            btn.type = "button";
+            btn.name = "submit";
+            btn.id = "resetButtonProperties";
+            btn.onclick = function() {
+                // show Set Context
+                /*
+                    Maverick
+                    Added the parameter here as well.
+                */
+                showSetContext(graph, diagRoot);
+            };
+            myform.appendChild(btn);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+
+            // Button - Submit
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Submit';
+            btn.type = "button";
+            btn.name = "submit";
+
+            // Executes when button 'btn' is clicked
+            btn.onclick = function() {
+                var propertiesObject = {};
+
+                for (var key in defaultProperties) {
+                    if (defaultProperties.hasOwnProperty(key)) {
+                        propertiesObject[defaultProperties[key][1]] = document.getElementById(key.toString()).value;
+
+                        /*
+                            Maverick
+                            Adding the corresponding attributes to the <XcosDiagram> tag.
+                        */
+                        diagRoot[defaultProperties[key][1]] = document.getElementById(key.toString()).value;
+                    }
+                }
+
+                setup("set", propertiesObject);
+                wind.destroy();
+            };
+
+            myform.appendChild(btn);
+
+
+            // Button - Reset
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Reset';
+            btn.type = "button";
+            btn.name = "submit";
+            btn.id = "resetButtonProperties";
+            btn.onclick = function() {
+                // Reset
+                for (var key in defaultProperties) {
+                    if (defaultProperties.hasOwnProperty(key)) {
+                        var element = document.getElementById(key.toString());
+                        if (key != "solv_kind") {
+                            element.value = defaultProperties[key][2];
+                        } else {
+                            /*
+ 								Maverick
+ 								Code modified to reset the drop down list.
+                    		*/
+                            element.selectedIndex = 0;
+                        }
+                    }
+                }
+            };
+
+            myform.appendChild(btn);
+            // Base height without fields : 135 px
+            height = 135 + 26 * defaultProperties.length + 15;
+
+            content.appendChild(myform);
+            var wind = showModalWindow(graph, 'Set Parameters', content, 450, height);
+        };
+
+        function showColorWheel(graph, cell, selectProperty) {
+            // Create basic structure for the form
+            var content = document.createElement('div');
+            content.setAttribute("id", "colorProperties");
+            // Add Form
+            var myform = document.createElement("form");
+            myform.method = "";
+            myform.setAttribute("id", "formProperties");
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+            // Input Title
+            var fieldName = 'Color';
+            var namelabel = document.createElement('label');
+            namelabel.innerHTML = fieldName;
+            myform.appendChild(namelabel);
+            // Input
+            var input = document.createElement("input");
+            input.name = fieldName;
+            input.value = 0;
+            input.style.cssText = 'float: right;';
+            input.setAttribute("id", "color");
+            myform.appendChild(input);
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+            var picker = document.createElement('div');
+            picker.setAttribute("id", "picker");
+            myform.appendChild(picker);
+            // Line break
+            var linebreak = document.createElement('br');
+            myform.appendChild(linebreak);
+            // Button - Submit
+            var btn = document.createElement("button");
+            btn.innerHTML = 'Submit';
+            btn.type = "button";
+            btn.name = "submit";
+            btn.style.cssText = 'margin-left: 75px';
+            // Executes when button 'btn' is clicked
+            btn.onclick = function() {
+                var input = document.getElementById('color').value;
+                var style = graph.getModel().getStyle(cell);
+                var styleObject = styleToObject(style);
+                if (selectProperty == "edgeStrokeColor") {
+                    styleObject['strokeColor'] = input;
+                } else if (selectProperty == "bgColor") {
+                    graph.container.style.backgroundColor = input;
+                } else if (selectProperty == "vertexStrokeColor") {
+                  styleObject['strokeColor'] = input;
+                } else if (selectProperty == "vertexFillColor") {
+                  styleObject['fillColor'] = input;
+                }
+                else if(selectProperty == "edgeTextColor") {
+                  styleObject['fontColor'] = input;
+                }
+                style = objectToStyle(styleObject);
+                graph.getModel().setStyle(cell, style);
+                wind.destroy();
+            };
+            myform.appendChild(btn);
+            content.appendChild(myform);
+            var wind = showModalWindow(graph, 'Diagram background...', content, 285, 340);
+            // Invokes the farbtastic functionality
             $(document).ready(function() {
                 $('#picker').farbtastic('#color');
             });
@@ -1187,22 +1588,23 @@
 
             var x = Math.max(0, document.body.scrollWidth / 2 - width / 2);
             var y = Math.max(10, (document.body.scrollHeight || document.documentElement.scrollHeight) / 2 - height * 2 / 3);
-            var wnd = new mxWindow(title, content, x, y, width, height, false, true);
-            wnd.setClosable(true);
+            var wind = new mxWindow(title, content, x, y, width, height, false, true);
+            wind.setClosable(true);
 
             // Fades the background out after after the window has been closed
-            wnd.addListener(mxEvent.DESTROY, function(evt) {
+            wind.addListener(mxEvent.DESTROY, function(evt) {
                 graph.setEnabled(true);
                 mxEffects.fadeOut(background, 50, true, 10, 30, true);
             });
 
             graph.setEnabled(false);
             graph.tooltipHandler.hide();
-            wnd.setVisible(true);
+            wind.setVisible(true);
+            return wind;
         };
 
-        function addSidebarIcon(graph, sidebar, name, image) {
 
+        function addSidebarIcon(graph, sidebar, name, image) {
             // Function that is executed when the image is dropped on
             // the graph. The cell argument points to the cell under
             // the mousepointer if there is one.
@@ -1214,21 +1616,31 @@
                 model.beginUpdate();
                 try {
                     var label = getImgHTML(name); // Will not exist for all blocks
-
                     if (name == 'ANDBLK') {
                         var details = ANDBLK("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        //node.setAttribute('label',label);
+                        node.setAttribute('label',label);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
                         createPorts(graph, v1, [], ['CONTROL', 'CONTROL'], [], ['COMMAND']);
                     } else if (name == 'CMSCOPE') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'CMSCOPE');
+                        var details = CMSCOPE("define");
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
+                        node.setAttribute('label',label);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CMSCOPE');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], [], []);
                     } else if (name == 'CONST_m') {
                         var details = CONST_m("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
+                        node.setAttribute('label',"1");
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CONST_m');
                         createPorts(graph, v1, [], [], ['EXPLICIT'], []);
                     } else if (name == 'CONVERT') {
@@ -1262,7 +1674,6 @@
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'SWITCH2_m');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
                     }
-
                     // CONTINUOUS
                     else if (name == 'CLINDUMMY_f') {
                         v1 = graph.insertVertex(parent, null, 'DUMMY<BR>CLSS', x, y, 80, 80, 'CLINDUMMY_f');
@@ -1298,7 +1709,6 @@
                         v1 = graph.insertVertex(parent, null, 'PDE', x, y, 80, 80, 'PDE');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT', 'EXPLICIT', 'EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], []);
                     }
-
                     // DISCONTINUOUS
                     else if (name == 'BACKLASH') {
                         v1 = graph.insertVertex(parent, null, 'Backlash', x, y, 80, 80, 'BACKLASH');
@@ -1322,7 +1732,6 @@
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'SATURATION');
                         createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
                     }
-
                     // DISCRETE
                     else if (name == 'AUTOMAT') {
                         v1 = graph.insertVertex(parent, null, 'Automaton<BR>nM=2, nX=1', x, y, 80, 80, 'AUTOMAT');
@@ -1354,11 +1763,25 @@
                     } else if (name == 'REGISTER') {
                         v1 = graph.insertVertex(parent, null, 'Shift<BR>register', x, y, 80, 80, 'REGISTER');
                         createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
+                    } else if (name == 'CFSCOPE') {
+                        var details = CFSCOPE("define");
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
+                        node.setAttribute('label',label);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
+                        createPorts(graph, v1, [], ['CONTROL'], [], []);
                     }
-
                     // EVENTS
                     else if (name == 'CLOCK_c') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'CLOCK_c');
+                        var details = CLOCK_c("define");
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
+                        node.setAttribute('label',label);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CLOCK_c');
                         createPorts(graph, v1, [], [], [], ['COMMAND']);
                     } else if (name == 'SampleCLK') {
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'SampleCLK');
@@ -1528,13 +1951,10 @@
                         v1 = graph.insertVertex(parent, null, '', x, y, 80, 80, 'TEXT_f');
                         createPorts(graph, v1, [], [], [], []);
                     }
-
                     v1.setConnectable(false);
-
                 } finally {
                     model.endUpdate();
                 }
-
                 graph.setSelectionCell(v1);
             }
 
@@ -1574,7 +1994,7 @@
                     var x = 0;
                     var y = (i / (leftNumber + 1)).toFixed(4);
                     var portType = leftArray[i - 1];
-                    createInputPort(graph, block, x, y, portType, 'left');
+                    createInputPort(graph, block, x, y, portType, 'left', i);
                 }
             }
             if (topNumber != 0) {
@@ -1582,7 +2002,7 @@
                     var x = (i / (topNumber + 1)).toFixed(4);
                     var y = 0;
                     var portType = topArray[i - 1];
-                    createInputPort(graph, block, x, y, portType, 'top');
+                    createInputPort(graph, block, x, y, portType, 'top', i);
                 }
             }
         };
@@ -1595,7 +2015,7 @@
                     var x = 1;
                     var y = (i / (rightNumber + 1)).toFixed(4);
                     var portType = rightArray[i - 1];
-                    createOutputPort(graph, block, x, y, portType, 'right');
+                    createOutputPort(graph, block, x, y, portType, 'right', i);
                 }
             }
             if (bottomNumber != 0) {
@@ -1603,12 +2023,12 @@
                     var x = (i / (bottomNumber + 1)).toFixed(4);
                     var y = 1;
                     var portType = bottomArray[i - 1];
-                    createOutputPort(graph, block, x, y, portType, 'bottom');
+                    createOutputPort(graph, block, x, y, portType, 'bottom', i);
                 }
             }
         };
 
-        function createInputPort(graph, block, x, y, portType, position) {
+        function createInputPort(graph, block, x, y, portType, position, ordering) {
             var port = null;
             if (portType == 'COMMAND') {
                 port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
@@ -1625,10 +2045,11 @@
                 } else if (position == 'left') {
                     port.geometry.offset = new mxPoint(-10, -6);
                 }
+                port.ordering=ordering;
             }
         };
 
-        function createOutputPort(graph, block, x, y, portType, position) {
+        function createOutputPort(graph, block, x, y, portType, position, ordering) {
             var port = null;
             if (portType == 'COMMAND') {
                 port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
@@ -1646,6 +2067,7 @@
                 if (position == 'right') {
                     port.geometry.offset = new mxPoint(0, -6);
                 }
+                port.ordering=ordering;
             }
         };
 
@@ -1654,8 +2076,6 @@
             var root = req.getDocumentElement();
             var dec = new mxCodec(root.ownerDocument);
             dec.decode(root, graph.stylesheet);
-            var style = graph.getStylesheet().getDefaultEdgeStyle();
-            style['edgeStyle'] = 'wireEdgeStyle';
         };
     </script>
     <!--
@@ -1858,7 +2278,7 @@
         }
     </script>
     <!--
-	   Implements a custom resistor shape. Direction currently ignored here.
+	   Implements a perpendicular wires connection edge style
     -->
     <script type="text/javascript">
         mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {

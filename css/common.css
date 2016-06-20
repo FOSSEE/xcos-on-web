@@ -1,3 +1,14 @@
+body {
+		font-family: Arial;
+}
+
+h1 {
+		font-size: 18px;
+}
+
+h2 {
+		font-size: 16px;
+}
 div.mxRubberband {
 	position: absolute;
 	overflow: hidden;
@@ -181,4 +192,30 @@ td.mxPopupMenuIcon {
 
 .fieldInput {
 	float: right;
+}
+
+#descriptionSetContext {
+	font-size: 14px;
+}
+
+#textareaSetContext {
+	width:380px;
+	height: 200px;
+}
+
+#buttonSetContext {
+	margin-left: 160px;
+	width: 50px;
+}
+
+.boldButton {
+	font-weight: bold;
+}
+
+.italicButton {
+	font-style: italic;
+}
+
+.underlineButton {
+	text-decoration: underline;
 }
