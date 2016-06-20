@@ -655,3 +655,29 @@ function ones() {
     }
 }
 
+function range(start, count) {
+      return Array.apply(0, Array(count))
+        .map(function (element, index) { 
+          return index + start;  
+      });
+    }
+    
+function size() {
+    
+    if(arguments.length==1)
+        return math.size(arguments[0])
+    else
+        {
+            var res=math.size(arguments[0]);
+            
+            switch(arguments[1])
+            {
+                case 'r':
+                case 1: return res[0];
+                case 'c':
+                case 2: return res[1];
+                case '*': return res[0]*res[1];
+                default: return res[arguments[1]];
+            }
+        }
+}
