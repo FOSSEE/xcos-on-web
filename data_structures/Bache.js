@@ -6,8 +6,9 @@ function Bache () {
 	var out = 3;
 
 	var model = scicos_model();
-	model.in = new ScilabDouble(transpose(range(1,in1)));
-	// model.out = new ScilabDouble([-(1:out)']);
+	
+	model.in = new ScilabDouble(math.transpose(math.range(-1,-in1,-1,true)));
+	model.out = new ScilabDouble(math.transpose(math.range(-1,-out,-1,true)));
 
 	var Patm = 1.013E5;
 
@@ -37,8 +38,8 @@ function Bache () {
 	mo.outputs = new ScilabString(["Cs1","Cs2","yNiveau"]);
 	mo.parameters=list(new ScilabString(["Patm"],["A"],["ze1"],["ze2"],["zs1"],["zs2"],["z0"],["T0"],["p_rho"]),new ScilabDouble([Patm],[A],[ze1],[ze2],[zs1],[zs2],[z0],[T0],[p_rho]));
 	model.equations=mo;
-	model.in=new ScilabDouble(ones(size(getData(mo.inputs),"*"),1));
-	model.out=new ScilabDouble(ones(size(getData(mo.outputs),"*"),1));
+	model.in=new ScilabDouble(...ones(size(getData(mo.inputs),'*'),1));
+	model.out=new ScilabDouble(...ones(size(getData(mo.outputs),'*'),1));
 
 	var exprs = new ScilabString([Patm.toString()],[A.toString()],[ze1.toString()],[ze2.toString()],[zs1.toString()],[zs2.toString()],[z0.toString()],[T0.toString()],[p_rho.toString()]);
 

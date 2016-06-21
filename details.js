@@ -307,11 +307,13 @@ function getData() {
 }
 
 function modelica(){
-	var model=[];
-    var inputs=[];
-    var outputs=[];
-    var parameters=list([],list());
-    var mo=tlist(["modelica","model","inputs","outputs","parameters"],model,inputs,outputs,parameters);
+    var modelica_type = ["modelica","model","inputs","outputs","parameters"];
+    this.modelica = new ScilabString(modelica_type);
+	this.model=[];
+    this.inputs=[];
+    this.outputs=[];
+    this.parameters=list([],list());
+    var mo=tlist(modelica_type,this.modelica,this.model,this.inputs,this.outputs,this.parameters);
 	return mo;
 }
 
@@ -884,7 +886,7 @@ function BasicBlock() {
         this.nmode = options.model.nmode;
         this.state = options.model.state;
         this.oDState = list();
-        this.equations = list(); // Not Known
+        this.equations = options.model.equations; 
         this.blockName = "BasicBlock";
         this.blockElementName = arguments.callee.caller.name;
     }
