@@ -9,7 +9,7 @@ function BITCLEAR () {
 	model.out2 = new ScilabDouble([1]);
 	model.intyp = new ScilabDouble([3]);
 	model.outtyp = new ScilabDouble([3]);
-	model.opar=list(new ScilabInteger(0));
+	model.opar=list(new ScilabInteger([0]));
 	model.blocktype = new ScilabString(["c"]);
 	model.dep_ut = new ScilabBoolean([true,false]);
 

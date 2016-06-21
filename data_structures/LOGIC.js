@@ -12,7 +12,7 @@ function LOGIC () {
 	model.evtin = new ScilabDouble([1]);
 	model.intyp = new ScilabDouble([5,5]);
 	model.outtyp = new ScilabDouble([5]);
-	model.opar=list(new ScilabInteger(mat));
+	model.opar=list(new ScilabInteger([mat]));
 	model.blocktype = new ScilabString(["c"]);
 	model.firing = new ScilabBoolean([false]);
 	model.dep_ut = new ScilabBoolean([true,false]);
