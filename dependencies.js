@@ -10,10 +10,11 @@ $.each(dir, function(index, value) {
                 filename = filename.replace("https://", value);
                 filename = filename.replace("http://", value);
                 var script = document.createElement("script");
-                script.src=filename;
+                script.src = filename;
                 document.head.appendChild(script);
-                });
-        }});
+            });
+        }
+    });
 });
 
 function AfficheBlock() {
@@ -104,11 +105,11 @@ function AfficheBlock() {
 function BigSom() {
     if (arguments.length > 0) {
         var options = arguments[0];
-        
+
         var dep_ut = getData(options.model.dep_ut);
         if (dep_ut[0] == "true")
             this.dependsOnU = "1";
-       
+
         this.id = options.id;
         this.interfaceFunctionName = arguments.callee.caller.name;
         this.ordering = options.ordering;
@@ -166,7 +167,7 @@ function BigSom() {
             this.simulationFunctionType = "DEFAULT";
         }
         this.style = arguments.callee.caller.name;
-        this.value = options.value; // Not Known
+        this.value = "+"; // Not Known
         this.exprs = options.graphics.exprs;
         this.realParameters = options.model.rpar;
         this.integerParameters = options.model.ipar;
@@ -180,67 +181,60 @@ function BigSom() {
     }
 }
 
+
 function zeros() {
-    if(arguments.length==0)
-    {
+    if (arguments.length == 0) {
         return [0];
-    }
-    else if(arguments.length==1)
-    {
+    } else if (arguments.length == 1) {
         var a = arguments[0];
-        if(typeof a.length === 'undefined'){
+        if (typeof a.length === 'undefined') {
             return [0];
-        }
-        else{
+        } else {
             return math.zeros(math.size(a));
         }
-    }
-    else{
+    } else {
         var args = Array.prototype.slice.call(arguments);
         return math.zeros(args);
     }
 }
 
 function ones() {
-    if(arguments.length==0)
-    {
+    if (arguments.length == 0) {
         return [1];
-    }
-    else if(arguments.length==1)
-    {
+    } else if (arguments.length == 1) {
         var a = arguments[0];
-        if(typeof a.length === 'undefined'){
+        if (typeof a.length === 'undefined') {
             return [1];
-        }
-        else{
+        } else {
             return math.ones(math.size(a));
         }
-    }
-    else{
+    } else {
         var args = Array.prototype.slice.call(arguments);
         return math.ones(args);
     }
 }
 
 function size() {
-    
-    if(arguments.length==1)
+
+    if (arguments.length == 1)
         return math.size(arguments[0])
-    else
-        {
-            var res=math.size(arguments[0]);
-            
-            if(res.length==1)
-                res.push(1);
-            
-            switch(arguments[1])
-            {
-                case 'r':
-                case 1: return res[0];
-                case 'c':
-                case 2: return res[1];
-                case '*': return res[0]*res[1];
-                default: return res[arguments[1]];
-            }
+    else {
+        var res = math.size(arguments[0]);
+
+        if (res.length == 1)
+            res.push(1);
+
+        switch (arguments[1]) {
+            case 'r':
+            case 1:
+                return res[0];
+            case 'c':
+            case 2:
+                return res[1];
+            case '*':
+                return res[0] * res[1];
+            default:
+                return res[arguments[1]];
         }
+    }
 }
