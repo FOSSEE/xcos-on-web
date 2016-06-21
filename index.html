@@ -14,7 +14,7 @@
 
     <link rel="stylesheet" href="jquery/farbtastic.css" type="text/css" />
     <link rel="stylesheet" href="jquery/jquery-ui.css">
-    <script type="text/javascript" src="math.js"></script>
+
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="json2.js"></script>
@@ -355,7 +355,8 @@
                     var text = null;
                     if (cell.isVertex() == true && cell.isConnectable() == false) {
                         var name = cell.value.getAttribute('blockElementName');
-                        var cellvar = window[name]('details');
+                        var cellvar = cell.inst.details();
+
                         // If cell is a block or port
                         if (cell.source == null && cell.target == null) {
                             if (cell.connectable) { // Cell is a port
@@ -564,14 +565,29 @@
                     var textarea = document.createElement('textarea');
                     textarea.style.width = '400px';
                     textarea.style.height = '400px';
-
                     var enc = new mxCodec(mxUtils.createXmlDocument());
+                    /*var array=[],key;
+                    for (key in diagRoot.model.cells) {
+                        
+                        if(diagRoot.model.cells[key].connectable == false)
+                        {
+                            array.push(diagRoot.model.cells[key].inst);
+                            diagRoot.model.cells[key].inst=null;
+                        }
+                    }*/
                     var node = enc.encode(diagRoot);
 
                     var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + mxUtils.getPrettyXml(node);
 
                     textarea.value = str;
-
+                    /*var j = 0;
+                    for (key in diagRoot.model.cells) {
+                        
+                        if(diagRoot.model.cells[key].connectable == false)
+                        {
+                            diagRoot.model.cells[key].inst=array[j++];
+                        }
+                    }*/
                     if (arguments[2] == null) {
                         showModalWindow(graph, 'XML', textarea, 410, 440);
                     } else {
@@ -909,7 +925,7 @@
         function showPropertiesWindow(graph, cell) {
 
             var name = cell.getAttribute('blockElementName');
-            var defaultProperties = window[name]("get");
+            var defaultProperties = cell.inst.get(); //window[name]("get");
             /*{
                 nbr_curves: ["Number of curves", 1],
                 clrs: ["color (>0) or mark (<0)", [1, 2, 3, 4, 5, 6, 7, 13]],
@@ -993,7 +1009,7 @@
                         propertiesObject[key] = document.getElementById(key.toString()).value;
                     }
                 }
-                var details = window[name]("set", cell.value, propertiesObject);
+                var details = cell.inst.set(cell.value, propertiesObject); //window[name]("set",cell.value,propertiesObject);
                 var enc = new mxCodec();
                 var node = enc.encode(details);
                 node.setAttribute('label', getData(details.exprs)[0]);
@@ -1591,6 +1607,7 @@
             return wind;
         };
 
+        var flag = 0;
 
         function addSidebarIcon(graph, sidebar, name, image) {
             // Function that is executed when the image is dropped on
@@ -1604,42 +1621,89 @@
                 model.beginUpdate();
                 try {
                     var label = getImgHTML(name); // Will not exist for all blocks
-                    if (name == 'ANDBLK') {
-                        var details = ANDBLK("define");
+                    var details_instance = new window[name]();
+                    var details = details_instance.define();
+                    var enc = new mxCodec(mxUtils.createXmlDocument());
+                    var node = enc.encode(details);
+                    node.setAttribute('label', label);
+                    var temp = enc.encode(parent);
+                    node.setAttribute('parent', temp.getAttribute('id'));
+                    var i, arr = [];
+                    var Model = details_instance.x.model;
+                    var graphics = details_instance.x.graphics;
+                    var inputPorts = [],
+                        outputPorts = [],
+                        controlPorts = [],
+                        commandPorts = [];
+                    if (Model.in.height != null) {
+                        arr = getData(graphics.in_implicit);
+                        if (arr.length != 0) {
+                            inputPorts = arr;
+                        } else {
+                            for (i = 0; i < Model.in.height; i++) {
+                                inputPorts.push("E");
+                            }
+                        }
+                    }
+                    if (Model.out.height != null) {
+                        arr = getData(graphics.out_implicit);
+                        if (arr.length != 0) {
+                            outputPorts = arr;
+                        } else {
+                            for (i = 0; i < Model.out.height; i++) {
+                                outputPorts.push("E");
+                            }
+                        }
+                    }
+                    if (Model.evtin.width != null) {
+                        for (i = 0; i < Model.evtin.width; i++) {
+                            controlPorts.push("CONTROL");
+                        }
+                    }
+                    if (Model.evtout.width != null) {
+                        for (i = 0; i < Model.evtout.width; i++) {
+                            commandPorts.push("COMMAND");
+                        }
+                    }
+                    v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
+                    v1.inst = details_instance;
+                    createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
+                    /*if (name == 'ANDBLK') {
+                        var a = new ANDBLK();
+                        var details = a.define();
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        node.setAttribute('label', label);
+                        node.setAttribute('label',label);
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
+                        v1.inst = a;
+                        
                         createPorts(graph, v1, [], ['CONTROL', 'CONTROL'], [], ['COMMAND']);
                     } else if (name == 'CMSCOPE') {
-                        var details = CMSCOPE("define");
+                        var a = new CMSCOPE();
+                        var details = a.define();
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        node.setAttribute('label', label);
+                        node.setAttribute('label',label);
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CMSCOPE');
+                        v1.inst = a;
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], [], []);
                     } else if (name == 'CONST_m') {
-                        var details = CONST_m("define");
+                        var a = new CONST_m();
+                        var details = a.define();
+                        console.log(a);
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        node.setAttribute('label', "1");
+                        console.log(node);
+                        node.setAttribute('label',"1");
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CONST_m');
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, "CONST_m");
+                        v1.inst = a;
                         createPorts(graph, v1, [], [], ['EXPLICIT'], []);
-                    } else if (name == 'AFFICH_m') {
-                        var details = AFFICH_m("define");
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        node.setAttribute('label', label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'AFFICH_m');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], [], []);
                     } else if (name == 'CONVERT') {
                         v1 = graph.insertVertex(parent, null, 'Convert to', x, y, 80, 80, 'CONVERT');
                         createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
@@ -1708,13 +1772,7 @@
                     }
                     // DISCONTINUOUS
                     else if (name == 'BACKLASH') {
-                        var details = BACKLASH("define");
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        node.setAttribute('label', label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'BACKLASH');
+                        v1 = graph.insertVertex(parent, null, 'Backlash', x, y, 80, 80, 'BACKLASH');
                         createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
                     } else if (name == 'DEADBAND') {
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'DEADBAND');
@@ -1737,14 +1795,7 @@
                     }
                     // DISCRETE
                     else if (name == 'AUTOMAT') {
-                        var details = AUTOMAT("define");
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        node.setAttribute('label', label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'AUTOMAT');
+                        v1 = graph.insertVertex(parent, null, 'Automaton<BR>nM=2, nX=1', x, y, 80, 80, 'AUTOMAT');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], ['COMMAND']);
                     } else if (name == 'DELAY_f') {
                         v1 = graph.insertVertex(parent, null, 'Delay', x, y, 80, 80, 'DELAYV_f');
@@ -1774,24 +1825,30 @@
                         v1 = graph.insertVertex(parent, null, 'Shift<BR>register', x, y, 80, 80, 'REGISTER');
                         createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
                     } else if (name == 'CFSCOPE') {
-                        var details = CFSCOPE("define");
+                        var a = new CFSCOPE();
+                        var details = a.define();
+                        console.log(a);
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        node.setAttribute('label', label);
+                        node.setAttribute('label',label);
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CFSCOPE');
+                        v1.inst = a;
                         createPorts(graph, v1, [], ['CONTROL'], [], []);
                     }
                     // EVENTS
                     else if (name == 'CLOCK_c') {
-                        var details = CLOCK_c("define");
+                        var a = new CLOCK_c();
+                        var details = a.define();
+                        console.log(a);
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        node.setAttribute('label', label);
+                        node.setAttribute('label',label);
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CLOCK_c');
+                        v1.inst = a;
                         createPorts(graph, v1, [], [], [], ['COMMAND']);
                     } else if (name == 'SampleCLK') {
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'SampleCLK');
@@ -1878,12 +1935,7 @@
                     }
                     // MATHEMATICAL OPERATIONS
                     else if (name == 'ABS_VALUE') {
-                        var details = ABS_VALUE("define");
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        node.setAttribute('label', label);
-                        var temp = enc.encode(parent);
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ABS_VALUE');
+                        v1 = graph.insertVertex(parent, null, 'ABS', x, y, 80, 80, 'ABS_VALUE');
                         createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
                     } else if (name == 'BIGSOM_f') {
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'BIGSOM_f');
@@ -1965,7 +2017,7 @@
                     } else if (name == 'TEXT_f') {
                         v1 = graph.insertVertex(parent, null, '', x, y, 80, 80, 'TEXT_f');
                         createPorts(graph, v1, [], [], [], []);
-                    }
+                    }*/
                     v1.setConnectable(false);
                 } finally {
                     model.endUpdate();
@@ -2049,9 +2101,9 @@
                 port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
             } else if (portType == 'CONTROL') {
                 port = graph.insertVertex(block, null, 'ControlPort', x, y, 10, 10, 'ControlPort', true);
-            } else if (portType == 'IMPLICIT') {
+            } else if (portType == 'I') {
                 port = graph.insertVertex(block, null, 'ImplicitInputPort', x, y, 10, 10, 'ImplicitInputPort', true);
-            } else if (portType == 'EXPLICIT') {
+            } else if (portType == 'E') {
                 port = graph.insertVertex(block, null, 'ExplicitInputPort', x, y, 10, 10, 'ExplicitInputPort', true);
             }
             if (port != null) {
@@ -2070,9 +2122,9 @@
                 port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
             } else if (portType == 'CONTROL') {
                 port = graph.insertVertex(block, null, 'ControlPort', x, y, 10, 10, 'ControlPort', true);
-            } else if (portType == 'IMPLICIT') {
+            } else if (portType == 'I') {
                 port = graph.insertVertex(block, null, 'ImplicitOutputPort', x, y, 10, 10, 'ImplicitOutputPort', true);
-            } else if (portType == 'EXPLICIT') {
+            } else if (portType == 'E') {
                 port = graph.insertVertex(block, null, 'ExplicitOutputPort', x, y, 10, 10, 'ExplicitOutputPort', true);
             }
             if (port != null) {
@@ -2509,5 +2561,4 @@
         });
     });
 </script>
-
 </html>
