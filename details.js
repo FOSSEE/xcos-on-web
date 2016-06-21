@@ -882,6 +882,7 @@ function BasicBlock() {
         this.objectsParameters = options.model.opar;
         this.nbZerosCrossing = options.model.nzcross;
         this.nmode = options.model.nmode;
+        this.state = options.model.state;
         this.oDState = list();
         this.equations = list(); // Not Known
         this.blockName = "BasicBlock";

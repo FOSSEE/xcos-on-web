@@ -1720,7 +1720,7 @@
                     }
                     // DISCONTINUOUS
                     else if (name == 'BACKLASH') {
-                        var details = BACKLASH();
+                        var details = BACKLASH("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
                         node.setAttribute('label',label);
@@ -1749,7 +1749,7 @@
                     }
                     // DISCRETE
                     else if (name == 'AUTOMAT') {
-                        var details = AUTOMAT();
+                        var details = AUTOMAT("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
                         node.setAttribute('label',label);
