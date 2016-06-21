@@ -1720,7 +1720,13 @@
                     }
                     // DISCONTINUOUS
                     else if (name == 'BACKLASH') {
-                        v1 = graph.insertVertex(parent, null, 'Backlash', x, y, 80, 80, 'BACKLASH');
+                        var details = BACKLASH();
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
+                        node.setAttribute('label',label);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'BACKLASH');
                         createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
                     } else if (name == 'DEADBAND') {
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'DEADBAND');

@@ -1,7 +1,7 @@
 function BACKLASH () {
 
 
-	var exprs = ["0";"1";"1"];
+	var exprs = new ScilabString(["0"],["1"],["1"]);
 
 	var model = scicos_model();
 	model.sim=list(new ScilabString(["backlash"]),new ScilabDouble([4]));
@@ -12,7 +12,7 @@ function BACKLASH () {
 	model.blocktype = new ScilabString(["c"]);
 	model.dep_ut = new ScilabBoolean([true,false]);
 
-	var gr_i = [];
+	var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"BACKLASH\",sz(1),sz(2));"]);
 	this.x=new standard_define(new ScilabDouble([3,2]),model,exprs,gr_i);
 	return new  BasicBlock (this.x)
 }

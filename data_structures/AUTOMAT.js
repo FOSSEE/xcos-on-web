@@ -1,6 +1,5 @@
 function AUTOMAT () {
 
-
 	var NMode = 2;
 
 	var Minitial = 1;

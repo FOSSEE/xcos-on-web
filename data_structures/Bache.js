@@ -1,13 +1,13 @@
 function Bache () {
 
 
-	var in = 2;
+	var in1 = 2;
 
 	var out = 3;
 
 	var model = scicos_model();
-	model.in = new ScilabDouble([-(1:in)']);
-	model.out = new ScilabDouble([-(1:out)']);
+	model.in = new ScilabDouble(transpose(range(1,in1)));
+	// model.out = new ScilabDouble([-(1:out)']);
 
 	var Patm = 1.013E5;
 
@@ -33,18 +33,18 @@ function Bache () {
 
 	var mo = modelica();
 	mo.model = new ScilabString(["Bache"]);
-	mo.inputs = new ScilabString(["Ce1" "Ce2"]);
-	mo.outputs = new ScilabString(["Cs1" "Cs2" "yNiveau"]);
-	mo.parameters=list(new ScilabString(["Patm";"A";"ze1";"ze2";"zs1";"zs2";"z0";"T0";"p_rho"]),[Patm],[A],[ze1],[ze2],[zs1],[zs2],[z0],[T0],[p_rho]);
+	mo.inputs = new ScilabString(["Ce1","Ce2"]);
+	mo.outputs = new ScilabString(["Cs1","Cs2","yNiveau"]);
+	mo.parameters=list(new ScilabString(["Patm"],["A"],["ze1"],["ze2"],["zs1"],["zs2"],["z0"],["T0"],["p_rho"]),new ScilabDouble([Patm],[A],[ze1],[ze2],[zs1],[zs2],[z0],[T0],[p_rho]));
 	model.equations=mo;
-	model.in=ones(size(mo.inputs,"*"),1);
-	model.out=ones(size(mo.outputs,"*"),1);
+	model.in=new ScilabDouble(ones(size(getData(mo.inputs),"*"),1));
+	model.out=new ScilabDouble(ones(size(getData(mo.outputs),"*"),1));
 
-	var exprs = [[string(Patm)],[string(A)],[string(ze1)],[string(ze2)],[string(zs1)],[string(zs2)],[string(z0)],[string(T0)],[string(p_rho)]];
+	var exprs = new ScilabString([Patm.toString()],[A.toString()],[ze1.toString()],[ze2.toString()],[zs1.toString()],[zs2.toString()],[z0.toString()],[T0.toString()],[p_rho.toString()]);
 
-	var gr_i = [];
-	this.x=standard_define([2,2],model,exprs,list(gr_i,0));
-	this.x.graphics.in_implicit = new ScilabString(["I";"I"]);
-	this.x.graphics.out_implicit = new ScilabString(["I";"I";"E"]);
+	var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"Bache\",sz(1),sz(2));"]);
+	this.x= new standard_define([2,2],model,exprs,list(gr_i,0));
+	this.x.graphics.in_implicit = new ScilabString(["I"],["I"]);
+	this.x.graphics.out_implicit = new ScilabString(["I"],["I"],["E"]);
 	return new  BasicBlock (this.x)
 }
