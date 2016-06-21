@@ -18,7 +18,7 @@ function AUTOMAT () {
 			var C2 = [1];
 		
 			var exprs = new ScilabString([NMode.toString()],[Minitial.toString()],[NX.toString()],[sci2exp(X0)],[sci2exp(XP)],[sci2exp(C1)],[sci2exp(C2)]);
-			console.log(XP.splice(0,2));
+			
 			var ipar = new ScilabDouble([NMode],[Minitial],[NX],...XP,C1,C2);
 			
 			var rpar = new ScilabDouble(X0);
