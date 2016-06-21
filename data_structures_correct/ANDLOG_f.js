@@ -1,6 +1,6 @@
 function ANDLOG_f() {
 
-    ANDLOG_f.prototype.internal = function() {
+    ANDLOG_f.prototype.internal = function ANDLOG_f() {
         var model = scicos_model();
         model.sim = new ScilabString(["andlog"]);
         model.out = new ScilabDouble([1]);
