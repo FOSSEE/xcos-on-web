@@ -1,4 +1,4 @@
-var dir = ["data_structures"];
+var dir = ["data_structures_correct"];
 var fileextension = ".";
 
 $.each(dir, function(index, value) {
