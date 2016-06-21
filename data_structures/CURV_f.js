@@ -15,7 +15,7 @@ function CURV_f () {
 
 	var model = scicos_model();
 	model.sim = new ScilabString(["intplt"]);
-	model.in = new ScilabDouble();
+	model.in1 = new ScilabDouble();
 	model.out = new ScilabDouble([1]);
 	model.rpar = new ScilabDouble([xx],[yy],[...rect]);
 	model.ipar = new ScilabDouble([size(xx,1)],[...axisdata]);
@@ -24,4 +24,5 @@ function CURV_f () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,[],gr_i);
+	return new BasicBlock(this.x)
 }

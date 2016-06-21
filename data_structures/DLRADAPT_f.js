@@ -15,7 +15,7 @@ function DLRADAPT_f () {
 
 	var model = scicos_model();
 	model.sim = new ScilabString(["dlradp"]);
-	model.in = new ScilabDouble([1],[1]);
+	model.in1 = new ScilabDouble([1],[1]);
 	model.out = new ScilabDouble([1]);
 	model.evtin = new ScilabDouble([1]);
 	model.dstate = new ScilabDouble([last_u],[last_y]);
@@ -29,4 +29,5 @@ function DLRADAPT_f () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }

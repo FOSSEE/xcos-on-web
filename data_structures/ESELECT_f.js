@@ -4,8 +4,8 @@ function ESELECT_f () {
 	var out = 2;
 
 	var model = scicos_model();
-	model.sim=list("eselect",-2);
-	model.in = new ScilabDouble([1]);
+	model.sim=list(new ScilabString(["eselect"]),new ScilabDouble([-2]));
+	model.in1 = new ScilabDouble([1]);
 	model.in2 = new ScilabDouble([1]);
 	model.intyp = new ScilabDouble([-1]);
 	model.evtin = new ScilabDouble([1]);
@@ -18,6 +18,7 @@ function ESELECT_f () {
 
 	var gr_i = [];
 
-	var exprs = [[out.toString()],[1.toString()],[model.nmode.toString()]];
+	var exprs = [[string(out)],[string(1)],[string(model.nmode)]];
 	this.x=new standard_define(new ScilabDouble([4,2]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }

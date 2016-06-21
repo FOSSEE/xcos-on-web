@@ -8,8 +8,8 @@ function CONSTRAINT2_c () {
 	var id = [0];
 
 	var model = scicos_model();
-	model.sim=list("constraint_c",10004);
-	model.in = new ScilabDouble([1]);
+	model.sim=list(new ScilabString(["constraint_c"]),new ScilabDouble([10004]));
+	model.in1 = new ScilabDouble([1]);
 	model.out = new ScilabDouble([1],[1]);
 	model.state = new ScilabDouble([x0],[xd0]);
 	model.ipar=new ScilabDouble([id]);
@@ -20,4 +20,5 @@ function CONSTRAINT2_c () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,2]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }

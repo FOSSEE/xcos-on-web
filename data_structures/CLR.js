@@ -14,8 +14,8 @@ function CLR () {
 	var exprs = ["1";"1+s"];
 
 	var model = scicos_model();
-	model.sim=list("csslti4",4);
-	model.in = new ScilabDouble([1]);
+	model.sim=list(new ScilabString(["csslti4"]),new ScilabDouble([4]));
+	model.in1 = new ScilabDouble([1]);
 	model.out = new ScilabDouble([1]);
 	model.state=new ScilabDouble([x0]);
 	model.rpar = new ScilabDouble([...colon_operator(A,:)],[...B],[C(,)],[...D]);
@@ -24,4 +24,5 @@ function CLR () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,2]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }

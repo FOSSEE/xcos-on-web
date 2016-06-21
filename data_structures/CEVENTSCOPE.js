@@ -14,15 +14,16 @@ function CEVENTSCOPE () {
 	var per = 30;
 
 	var model = scicos_model();
-	model.sim=list("cevscpe",4);
+	model.sim=list(new ScilabString(["cevscpe"]),new ScilabDouble([4]));
 	model.evtin = new ScilabDouble([1]);
 	model.rpar=new ScilabDouble([per]);
 	model.ipar = new ScilabDouble([win],[1],[...colon_operator(clrs,nclock)],[wpos(,)],[...wdim]);
 	model.blocktype = new ScilabString(["d"]);
 	model.dep_ut = new ScilabBoolean([false,false]);
 
-	var exprs = [[sci2exp(nclock);strcat(sci2exp(clrs(nclock))," ")],[win.toString()],[sci2exp([])],[sci2exp(wdim)],[per.toString()]];
+	var exprs = [[sci2exp(nclock);strcat(sci2exp(clrs(nclock))," ")],[string(win)],[sci2exp([])],[sci2exp(wdim)],[string(per)]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }

@@ -3,7 +3,7 @@ function GOTOMO () {
 
 	var model = scicos_model();
 	model.sim = new ScilabString(["gotomo"]);
-	model.in = new ScilabDouble([-1]);
+	model.in1 = new ScilabDouble([-1]);
 	model.in2 = new ScilabDouble([-2]);
 	model.intyp = new ScilabDouble();
 	model.out = new ScilabDouble();
@@ -23,4 +23,5 @@ function GOTOMO () {
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,1]),model,exprs,gr_i);
 	this.x.graphics.in_implicit = new ScilabString(["I"]);
+	return new BasicBlock(this.x)
 }

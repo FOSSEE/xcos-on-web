@@ -14,8 +14,8 @@ function DLR () {
 	var exprs = ["1";"1+z"];
 
 	var model = scicos_model();
-	model.sim=list("dsslti4",4);
-	model.in = new ScilabDouble([1]);
+	model.sim=list(new ScilabString(["dsslti4"]),new ScilabDouble([4]));
+	model.in1 = new ScilabDouble([1]);
 	model.out = new ScilabDouble([1]);
 	model.evtin = new ScilabDouble([1]);
 	model.dstate=...x0;
@@ -25,4 +25,5 @@ function DLR () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,2]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }
