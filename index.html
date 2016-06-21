@@ -318,33 +318,56 @@
                             edgeSource = edgeSource.source;
                         }
 
-                        var cell = graph.insertVertex(graph.getDefaultParent(), null, '', source.sourcePoint.x, source.sourcePoint.y, 5, 5,'Split', false);
+                        var cell = graph.insertVertex(graph.getDefaultParent(), null, '', source.sourcePoint.x, source.sourcePoint.y, 10, 10,'Split', false);
 
                         if (edgeSource.value == 'ExplicitOutputPort') {
                           createPorts(graph, cell, ['EXPLICIT'], [], ['EXPLICIT'], ['EXPLICIT']);
                           cell.name = 'SPLIT_f';
-                          graph.insertEdge(parent, null, '', cell.getChildAt(1), source.target,'ExplicitLink;');
+                          var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), source.target,'ExplicitLink;');
                           graph.insertEdge(parent, null, '', cell.getChildAt(2), target,'ExplicitLink;');
                         }
                         else if (edgeSource.value == 'ImplicitOutputPort') {
                           createPorts(graph, cell, ['IMPLICIT'], [], ['IMPLICIT', 'IMPLICIT'], []);
                           cell.name = 'SPLIT_f';
-                          graph.insertEdge(parent, null, '', cell.getChildAt(1), source.target,'ImplicitLink;');
+                          var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), source.target,'ImplicitLink;');
                           graph.insertEdge(parent, null, '', cell.getChildAt(2), target,'ImplicitLink;');
                         }
                         else {
                           createPorts(graph, cell, ['CONTROL'], [], ['COMMAND', 'COMMAND'], []);
                           cell.name = 'SPLIT_f';
-                          graph.insertEdge(parent, null, '', cell.getChildAt(1), source.target,'CommandControlLink;');
+                          var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), source.target,'CommandControlLink;');
                           graph.insertEdge(parent, null, '', cell.getChildAt(2), target,'CommandControlLink;');
                         }
 
                         cell.getChildAt(0).setVisible(false);
                         cell.getChildAt(1).setVisible(false);
                         cell.getChildAt(2).setVisible(false);
+                        var waypoints = source.waypoints;
+                        var sdsd = graph.view.getState(source);
+                        var seg = mxUtils.findNearestSegment(sdsd, source.sourcePoint.x, source.sourcePoint.y);
+                        //console.log(graph.view.getNextPoint(graph.view.getState(source), graph.view.getState(cell), false));
+                        graph.removeCells([source], true);
+                        source = graph.insertEdge(parent, null, '', source.source, cell.getChildAt(0),'ExplicitLink;');
+                        //var seg = mxUtils.findNearestSegment(source, source.sourcePoint.x, source.sourcePoint.x);
+                        //console.log(seg);
+                        console.log(waypoints);
+                        console.log(sdsd.absolutePoints);
+                        console.log(seg);
 
-                        graph.getModel().setTerminal(source, cell.getChildAt(0), false);
+                        if(waypoints != null)  {
+                          var waypoints1 = [];
+                          for(var i = 0; i < seg; i++) {
+                            waypoints1.push(waypoints[i]);
+                          }
 
+                          var waypoints2 = [];
+                          for(var i = seg; i < waypoints.length; i++) {
+                            waypoints2.push(waypoints[i]);
+                          }
+
+                          source.geometry.points = waypoints1;
+                          someEdge.geometry.points = waypoints2;
+                        }
                         cell.getChildAt(0).setConnectable(false);
                         cell.getChildAt(1).setConnectable(false);
                         cell.getChildAt(2).setConnectable(false);
@@ -376,13 +399,13 @@
                         }
                         else if (edgeSource.value == 'ImplicitOutputPort') {
                           createPorts(graph, cell, ['IMPLICIT'], [], ['IMPLICIT', 'IMPLICIT'], []);
-                          cell.name = 'IMPSPLIT_f';
+                          cell.name = 'SPLIT_f';
                           graph.insertEdge(parent, null, '', cell.getChildAt(1), target.target,'ImplicitLink;');
                           graph.insertEdge(parent, null, '', cell.getChildAt(2), source,'ImplicitLink;');
                         }
                         else {
                           createPorts(graph, cell, ['CONTROL'], [], ['COMMAND', 'COMMAND'], []);
-                          cell.name = 'CLKSPLIT_f';
+                          cell.name = 'SPLIT_f';
                           graph.insertEdge(parent, null, '', cell.getChildAt(1), target.target,'CommandControlLink;');
                           graph.insertEdge(parent, null, '', cell.getChildAt(2), source,'CommandControlLink;');
                         }
@@ -405,9 +428,6 @@
                       return null;
                     }
                     return mxGraph.prototype.addEdge.apply(this, arguments);
-                  //}
-
-                  return null;
                 }
 
                 // Shows a "modal" window when double clicking a vertex.
@@ -428,6 +448,9 @@
                             */
                             if(cell.isVertex() == true) {
                               showPropertiesWindow(graph, cell);
+                            }
+                            else {
+                              console.log(cell);
                             }
                         }
                     }
@@ -684,13 +707,19 @@
                             cells.push(tempEdgeObject);
                         }
                         if(tempEdgeObject.source.parent.name == "SPLIT_f") {
+                          //console.log(tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0));
+
+                          //console.log(sdsd);
                             if(tempEdgeObject.source == tempEdgeObject.source.parent.getChildAt(1)) {
+                              console.log('sdsd');
                               var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
                               var target = tempEdgeObject.source.parent.getChildAt(2).getEdgeAt(0).target;
                               graph.getModel().setTerminal(sourceEdge, target, false);
                               cells.push(tempEdgeObject.source.parent);
                             }
                             else {
+                              console.log()
+                              //var points = graph.view.getState(tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0)).absolutePoints;
                               var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
                               var target = tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0).target;
                               graph.getModel().setTerminal(sourceEdge, target, false);
@@ -750,7 +779,7 @@
 
                 toolbar.appendChild(spacer.cloneNode(true));
 
-                addToolbarButton(editor, toolbar, 'deleteBlock', 'Delete', 'images/delete2.png');
+                addToolbarButton(editor, toolbar, 'delete', 'Delete', 'images/delete2.png');
                 addToolbarButton(editor, toolbar, 'undo', '', 'images/undo.png');
                 addToolbarButton(editor, toolbar, 'redo', '', 'images/redo.png');
                 toolbar.appendChild(spacer.cloneNode(true));
@@ -2505,6 +2534,7 @@
     -->
     <script type="text/javascript">
         mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
+            state.cell.waypoints = state.cell.geometry.points;
             // Creates array of all way- and terminalpoints
             var pts = state.absolutePoints;
             var horizontal = true;
