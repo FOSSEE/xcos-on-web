@@ -4,6 +4,11 @@
 /*
 Authors: Adhitya, Nimish, Chhavi, Saarang
 */
+// This is temporary so that my functions can be used be by blocks - @ASP1234
+var script = document.createElement("script");
+script.src = "dependencies.js";
+document.head.appendChild(script);
+
 var count = 1;
 
 function scicos_block() {
@@ -301,13 +306,13 @@ function getData() {
     return dataArray;
 }
 
-function modelica(){
-	var model=[];
-    var inputs=[];
-    var outputs=[];
-    var parameters=list([],list());
-    var mo=tlist(["modelica","model","inputs","outputs","parameters"],model,inputs,outputs,parameters);
-	return mo;
+function modelica() {
+    var model = [];
+    var inputs = [];
+    var outputs = [];
+    var parameters = list([], list());
+    var mo = tlist(["modelica", "model", "inputs", "outputs", "parameters"], model, inputs, outputs, parameters);
+    return mo;
 }
 
 function CONST_m() {
@@ -875,8 +880,9 @@ function BasicBlock() {
         this.realParameters = options.model.rpar;
         this.integerParameters = options.model.ipar;
         this.objectsParameters = options.model.opar;
-        this.nbZerosCrossing = new ScilabDouble([0]);
-        this.nmode = new ScilabDouble([0]);
+        this.nbZerosCrossing = options.model.nzcross;
+        this.nmode = options.model.nmode;
+        this.state = options.model.state;
         this.oDState = list();
         this.equations = list(); // Not Known
         this.blockName = "BasicBlock";
@@ -937,4 +943,3 @@ function zeros(n) {
 
     return port;
 }
-
