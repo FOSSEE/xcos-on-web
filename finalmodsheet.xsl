@@ -8,7 +8,6 @@ Authors: Maverick & Karma
 NOTES:
 Look for TAG:Break1!!!
          TAG:Break2!!!
-         TAG:Break3!!!
 -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:output method="xml" indent="no" />
@@ -117,9 +116,6 @@ Look for TAG:Break1!!!
             <xsl:when test="@style">
                 <!-- Style present -->
                 <xsl:choose>
-                    <xsl:when test="@style='BIGSOM_f'">
-                        <xsl:call-template name="BigSom" />
-                    </xsl:when>
                     <xsl:when test="@style='ExplicitInputPort'">
                         <xsl:call-template name="ExplicitInputPort" />
                     </xsl:when>
@@ -152,8 +148,6 @@ Look for TAG:Break1!!!
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
-            
-            
             <xsl:when test="@name">
                 <xsl:choose>
                     <xsl:when test="@name='ExplicitLink'">
@@ -175,7 +169,7 @@ Look for TAG:Break1!!!
     </xsl:template>
     <xsl:template name="Object" match="Object">
         <xsl:element name="Array">
-            <xsl:if test="name(..)='BasicBlock'">
+            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom'">
                 <xsl:if test="@as">
                     <xsl:attribute name="as">
                         <xsl:value-of select="@as" />
@@ -203,7 +197,7 @@ Look for TAG:Break1!!!
     -->
     <xsl:template name="Array" match="Array">
         <xsl:element name="Array">
-            <xsl:if test="name(..)='BasicBlock' or @as='context'">
+            <xsl:if test="name(..)='BasicBlock' or @as='context' or name(..)='AfficheBlock' or name(..)='BigSom'">
                 <xsl:if test="@as">
                     <xsl:attribute name="as">
                         <xsl:value-of select="@as" />
@@ -1588,7 +1582,7 @@ Look for TAG:Break1!!!
     </xsl:template>
     <xsl:template name="ScilabDouble" match="ScilabDouble">
         <xsl:element name="ScilabDouble">
-            <xsl:if test="name(..)='BasicBlock'">
+            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom'">
                 <xsl:if test="@as">
                     <xsl:attribute name="as">
                         <xsl:value-of select="@as" />
@@ -1620,7 +1614,7 @@ Look for TAG:Break1!!!
     </xsl:template>
     <xsl:template name="ScilabString" match="ScilabString">
         <xsl:element name="ScilabString">
-            <xsl:if test="name(..)='BasicBlock'">
+            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom'">
                 <xsl:if test="@as">
                     <xsl:attribute name="as">
                         <xsl:value-of select="@as" />
@@ -2194,6 +2188,6 @@ Look for TAG:Break1!!!
             <xsl:apply-templates />
         </xsl:element>
     </xsl:template>
-    <!-- To remove the instance variable in generated Xcos-->
+     <!-- To remove the instance variable in generated Xcos-->
     <xsl:template match="mxCell/instance"/>
 </xsl:stylesheet>
