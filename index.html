@@ -14,12 +14,11 @@
 
     <link rel="stylesheet" href="jquery/farbtastic.css" type="text/css" />
     <link rel="stylesheet" href="jquery/jquery-ui.css">
-
+    <script type="text/javascript" src="math.js"></script>
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="json2.js"></script>
     <script type="text/javascript">
-
         function main(container, outline, toolbar, sidebar, status) {
             // Checks if the browser is supported
             if (!mxClient.isBrowserSupported()) {
@@ -121,22 +120,22 @@
                                    XSLT transformation.
                                 */
                                 var cellSource = cell.source;
-                                while(cellSource.isEdge() == true) {
-                                  cellSource = cellSource.source;
+                                while (cellSource.isEdge() == true) {
+                                    cellSource = cellSource.source;
                                 }
                                 if (cellSource.value == "ExplicitOutputPort" || cellSource.value == "ExplicitInputPort") {
-                                    if(style == null) {
-                                      style = 'ExplicitLink' + ';';
+                                    if (style == null) {
+                                        style = 'ExplicitLink' + ';';
                                     }
                                     cell.name = "ExplicitLink";
                                 } else if (cellSource.value == "ImplicitOutputPort" || cellSource.value == "ImplicitInputPort") {
-                                    if(style == null) {
-                                      style = 'ImplicitLink' + ';';
+                                    if (style == null) {
+                                        style = 'ImplicitLink' + ';';
                                     }
                                     cell.name = "ImplicitLink";
                                 } else if (cellSource.value == "CommandPort" || cellSource.value == "ControlPort") {
-                                    if(style == null) {
-                                      style = 'CommandControlLink' + ';';
+                                    if (style == null) {
+                                        style = 'CommandControlLink' + ';';
                                     }
                                     cell.name = "CommandControlLink";
                                 }
@@ -167,10 +166,10 @@
 
                             }, edgeformat);
                             menu.addItem('Text and Text Font', 'images/edit.png', function() {
-                              showTextEditWindow(graph, cell);
+                                showTextEditWindow(graph, cell);
                             }, edgeformat);
                             menu.addItem('Text Color', 'images/edit.png', function() {
-                              showColorWheel(graph, cell, 'edgeTextColor');
+                                showColorWheel(graph, cell, 'edgeTextColor');
                             }, edgeformat);
 
                         } else {
@@ -262,43 +261,36 @@
                 */
                 graph.addEdge = function(edge, parent, source, target, index) {
 
-                  var edgeSource = source;
+                    var edgeSource = source;
 
-                  // If the source of the edge is also an edge, find the port.
-                  while (edgeSource.isEdge() == true) {
-                      edgeSource = edgeSource.source;
-                  }
+                    // If the source of the edge is also an edge, find the port.
+                    while (edgeSource.isEdge() == true) {
+                        edgeSource = edgeSource.source;
+                    }
 
-                  // If the edge violates any port constraints, return null.
-                  if(!((edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() &&
-                          target.getEdgeCount() == 0 && target.isVertex()) ||
-                    (edgeSource.getEdgeCount() <= 1 && source.isEdge()))) {
-                      alert("Port is already connected, please select an please select an unconnected port or a valid link");
-                  }
-                  else if(edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
-                    alert("Explicit data output port must be connected to explicit data input port");
-                  }
-                  else if(edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
-                    alert("Explicit data input port must be connected to explicit data output port");
-                  }
-                  else if(edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
-                    alert("Implicit data output port must be connected to implicit data input port");
-                  }
-                  else if(edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
-                    alert("Implicit data input port must be connected to implicit data output port");
-                  }
-                  else if(edgeSource.value == "CommandPort" && target.value != "ControlPort") {
-                    alert("Command port must be connected to control port");
-                  }
-                  else if(edgeSource.value == "ControlPort" && target.value != "CommandPort") {
-                    alert("Control port must be connected to command port");
-                  }
-                  else {
-                    // If the edge is legit, return the edge.
-                    return mxGraph.prototype.addEdge.apply(this, arguments);
-                  }
+                    // If the edge violates any port constraints, return null.
+                    if (!((edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() &&
+                                target.getEdgeCount() == 0 && target.isVertex()) ||
+                            (edgeSource.getEdgeCount() <= 1 && source.isEdge()))) {
+                        alert("Port is already connected, please select an please select an unconnected port or a valid link");
+                    } else if (edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
+                        alert("Explicit data output port must be connected to explicit data input port");
+                    } else if (edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
+                        alert("Explicit data input port must be connected to explicit data output port");
+                    } else if (edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
+                        alert("Implicit data output port must be connected to implicit data input port");
+                    } else if (edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
+                        alert("Implicit data input port must be connected to implicit data output port");
+                    } else if (edgeSource.value == "CommandPort" && target.value != "ControlPort") {
+                        alert("Command port must be connected to control port");
+                    } else if (edgeSource.value == "ControlPort" && target.value != "CommandPort") {
+                        alert("Control port must be connected to command port");
+                    } else {
+                        // If the edge is legit, return the edge.
+                        return mxGraph.prototype.addEdge.apply(this, arguments);
+                    }
 
-                  return null;
+                    return null;
                 }
 
                 // Shows a "modal" window when double clicking a vertex.
@@ -317,8 +309,8 @@
                             content.innerHTML = this.convertValueToString(cell);
                             showModalWindow(this, 'Properties', content, 400, 300);
                             */
-                            if(cell.isVertex() == true) {
-                              showPropertiesWindow(graph, cell);
+                            if (cell.isVertex() == true) {
+                                showPropertiesWindow(graph, cell);
                             }
                         }
                     }
@@ -360,55 +352,55 @@
                 }
 
                 graph.getTooltipForCell = function(cell) {
-                     var text = null;
-                     if (cell.isVertex() == true && cell.isConnectable() == false) {
-                         var name = cell.value.getAttribute('blockElementName');
-                         var cellvar = window[name]('details');
-                         // If cell is a block or port
-                         if (cell.source == null && cell.target == null) {
-                             if (cell.connectable) { // Cell is a port
-                                 // @ToDo: Port Number
-                                 text = 'Style : ' + cell.style + "\n";
-                             } else { //Cell is a block
-                                 // @ToDo: Block Name, Simulation, Flip, Mirror
-                                 // @ToDo: Number of Input, Output, Control, Command Ports
-                                 var inputport, outputport, controlport, commandport;
-                                 if (cellvar.model.in.height == null)
-                                     inputport = 0;
-                                 else
-                                     inputport = cellvar.model.in.height;
-                                 if (cellvar.model.out.height == null)
-                                     outputport = 0;
-                                 else
-                                     outputport = cellvar.model.out.height;
-                                 if (cellvar.model.evtin.width == null)
-                                     controlport = 0;
-                                 else
-                                     controlport = cellvar.model.evtin.width;
-                                 if (cellvar.model.evtout.width == null)
-                                     commandport = 0;
-                                 else
-                                     commandport = cellvar.model.evtout.width;
-                                 var geometry = cell.getGeometry();
-                                 text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
-                                     'Simulation : ' + cell.value.getAttribute('simulationFunctionName') + "\n" +
-                                     'UID : ' + cell.id + "\n" +
-                                     'Style : ' + cell.style + "\n" +
-                                     'Flip : ' + getData(cellvar.graphics.flip)[0] + "\n" +
-                                     'Mirror : false' + "\n" +
-                                     'Input Ports : ' + inputport + "\n" +
-                                     'Output Ports : ' + outputport + "\n" +
-                                     'Control Ports : ' + controlport + "\n" +
-                                     'Command Ports : ' + commandport + "\n" +
-                                     'x : ' + geometry.x + "\n" +
-                                     'y : ' + geometry.y + "\n" +
-                                     'w : ' + geometry.width + "\n" +
-                                     'h : ' + geometry.height + "\n";
-                             }
-                         }
-                     }
-                     return text;
-                 };
+                    var text = null;
+                    if (cell.isVertex() == true && cell.isConnectable() == false) {
+                        var name = cell.value.getAttribute('blockElementName');
+                        var cellvar = window[name]('details');
+                        // If cell is a block or port
+                        if (cell.source == null && cell.target == null) {
+                            if (cell.connectable) { // Cell is a port
+                                // @ToDo: Port Number
+                                text = 'Style : ' + cell.style + "\n";
+                            } else { //Cell is a block
+                                // @ToDo: Block Name, Simulation, Flip, Mirror
+                                // @ToDo: Number of Input, Output, Control, Command Ports
+                                var inputport, outputport, controlport, commandport;
+                                if (cellvar.model.in.height == null)
+                                    inputport = 0;
+                                else
+                                    inputport = cellvar.model.in.height;
+                                if (cellvar.model.out.height == null)
+                                    outputport = 0;
+                                else
+                                    outputport = cellvar.model.out.height;
+                                if (cellvar.model.evtin.width == null)
+                                    controlport = 0;
+                                else
+                                    controlport = cellvar.model.evtin.width;
+                                if (cellvar.model.evtout.width == null)
+                                    commandport = 0;
+                                else
+                                    commandport = cellvar.model.evtout.width;
+                                var geometry = cell.getGeometry();
+                                text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
+                                    'Simulation : ' + cell.value.getAttribute('simulationFunctionName') + "\n" +
+                                    'UID : ' + cell.id + "\n" +
+                                    'Style : ' + cell.style + "\n" +
+                                    'Flip : ' + getData(cellvar.graphics.flip)[0] + "\n" +
+                                    'Mirror : false' + "\n" +
+                                    'Input Ports : ' + inputport + "\n" +
+                                    'Output Ports : ' + outputport + "\n" +
+                                    'Control Ports : ' + controlport + "\n" +
+                                    'Command Ports : ' + commandport + "\n" +
+                                    'x : ' + geometry.x + "\n" +
+                                    'y : ' + geometry.y + "\n" +
+                                    'w : ' + geometry.width + "\n" +
+                                    'h : ' + geometry.height + "\n";
+                            }
+                        }
+                    }
+                    return text;
+                };
 
                 // Create XML tags!
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -576,9 +568,9 @@
                     var enc = new mxCodec(mxUtils.createXmlDocument());
                     var node = enc.encode(diagRoot);
 
-                    var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"+mxUtils.getPrettyXml(node);
+                    var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + mxUtils.getPrettyXml(node);
 
-                    textarea.value=str;
+                    textarea.value = str;
 
                     if (arguments[2] == null) {
                         showModalWindow(graph, 'XML', textarea, 410, 440);
@@ -620,9 +612,9 @@
                             Maverick
                             Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
                         */
-                        var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n"+mxUtils.getPrettyXml(resultDocument.documentElement);
+                        var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocument.documentElement);
 
-                        textarea.value=str.replace(/\n\n/g,"\n");
+                        textarea.value = str.replace(/\n\n/g, "\n");
                         showModalWindow(graph, 'Xcos', textarea, 410, 440);
                     }
                 });
@@ -747,30 +739,30 @@
 
         function styleToObject(style) {
 
-          var defaultStyle = style.substring(0, style.indexOf(';'));
-          var styleObject = {
-            "default" : defaultStyle
-          };
-          var remainingStyle = style.substring(style.indexOf(';') + 1);
+            var defaultStyle = style.substring(0, style.indexOf(';'));
+            var styleObject = {
+                "default": defaultStyle
+            };
+            var remainingStyle = style.substring(style.indexOf(';') + 1);
 
-          /*
-            remainingStyle is the string without the default style.
-            For every key:value pair in the string,
-            extract the key(string before '=') and the value
-            (string before ';'), set the key:value pair into styleObject
-            and remainingStyle is set to a string without the key:value pair.
-          */
-          while(remainingStyle.length > 0) {
-            var indexOfKey = remainingStyle.indexOf('=');
-            var key = remainingStyle.substring(0, indexOfKey);
-            remainingStyle = remainingStyle.substring(indexOfKey + 1);
-            var indexOfValue = remainingStyle.indexOf(';');
-            var value = remainingStyle.substring(0, indexOfValue);
-            styleObject[key] = value;
-            remainingStyle = remainingStyle.substring(indexOfValue + 1);
-          }
+            /*
+              remainingStyle is the string without the default style.
+              For every key:value pair in the string,
+              extract the key(string before '=') and the value
+              (string before ';'), set the key:value pair into styleObject
+              and remainingStyle is set to a string without the key:value pair.
+            */
+            while (remainingStyle.length > 0) {
+                var indexOfKey = remainingStyle.indexOf('=');
+                var key = remainingStyle.substring(0, indexOfKey);
+                remainingStyle = remainingStyle.substring(indexOfKey + 1);
+                var indexOfValue = remainingStyle.indexOf(';');
+                var value = remainingStyle.substring(0, indexOfValue);
+                styleObject[key] = value;
+                remainingStyle = remainingStyle.substring(indexOfValue + 1);
+            }
 
-          return styleObject;
+            return styleObject;
         }
 
         /*
@@ -778,16 +770,15 @@
           styleToObject(style) converts the object back to the style string.
         */
         function objectToStyle(object) {
-          var style = "";
-          for (var key in object) {
-            if(key.toString() == "default") {
-              style += object[key] + ';';
+            var style = "";
+            for (var key in object) {
+                if (key.toString() == "default") {
+                    style += object[key] + ';';
+                } else {
+                    style += (key + '=' + object[key] + ';');
+                }
             }
-            else {
-              style += (key + '=' + object[key] + ';');
-            }
-          }
-          return style;
+            return style;
         }
 
         /*
@@ -867,7 +858,7 @@
                 traverse the array of 'contextValue' and not all the
                 elements of it.
             */
-            for (var i=0;i<contextValue.length;i++) {
+            for (var i = 0; i < contextValue.length; i++) {
                 displayValue += contextValue[i] + "\n";
             }
             if (contextValue != "") {
@@ -905,7 +896,7 @@
                 }
 
                 diagRoot.context = contextValues;
-                diagRoot.context.scilabClass="String[]";
+                diagRoot.context.scilabClass = "String[]";
                 handleContext("set", contextValues);
                 wind.destroy();
             };
@@ -1002,10 +993,10 @@
                         propertiesObject[key] = document.getElementById(key.toString()).value;
                     }
                 }
-                var details = window[name]("set",cell.value,propertiesObject);
+                var details = window[name]("set", cell.value, propertiesObject);
                 var enc = new mxCodec();
                 var node = enc.encode(details);
-                node.setAttribute('label',getData(details.exprs)[0]);
+                node.setAttribute('label', getData(details.exprs)[0]);
                 cell.value = node;
                 /*
                     Maverick
@@ -1050,17 +1041,17 @@
 
 
         function showTextEditWindow(graph, cell) {
-              var fontFamilyList = {
-                "Arial" : 0,
-                "Dialog" : 1,
-                "Verdana" : 2,
-                "Times New Roman" : 3
-              }
-              var defaultProperties = {
-                  text: ["Text", "text"],
-                  fontFamily : ["Font Family", fontFamilyList],
-                  fontSize: ["fontSize", 20]
-              };
+            var fontFamilyList = {
+                "Arial": 0,
+                "Dialog": 1,
+                "Verdana": 2,
+                "Times New Roman": 3
+            }
+            var defaultProperties = {
+                text: ["Text", "text"],
+                fontFamily: ["Font Family", fontFamilyList],
+                fontSize: ["fontSize", 20]
+            };
 
             var style = graph.getModel().getStyle(cell);
             var styleObject = styleToObject(style);
@@ -1099,38 +1090,37 @@
                     namelabel.innerHTML = defaultProperties[key][0];
                     myform.appendChild(namelabel);
 
-                    if(key == "fontFamily") {
-                      //Here we create a "select" element (a drop down list).
-                      var newList = document.createElement("select");
-                      newList.style.cssText = "float:right";
-                      newList.setAttribute("id", key.toString());
-                      var dropdownItems = defaultProperties[key][1];
+                    if (key == "fontFamily") {
+                        //Here we create a "select" element (a drop down list).
+                        var newList = document.createElement("select");
+                        newList.style.cssText = "float:right";
+                        newList.setAttribute("id", key.toString());
+                        var dropdownItems = defaultProperties[key][1];
 
-                      for(var item in dropdownItems) {
-                        if (dropdownItems.hasOwnProperty(item)) {
-                          option = document.createElement('option');
-                          option.value = item;
-                          option.text = item;
-                          option.setAttribute("id", item);
-                          newList.appendChild(option);
+                        for (var item in dropdownItems) {
+                            if (dropdownItems.hasOwnProperty(item)) {
+                                option = document.createElement('option');
+                                option.value = item;
+                                option.text = item;
+                                option.setAttribute("id", item);
+                                newList.appendChild(option);
+                            }
                         }
-                      }
 
-                      var selectedFontFamily = 0;
-                      var styleObject = styleToObject(style);
-                      if ('fontFamily' in styleObject) {
-                          selectedFontFamily =  styleObject['fontFamily'];
-                      }
-                      newList.selectedIndex = dropdownItems[selectedFontFamily];
-                      myform.appendChild(newList);
-                    }
-                    else {
-                      var input = document.createElement("input");
-                      input.name = key;
-                      input.value = defaultProperties[key][1];
-                      input.setAttribute("id", key.toString());
-                      input.setAttribute("class", "fieldInput");
-                      myform.appendChild(input);
+                        var selectedFontFamily = 0;
+                        var styleObject = styleToObject(style);
+                        if ('fontFamily' in styleObject) {
+                            selectedFontFamily = styleObject['fontFamily'];
+                        }
+                        newList.selectedIndex = dropdownItems[selectedFontFamily];
+                        myform.appendChild(newList);
+                    } else {
+                        var input = document.createElement("input");
+                        input.name = key;
+                        input.value = defaultProperties[key][1];
+                        input.setAttribute("id", key.toString());
+                        input.setAttribute("class", "fieldInput");
+                        myform.appendChild(input);
                     }
                     // Line break
                     var linebreak = document.createElement('br');
@@ -1151,30 +1141,29 @@
               for "set" type, and toggles with the active class for "get" type.
             */
             function changeFontStyle(type, graph, cell, button, bit) {
-              var style = graph.getModel().getStyle(cell);
-              var trigger = document.getElementById(button);
-              var styleObject = styleToObject(style);
-              var previousValue = 1;
-              if ('fontStyle' in styleObjesct) {
-                  previousValue = styleObject['fontStyle'];
+                var style = graph.getModel().getStyle(cell);
+                var trigger = document.getElementById(button);
+                var styleObject = styleToObject(style);
+                var previousValue = 1;
+                if ('fontStyle' in styleObjesct) {
+                    previousValue = styleObject['fontStyle'];
 
-                  // To get a bit mask:
-                  var mask = 1 << bit; // Get the 1st element
+                    // To get a bit mask:
+                    var mask = 1 << bit; // Get the 1st element
 
-                  if(type == "get") {
-                    // toggle the bit
-                    previousValue ^= mask;
-                    trigger.classList.toggle(button);
-                    styleObject['fontStyle'] = previousValue;
-                    style = objectToStyle(styleObject);
-                    graph.getModel().setStyle(cell, style);
-                  }
-                  else if(type == "set") {
-                    if ((previousValue & mask) != 0) {
-                      trigger.classList.toggle(button);
+                    if (type == "get") {
+                        // toggle the bit
+                        previousValue ^= mask;
+                        trigger.classList.toggle(button);
+                        styleObject['fontStyle'] = previousValue;
+                        style = objectToStyle(styleObject);
+                        graph.getModel().setStyle(cell, style);
+                    } else if (type == "set") {
+                        if ((previousValue & mask) != 0) {
+                            trigger.classList.toggle(button);
+                        }
                     }
-                  }
-              }
+                }
             }
 
             // Button - Bold
@@ -1184,7 +1173,7 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-              changeFontStyle("get", graph, cell, 'boldButton', 0);
+                changeFontStyle("get", graph, cell, 'boldButton', 0);
             }
             myform.appendChild(btn);
 
@@ -1195,7 +1184,7 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-              changeFontStyle("get", graph, cell, 'italicButton', 1);
+                changeFontStyle("get", graph, cell, 'italicButton', 1);
             }
             myform.appendChild(btn);
 
@@ -1206,7 +1195,7 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-              changeFontStyle("get", graph, cell, 'underlineButton', 2);
+                changeFontStyle("get", graph, cell, 'underlineButton', 2);
             }
             myform.appendChild(btn);
 
@@ -1256,10 +1245,10 @@
               for the selected edge label, add the respective active class to that button.
             */
 
-            if('fontStyle' in styleObject) {
-              changeFontStyle("set", graph, cell, 'boldButton', 0);
-              changeFontStyle("set", graph, cell, 'italicButton', 1);
-              changeFontStyle("set", graph, cell, 'underlineButton', 2);
+            if ('fontStyle' in styleObject) {
+                changeFontStyle("set", graph, cell, 'boldButton', 0);
+                changeFontStyle("set", graph, cell, 'italicButton', 1);
+                changeFontStyle("set", graph, cell, 'underlineButton', 2);
             }
         };
         /*
@@ -1490,12 +1479,11 @@
                 } else if (selectProperty == "bgColor") {
                     graph.container.style.backgroundColor = input;
                 } else if (selectProperty == "vertexStrokeColor") {
-                  styleObject['strokeColor'] = input;
+                    styleObject['strokeColor'] = input;
                 } else if (selectProperty == "vertexFillColor") {
-                  styleObject['fillColor'] = input;
-                }
-                else if(selectProperty == "edgeTextColor") {
-                  styleObject['fontColor'] = input;
+                    styleObject['fillColor'] = input;
+                } else if (selectProperty == "edgeTextColor") {
+                    styleObject['fontColor'] = input;
                 }
                 style = objectToStyle(styleObject);
                 graph.getModel().setStyle(cell, style);
@@ -1620,7 +1608,7 @@
                         var details = ANDBLK("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        node.setAttribute('label',label);
+                        node.setAttribute('label', label);
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
@@ -1629,7 +1617,7 @@
                         var details = CMSCOPE("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        node.setAttribute('label',label);
+                        node.setAttribute('label', label);
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CMSCOPE');
@@ -1638,11 +1626,20 @@
                         var details = CONST_m("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        node.setAttribute('label',"1");
+                        node.setAttribute('label', "1");
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CONST_m');
                         createPorts(graph, v1, [], [], ['EXPLICIT'], []);
+                    } else if (name == 'AFFICH_m') {
+                        var details = AFFICH_m("define");
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
+                        node.setAttribute('label', label);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'AFFICH_m');
+                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], [], []);
                     } else if (name == 'CONVERT') {
                         v1 = graph.insertVertex(parent, null, 'Convert to', x, y, 80, 80, 'CONVERT');
                         createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
@@ -1711,7 +1708,13 @@
                     }
                     // DISCONTINUOUS
                     else if (name == 'BACKLASH') {
-                        v1 = graph.insertVertex(parent, null, 'Backlash', x, y, 80, 80, 'BACKLASH');
+                        var details = BACKLASH("define");
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
+                        node.setAttribute('label', label);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'BACKLASH');
                         createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
                     } else if (name == 'DEADBAND') {
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'DEADBAND');
@@ -1734,7 +1737,14 @@
                     }
                     // DISCRETE
                     else if (name == 'AUTOMAT') {
-                        v1 = graph.insertVertex(parent, null, 'Automaton<BR>nM=2, nX=1', x, y, 80, 80, 'AUTOMAT');
+                        var details = AUTOMAT("define");
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
+                        node.setAttribute('label', label);
+                        var temp = enc.encode(parent);
+                        node.setAttribute('parent', temp.getAttribute('id'));
+
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'AUTOMAT');
                         createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], ['COMMAND']);
                     } else if (name == 'DELAY_f') {
                         v1 = graph.insertVertex(parent, null, 'Delay', x, y, 80, 80, 'DELAYV_f');
@@ -1767,7 +1777,7 @@
                         var details = CFSCOPE("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        node.setAttribute('label',label);
+                        node.setAttribute('label', label);
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
@@ -1778,7 +1788,7 @@
                         var details = CLOCK_c("define");
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        node.setAttribute('label',label);
+                        node.setAttribute('label', label);
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
                         v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CLOCK_c');
@@ -1868,7 +1878,12 @@
                     }
                     // MATHEMATICAL OPERATIONS
                     else if (name == 'ABS_VALUE') {
-                        v1 = graph.insertVertex(parent, null, 'ABS', x, y, 80, 80, 'ABS_VALUE');
+                        var details = ABS_VALUE("define");
+                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                        var node = enc.encode(details);
+                        node.setAttribute('label', label);
+                        var temp = enc.encode(parent);
+                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ABS_VALUE');
                         createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
                     } else if (name == 'BIGSOM_f') {
                         v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'BIGSOM_f');
@@ -2045,7 +2060,7 @@
                 } else if (position == 'left') {
                     port.geometry.offset = new mxPoint(-10, -6);
                 }
-                port.ordering=ordering;
+                port.ordering = ordering;
             }
         };
 
@@ -2067,7 +2082,7 @@
                 if (position == 'right') {
                     port.geometry.offset = new mxPoint(0, -6);
                 }
-                port.ordering=ordering;
+                port.ordering = ordering;
             }
         };
 
