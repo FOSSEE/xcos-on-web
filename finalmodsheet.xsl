@@ -8,6 +8,7 @@ Authors: Maverick & Karma
 NOTES:
 Look for TAG:Break1!!!
          TAG:Break2!!!
+         TAG:Break3!!!
 -->
 <xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:output method="xml" indent="no" />
@@ -151,6 +152,8 @@ Look for TAG:Break1!!!
                     </xsl:otherwise>
                 </xsl:choose>
             </xsl:when>
+            
+            
             <xsl:when test="@name">
                 <xsl:choose>
                     <xsl:when test="@name='ExplicitLink'">
@@ -2191,4 +2194,6 @@ Look for TAG:Break1!!!
             <xsl:apply-templates />
         </xsl:element>
     </xsl:template>
+    <!-- To remove the instance variable in generated Xcos-->
+    <xsl:template match="mxCell/instance"/>
 </xsl:stylesheet>

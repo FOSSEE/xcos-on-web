@@ -19,7 +19,6 @@
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="json2.js"></script>
     <script type="text/javascript">
-
         function main(container, outline, toolbar, sidebar, status) {
             // Checks if the browser is supported
             if (!mxClient.isBrowserSupported()) {
@@ -121,22 +120,22 @@
                                    XSLT transformation.
                                 */
                                 var cellSource = cell.source;
-                                while(cellSource.isEdge() == true) {
-                                  cellSource = cellSource.source;
+                                while (cellSource.isEdge() == true) {
+                                    cellSource = cellSource.source;
                                 }
                                 if (cellSource.value == "ExplicitOutputPort" || cellSource.value == "ExplicitInputPort") {
-                                    if(style == null) {
-                                      style = 'ExplicitLink' + ';';
+                                    if (style == null) {
+                                        style = 'ExplicitLink' + ';';
                                     }
                                     cell.name = "ExplicitLink";
                                 } else if (cellSource.value == "ImplicitOutputPort" || cellSource.value == "ImplicitInputPort") {
-                                    if(style == null) {
-                                      style = 'ImplicitLink' + ';';
+                                    if (style == null) {
+                                        style = 'ImplicitLink' + ';';
                                     }
                                     cell.name = "ImplicitLink";
                                 } else if (cellSource.value == "CommandPort" || cellSource.value == "ControlPort") {
-                                    if(style == null) {
-                                      style = 'CommandControlLink' + ';';
+                                    if (style == null) {
+                                        style = 'CommandControlLink' + ';';
                                     }
                                     cell.name = "CommandControlLink";
                                 }
@@ -167,10 +166,10 @@
 
                             }, edgeformat);
                             menu.addItem('Text and Text Font', 'images/edit.png', function() {
-                              showTextEditWindow(graph, cell);
+                                showTextEditWindow(graph, cell);
                             }, edgeformat);
                             menu.addItem('Text Color', 'images/edit.png', function() {
-                              showColorWheel(graph, cell, 'edgeTextColor');
+                                showColorWheel(graph, cell, 'edgeTextColor');
                             }, edgeformat);
 
                         } else {
@@ -262,43 +261,36 @@
                 */
                 graph.addEdge = function(edge, parent, source, target, index) {
 
-                  var edgeSource = source;
+                    var edgeSource = source;
 
-                  // If the source of the edge is also an edge, find the port.
-                  while (edgeSource.isEdge() == true) {
-                      edgeSource = edgeSource.source;
-                  }
+                    // If the source of the edge is also an edge, find the port.
+                    while (edgeSource.isEdge() == true) {
+                        edgeSource = edgeSource.source;
+                    }
 
-                  // If the edge violates any port constraints, return null.
-                  if(!((edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() &&
-                          target.getEdgeCount() == 0 && target.isVertex()) ||
-                    (edgeSource.getEdgeCount() <= 1 && source.isEdge()))) {
-                      alert("Port is already connected, please select an please select an unconnected port or a valid link");
-                  }
-                  else if(edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
-                    alert("Explicit data output port must be connected to explicit data input port");
-                  }
-                  else if(edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
-                    alert("Explicit data input port must be connected to explicit data output port");
-                  }
-                  else if(edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
-                    alert("Implicit data output port must be connected to implicit data input port");
-                  }
-                  else if(edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
-                    alert("Implicit data input port must be connected to implicit data output port");
-                  }
-                  else if(edgeSource.value == "CommandPort" && target.value != "ControlPort") {
-                    alert("Command port must be connected to control port");
-                  }
-                  else if(edgeSource.value == "ControlPort" && target.value != "CommandPort") {
-                    alert("Control port must be connected to command port");
-                  }
-                  else {
-                    // If the edge is legit, return the edge.
-                    return mxGraph.prototype.addEdge.apply(this, arguments);
-                  }
+                    // If the edge violates any port constraints, return null.
+                    if (!((edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() &&
+                                target.getEdgeCount() == 0 && target.isVertex()) ||
+                            (edgeSource.getEdgeCount() <= 1 && source.isEdge()))) {
+                        alert("Port is already connected, please select an please select an unconnected port or a valid link");
+                    } else if (edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
+                        alert("Explicit data output port must be connected to explicit data input port");
+                    } else if (edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
+                        alert("Explicit data input port must be connected to explicit data output port");
+                    } else if (edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
+                        alert("Implicit data output port must be connected to implicit data input port");
+                    } else if (edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
+                        alert("Implicit data input port must be connected to implicit data output port");
+                    } else if (edgeSource.value == "CommandPort" && target.value != "ControlPort") {
+                        alert("Command port must be connected to control port");
+                    } else if (edgeSource.value == "ControlPort" && target.value != "CommandPort") {
+                        alert("Control port must be connected to command port");
+                    } else {
+                        // If the edge is legit, return the edge.
+                        return mxGraph.prototype.addEdge.apply(this, arguments);
+                    }
 
-                  return null;
+                    return null;
                 }
 
                 // Shows a "modal" window when double clicking a vertex.
@@ -317,8 +309,8 @@
                             content.innerHTML = this.convertValueToString(cell);
                             showModalWindow(this, 'Properties', content, 400, 300);
                             */
-                            if(cell.isVertex() == true) {
-                              showPropertiesWindow(graph, cell);
+                            if (cell.isVertex() == true) {
+                                showPropertiesWindow(graph, cell);
                             }
                         }
                     }
@@ -360,55 +352,64 @@
                 }
 
                 graph.getTooltipForCell = function(cell) {
-                     var text = null;
-                     if (cell.isVertex() == true && cell.isConnectable() == false) {
-                         var name = cell.value.getAttribute('blockElementName');
-                         var cellvar = window[name]('details');
-                         // If cell is a block or port
-                         if (cell.source == null && cell.target == null) {
-                             if (cell.connectable) { // Cell is a port
-                                 // @ToDo: Port Number
-                                 text = 'Style : ' + cell.style + "\n";
-                             } else { //Cell is a block
-                                 // @ToDo: Block Name, Simulation, Flip, Mirror
-                                 // @ToDo: Number of Input, Output, Control, Command Ports
-                                 var inputport, outputport, controlport, commandport;
-                                 if (cellvar.model.in.height == null)
-                                     inputport = 0;
-                                 else
-                                     inputport = cellvar.model.in.height;
-                                 if (cellvar.model.out.height == null)
-                                     outputport = 0;
-                                 else
-                                     outputport = cellvar.model.out.height;
-                                 if (cellvar.model.evtin.width == null)
-                                     controlport = 0;
-                                 else
-                                     controlport = cellvar.model.evtin.width;
-                                 if (cellvar.model.evtout.width == null)
-                                     commandport = 0;
-                                 else
-                                     commandport = cellvar.model.evtout.width;
-                                 var geometry = cell.getGeometry();
-                                 text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
-                                     'Simulation : ' + cell.value.getAttribute('simulationFunctionName') + "\n" +
-                                     'UID : ' + cell.id + "\n" +
-                                     'Style : ' + cell.style + "\n" +
-                                     'Flip : ' + getData(cellvar.graphics.flip)[0] + "\n" +
-                                     'Mirror : false' + "\n" +
-                                     'Input Ports : ' + inputport + "\n" +
-                                     'Output Ports : ' + outputport + "\n" +
-                                     'Control Ports : ' + controlport + "\n" +
-                                     'Command Ports : ' + commandport + "\n" +
-                                     'x : ' + geometry.x + "\n" +
-                                     'y : ' + geometry.y + "\n" +
-                                     'w : ' + geometry.width + "\n" +
-                                     'h : ' + geometry.height + "\n";
-                             }
-                         }
-                     }
-                     return text;
-                 };
+                    var text = null;
+                    if (cell.isVertex() == true && cell.isConnectable() == false) {
+                        var name = cell.value.getAttribute('blockElementName');
+                        var cellvar = cell.blockInstance.instance.details();
+
+                        // If cell is a block or ports
+                        if (cell.source == null && cell.target == null) {
+                            if (cell.connectable) { // Cell is a Port
+                                // @ToDo: Port Number
+                                text = 'Style : ' + cell.style + "\n";
+                            } else { //Cell is a block
+                                // @ToDo: Block Name, Simulation, Flip, Mirror
+                                // @ToDo: Number of Input, Output, Control, Command Ports
+                                var inputPort, outputPort, controlPort, commandPort;
+                                if (cellvar.model.in.height == null) {
+                                    inputPort = 0;
+								}
+                                else {
+                                    inputPort = cellvar.model.in.height;
+								}
+                                if (cellvar.model.out.height == null) {
+                                    outputPort = 0;
+                                }
+								else {
+                                    outputPort = cellvar.model.out.height;
+								}
+                                if (cellvar.model.evtin.width == null) {
+                                    controlPort = 0;
+								}
+                                else {
+                                    controlPort = cellvar.model.evtin.width;
+								}
+                                if (cellvar.model.evtout.width == null) {
+                                    commandPort = 0;
+								}
+                                else {
+                                    commandPort = cellvar.model.evtout.width;
+								}
+                                var geometry = cell.getGeometry();
+                                text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
+                                    'Simulation : ' + cell.value.getAttribute('simulationFunctionName') + "\n" +
+                                    'UID : ' + cell.id + "\n" +
+                                    'Style : ' + cell.style + "\n" +
+                                    'Flip : ' + getData(cellvar.graphics.flip)[0] + "\n" +
+                                    'Mirror : false' + "\n" +
+                                    'Input Ports : ' + inputPort + "\n" +
+                                    'Output Ports : ' + outputPort + "\n" +
+                                    'Control Ports : ' + controlPort + "\n" +
+                                    'Command Ports : ' + commandPort + "\n" +
+                                    'x : ' + geometry.x + "\n" +
+                                    'y : ' + geometry.y + "\n" +
+                                    'w : ' + geometry.width + "\n" +
+                                    'h : ' + geometry.height + "\n";
+                            }
+                        }
+                    }
+                    return text;
+                };
 
                 // Create XML tags!
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
@@ -572,14 +573,29 @@
                     var textarea = document.createElement('textarea');
                     textarea.style.width = '400px';
                     textarea.style.height = '400px';
-
                     var enc = new mxCodec(mxUtils.createXmlDocument());
+                    /*var array=[],key;
+                    for (key in diagRoot.model.cells) {
+                        
+                        if(diagRoot.model.cells[key].connectable == false)
+                        {
+                            array.push(diagRoot.model.cells[key].inst);
+                            diagRoot.model.cells[key].inst=null;
+                        }
+                    }*/
                     var node = enc.encode(diagRoot);
 
-                    var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"+mxUtils.getPrettyXml(node);
+                    var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + mxUtils.getPrettyXml(node);
 
-                    textarea.value=str;
-
+                    textarea.value = str;
+                    /*var j = 0;
+                    for (key in diagRoot.model.cells) {
+                        
+                        if(diagRoot.model.cells[key].connectable == false)
+                        {
+                            diagRoot.model.cells[key].inst=array[j++];
+                        }
+                    }*/
                     if (arguments[2] == null) {
                         showModalWindow(graph, 'XML', textarea, 410, 440);
                     } else {
@@ -620,9 +636,9 @@
                             Maverick
                             Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
                         */
-                        var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n"+mxUtils.getPrettyXml(resultDocument.documentElement);
+                        var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocument.documentElement);
 
-                        textarea.value=str.replace(/\n\n/g,"\n");
+                        textarea.value = str.replace(/\n\n/g, "\n");
                         showModalWindow(graph, 'Xcos', textarea, 410, 440);
                     }
                 });
@@ -747,30 +763,30 @@
 
         function styleToObject(style) {
 
-          var defaultStyle = style.substring(0, style.indexOf(';'));
-          var styleObject = {
-            "default" : defaultStyle
-          };
-          var remainingStyle = style.substring(style.indexOf(';') + 1);
+            var defaultStyle = style.substring(0, style.indexOf(';'));
+            var styleObject = {
+                "default": defaultStyle
+            };
+            var remainingStyle = style.substring(style.indexOf(';') + 1);
 
-          /*
-            remainingStyle is the string without the default style.
-            For every key:value pair in the string,
-            extract the key(string before '=') and the value
-            (string before ';'), set the key:value pair into styleObject
-            and remainingStyle is set to a string without the key:value pair.
-          */
-          while(remainingStyle.length > 0) {
-            var indexOfKey = remainingStyle.indexOf('=');
-            var key = remainingStyle.substring(0, indexOfKey);
-            remainingStyle = remainingStyle.substring(indexOfKey + 1);
-            var indexOfValue = remainingStyle.indexOf(';');
-            var value = remainingStyle.substring(0, indexOfValue);
-            styleObject[key] = value;
-            remainingStyle = remainingStyle.substring(indexOfValue + 1);
-          }
+            /*
+              remainingStyle is the string without the default style.
+              For every key:value pair in the string,
+              extract the key(string before '=') and the value
+              (string before ';'), set the key:value pair into styleObject
+              and remainingStyle is set to a string without the key:value pair.
+            */
+            while (remainingStyle.length > 0) {
+                var indexOfKey = remainingStyle.indexOf('=');
+                var key = remainingStyle.substring(0, indexOfKey);
+                remainingStyle = remainingStyle.substring(indexOfKey + 1);
+                var indexOfValue = remainingStyle.indexOf(';');
+                var value = remainingStyle.substring(0, indexOfValue);
+                styleObject[key] = value;
+                remainingStyle = remainingStyle.substring(indexOfValue + 1);
+            }
 
-          return styleObject;
+            return styleObject;
         }
 
         /*
@@ -778,16 +794,15 @@
           styleToObject(style) converts the object back to the style string.
         */
         function objectToStyle(object) {
-          var style = "";
-          for (var key in object) {
-            if(key.toString() == "default") {
-              style += object[key] + ';';
+            var style = "";
+            for (var key in object) {
+                if (key.toString() == "default") {
+                    style += object[key] + ';';
+                } else {
+                    style += (key + '=' + object[key] + ';');
+                }
             }
-            else {
-              style += (key + '=' + object[key] + ';');
-            }
-          }
-          return style;
+            return style;
         }
 
         /*
@@ -867,7 +882,7 @@
                 traverse the array of 'contextValue' and not all the
                 elements of it.
             */
-            for (var i=0;i<contextValue.length;i++) {
+            for (var i = 0; i < contextValue.length; i++) {
                 displayValue += contextValue[i] + "\n";
             }
             if (contextValue != "") {
@@ -905,7 +920,7 @@
                 }
 
                 diagRoot.context = contextValues;
-                diagRoot.context.scilabClass="String[]";
+                diagRoot.context.scilabClass = "String[]";
                 handleContext("set", contextValues);
                 wind.destroy();
             };
@@ -918,7 +933,7 @@
         function showPropertiesWindow(graph, cell) {
 
             var name = cell.getAttribute('blockElementName');
-            var defaultProperties = window[name]("get");
+            var defaultProperties = cell.blockInstance.instance.get(); //window[name]("get");
             /*{
                 nbr_curves: ["Number of curves", 1],
                 clrs: ["color (>0) or mark (<0)", [1, 2, 3, 4, 5, 6, 7, 13]],
@@ -1002,10 +1017,10 @@
                         propertiesObject[key] = document.getElementById(key.toString()).value;
                     }
                 }
-                var details = window[name]("set",cell.value,propertiesObject);
+                var details = cell.blockInstance.instance.set(propertiesObject); //window[name]("set",cell.value,propertiesObject);
                 var enc = new mxCodec();
                 var node = enc.encode(details);
-                node.setAttribute('label',getData(details.exprs)[0]);
+                node.setAttribute('label', getData(details.exprs)[0]);
                 cell.value = node;
                 /*
                     Maverick
@@ -1050,17 +1065,17 @@
 
 
         function showTextEditWindow(graph, cell) {
-              var fontFamilyList = {
-                "Arial" : 0,
-                "Dialog" : 1,
-                "Verdana" : 2,
-                "Times New Roman" : 3
-              }
-              var defaultProperties = {
-                  text: ["Text", "text"],
-                  fontFamily : ["Font Family", fontFamilyList],
-                  fontSize: ["fontSize", 20]
-              };
+            var fontFamilyList = {
+                "Arial": 0,
+                "Dialog": 1,
+                "Verdana": 2,
+                "Times New Roman": 3
+            }
+            var defaultProperties = {
+                text: ["Text", "text"],
+                fontFamily: ["Font Family", fontFamilyList],
+                fontSize: ["fontSize", 20]
+            };
 
             var style = graph.getModel().getStyle(cell);
             var styleObject = styleToObject(style);
@@ -1099,38 +1114,37 @@
                     namelabel.innerHTML = defaultProperties[key][0];
                     myform.appendChild(namelabel);
 
-                    if(key == "fontFamily") {
-                      //Here we create a "select" element (a drop down list).
-                      var newList = document.createElement("select");
-                      newList.style.cssText = "float:right";
-                      newList.setAttribute("id", key.toString());
-                      var dropdownItems = defaultProperties[key][1];
+                    if (key == "fontFamily") {
+                        //Here we create a "select" element (a drop down list).
+                        var newList = document.createElement("select");
+                        newList.style.cssText = "float:right";
+                        newList.setAttribute("id", key.toString());
+                        var dropdownItems = defaultProperties[key][1];
 
-                      for(var item in dropdownItems) {
-                        if (dropdownItems.hasOwnProperty(item)) {
-                          option = document.createElement('option');
-                          option.value = item;
-                          option.text = item;
-                          option.setAttribute("id", item);
-                          newList.appendChild(option);
+                        for (var item in dropdownItems) {
+                            if (dropdownItems.hasOwnProperty(item)) {
+                                option = document.createElement('option');
+                                option.value = item;
+                                option.text = item;
+                                option.setAttribute("id", item);
+                                newList.appendChild(option);
+                            }
                         }
-                      }
 
-                      var selectedFontFamily = 0;
-                      var styleObject = styleToObject(style);
-                      if ('fontFamily' in styleObject) {
-                          selectedFontFamily =  styleObject['fontFamily'];
-                      }
-                      newList.selectedIndex = dropdownItems[selectedFontFamily];
-                      myform.appendChild(newList);
-                    }
-                    else {
-                      var input = document.createElement("input");
-                      input.name = key;
-                      input.value = defaultProperties[key][1];
-                      input.setAttribute("id", key.toString());
-                      input.setAttribute("class", "fieldInput");
-                      myform.appendChild(input);
+                        var selectedFontFamily = 0;
+                        var styleObject = styleToObject(style);
+                        if ('fontFamily' in styleObject) {
+                            selectedFontFamily = styleObject['fontFamily'];
+                        }
+                        newList.selectedIndex = dropdownItems[selectedFontFamily];
+                        myform.appendChild(newList);
+                    } else {
+                        var input = document.createElement("input");
+                        input.name = key;
+                        input.value = defaultProperties[key][1];
+                        input.setAttribute("id", key.toString());
+                        input.setAttribute("class", "fieldInput");
+                        myform.appendChild(input);
                     }
                     // Line break
                     var linebreak = document.createElement('br');
@@ -1151,30 +1165,29 @@
               for "set" type, and toggles with the active class for "get" type.
             */
             function changeFontStyle(type, graph, cell, button, bit) {
-              var style = graph.getModel().getStyle(cell);
-              var trigger = document.getElementById(button);
-              var styleObject = styleToObject(style);
-              var previousValue = 1;
-              if ('fontStyle' in styleObjesct) {
-                  previousValue = styleObject['fontStyle'];
+                var style = graph.getModel().getStyle(cell);
+                var trigger = document.getElementById(button);
+                var styleObject = styleToObject(style);
+                var previousValue = 1;
+                if ('fontStyle' in styleObjesct) {
+                    previousValue = styleObject['fontStyle'];
 
-                  // To get a bit mask:
-                  var mask = 1 << bit; // Get the 1st element
+                    // To get a bit mask:
+                    var mask = 1 << bit; // Get the 1st element
 
-                  if(type == "get") {
-                    // toggle the bit
-                    previousValue ^= mask;
-                    trigger.classList.toggle(button);
-                    styleObject['fontStyle'] = previousValue;
-                    style = objectToStyle(styleObject);
-                    graph.getModel().setStyle(cell, style);
-                  }
-                  else if(type == "set") {
-                    if ((previousValue & mask) != 0) {
-                      trigger.classList.toggle(button);
+                    if (type == "get") {
+                        // toggle the bit
+                        previousValue ^= mask;
+                        trigger.classList.toggle(button);
+                        styleObject['fontStyle'] = previousValue;
+                        style = objectToStyle(styleObject);
+                        graph.getModel().setStyle(cell, style);
+                    } else if (type == "set") {
+                        if ((previousValue & mask) != 0) {
+                            trigger.classList.toggle(button);
+                        }
                     }
-                  }
-              }
+                }
             }
 
             // Button - Bold
@@ -1184,7 +1197,7 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-              changeFontStyle("get", graph, cell, 'boldButton', 0);
+                changeFontStyle("get", graph, cell, 'boldButton', 0);
             }
             myform.appendChild(btn);
 
@@ -1195,7 +1208,7 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-              changeFontStyle("get", graph, cell, 'italicButton', 1);
+                changeFontStyle("get", graph, cell, 'italicButton', 1);
             }
             myform.appendChild(btn);
 
@@ -1206,7 +1219,7 @@
             btn.type = "button";
             btn.name = "submit";
             btn.onclick = function() {
-              changeFontStyle("get", graph, cell, 'underlineButton', 2);
+                changeFontStyle("get", graph, cell, 'underlineButton', 2);
             }
             myform.appendChild(btn);
 
@@ -1256,10 +1269,10 @@
               for the selected edge label, add the respective active class to that button.
             */
 
-            if('fontStyle' in styleObject) {
-              changeFontStyle("set", graph, cell, 'boldButton', 0);
-              changeFontStyle("set", graph, cell, 'italicButton', 1);
-              changeFontStyle("set", graph, cell, 'underlineButton', 2);
+            if ('fontStyle' in styleObject) {
+                changeFontStyle("set", graph, cell, 'boldButton', 0);
+                changeFontStyle("set", graph, cell, 'italicButton', 1);
+                changeFontStyle("set", graph, cell, 'underlineButton', 2);
             }
         };
         /*
@@ -1490,12 +1503,11 @@
                 } else if (selectProperty == "bgColor") {
                     graph.container.style.backgroundColor = input;
                 } else if (selectProperty == "vertexStrokeColor") {
-                  styleObject['strokeColor'] = input;
+                    styleObject['strokeColor'] = input;
                 } else if (selectProperty == "vertexFillColor") {
-                  styleObject['fillColor'] = input;
-                }
-                else if(selectProperty == "edgeTextColor") {
-                  styleObject['fontColor'] = input;
+                    styleObject['fillColor'] = input;
+                } else if (selectProperty == "edgeTextColor") {
+                    styleObject['fontColor'] = input;
                 }
                 style = objectToStyle(styleObject);
                 graph.getModel().setStyle(cell, style);
@@ -1603,6 +1615,7 @@
             return wind;
         };
 
+        var flag = 0;
 
         function addSidebarIcon(graph, sidebar, name, image) {
             // Function that is executed when the image is dropped on
@@ -1616,341 +1629,56 @@
                 model.beginUpdate();
                 try {
                     var label = getImgHTML(name); // Will not exist for all blocks
-                    if (name == 'ANDBLK') {
-                        var details = ANDBLK("define");
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        node.setAttribute('label',label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
-                        createPorts(graph, v1, [], ['CONTROL', 'CONTROL'], [], ['COMMAND']);
-                    } else if (name == 'CMSCOPE') {
-                        var details = CMSCOPE("define");
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        node.setAttribute('label',label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CMSCOPE');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], [], []);
-                    } else if (name == 'CONST_m') {
-                        var details = CONST_m("define");
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        node.setAttribute('label',"1");
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CONST_m');
-                        createPorts(graph, v1, [], [], ['EXPLICIT'], []);
-                    } else if (name == 'CONVERT') {
-                        v1 = graph.insertVertex(parent, null, 'Convert to', x, y, 80, 80, 'CONVERT');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'CSCOPXY') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'CSCOPXY');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], [], []);
-                    } else if (name == 'DEMUX') {
-                        v1 = graph.insertVertex(parent, null, '', x, y, 80, 80, 'DEMUX');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], []);
-                    } else if (name == 'IN_f') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'IN_f');
-                        createPorts(graph, v1, [], [], ['EXPLICIT'], []);
-                    } else if (name == 'LOGICAL_OP') {
-                        v1 = graph.insertVertex(parent, null, 'AND', x, y, 80, 80, 'LOGICAL_OP');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'MUX') {
-                        v1 = graph.insertVertex(parent, null, '', x, y, 80, 80, 'MUX');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'NRMSOM_f') {
-                        v1 = graph.insertVertex(parent, null, '', x, y, 80, 80, 'NRMSOM_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'OUT_f') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'OUT_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], [], []);
-                    } else if (name == 'RELATIONALOP') {
-                        v1 = graph.insertVertex(parent, null, '<FONT SIZE="6"><</FONT>', x, y, 80, 80, 'RELATIONALOP');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SWITCH2_m') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'SWITCH2_m');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
+                    var details_instance = new window[name]();
+                    var details = details_instance.define();
+                    var enc = new mxCodec(mxUtils.createXmlDocument());
+                    var node = enc.encode(details);
+                    node.setAttribute('label', label);
+                    var temp = enc.encode(parent);
+                    node.setAttribute('parent', temp.getAttribute('id'));
+                    var i, arr = [];
+                    var blockModel = details_instance.x.model;
+                    var graphics = details_instance.x.graphics;
+
+                    /* To determine number and type of Port*/
+                    var inputPorts = [],
+                        outputPorts = [],
+                        controlPorts = [],
+                        commandPorts = [];
+                    if (blockModel.in.height != null) {
+                        arr = getData(graphics.in_implicit);
+                        if (arr.length != 0) {
+                            inputPorts = arr;
+                        } else {
+                            for (i = 0; i < blockModel.in.height; i++) {
+                                inputPorts.push("E");
+                            }
+                        }
                     }
-                    // CONTINUOUS
-                    else if (name == 'CLINDUMMY_f') {
-                        v1 = graph.insertVertex(parent, null, 'DUMMY<BR>CLSS', x, y, 80, 80, 'CLINDUMMY_f');
-                        createPorts(graph, v1, [], [], [], []);
-                    } else if (name == 'CLR') {
-                        v1 = graph.insertVertex(parent, null, '1<BR><HR>1 + s', x, y, 80, 80, 'CLR');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'CLSS') {
-                        v1 = graph.insertVertex(parent, null, '<TABLE><TR><TD ALIGN="RIGHT">xd</TD><TD>=</TD><TD>Ax+Bu</TD></TR><TR><TD ALIGN="RIGHT">y</TD><TD>=</TD><TD>Cx+Du</TD></TR></TABLE>', x, y, 130, 80, 'CLSS');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'DERIV') {
-                        v1 = graph.insertVertex(parent, null, 'du / dt', x, y, 80, 80, 'DERIV');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'INTEGRAL_f') {
-                        v1 = graph.insertVertex(parent, null, '1/s', x, y, 80, 80, 'INTEGRAL_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'INTEGRAL_m') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'INTEGRAL_m');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'PID') {
-                        v1 = graph.insertVertex(parent, null, 'PID', x, y, 80, 80, 'PID');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'TCLSS') {
-                        v1 = graph.insertVertex(parent, null, 'Jump<BR>(A,B,C,D)', x, y, 80, 80, 'TCLSS');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'TIME_DELAY') {
-                        v1 = graph.insertVertex(parent, null, 'Continuous<BR>fix delay', x, y, 80, 80, 'TIME_DELAY');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'VARIABLE_DELAY') {
-                        v1 = graph.insertVertex(parent, null, 'Variable<BR>delay', x, y, 80, 80, 'VARIABLE_DELAY');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'PDE') {
-                        v1 = graph.insertVertex(parent, null, 'PDE', x, y, 80, 80, 'PDE');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT', 'EXPLICIT', 'EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], []);
+                    if (blockModel.out.height != null) {
+                        arr = getData(graphics.out_implicit);
+                        if (arr.length != 0) {
+                            outputPorts = arr;
+                        } else {
+                            for (i = 0; i < blockModel.out.height; i++) {
+                                outputPorts.push("E");
+                            }
+                        }
                     }
-                    // DISCONTINUOUS
-                    else if (name == 'BACKLASH') {
-                        v1 = graph.insertVertex(parent, null, 'Backlash', x, y, 80, 80, 'BACKLASH');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'DEADBAND') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'DEADBAND');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'DELAYV_f') {
-                        v1 = graph.insertVertex(parent, null, 'Variable<BR>delay', x, y, 80, 80, 'DELAYV_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], ['EXPLICIT'], ['COMMAND', 'COMMAND']);
-                    } else if (name == 'HYSTHERESIS') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'HYSTHERESIS');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'RATELIMITER') {
-                        v1 = graph.insertVertex(parent, null, 'Rate limiter', x, y, 80, 80, 'RATELIMITER');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'QUANT_f') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'QUANT_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SATURATION') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'SATURATION');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
+                    if (blockModel.evtin.width != null) {
+                        for (i = 0; i < blockModel.evtin.width; i++) {
+                            controlPorts.push("CONTROL");
+                        }
                     }
-                    // DISCRETE
-                    else if (name == 'AUTOMAT') {
-                        v1 = graph.insertVertex(parent, null, 'Automaton<BR>nM=2, nX=1', x, y, 80, 80, 'AUTOMAT');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], ['COMMAND']);
-                    } else if (name == 'DELAY_f') {
-                        v1 = graph.insertVertex(parent, null, 'Delay', x, y, 80, 80, 'DELAYV_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'DLR') {
-                        v1 = graph.insertVertex(parent, null, '1<BR><HR>1 + z', x, y, 80, 80, 'DLR');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'DLRADAPT_f') {
-                        v1 = graph.insertVertex(parent, null, 'N(z,p)<BR><HR>D(z,p)', x, y, 80, 80, 'DLRADAPT_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'DLSS') {
-                        v1 = graph.insertVertex(parent, null, '<TABLE><TR><TD ALIGN="RIGHT">x</TD><TD ALIGN="CENTER">+=</TD><TD>Ax+Bu</TD></TR><TR><TD ALIGN="RIGHT">y</TD><TD ALIGN="CENTER">=</TD><TD>Cx+Du</TD></TR></TABLE>', x, y, 80, 80, 'DLSS');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'DOLLAR_f') {
-                        v1 = graph.insertVertex(parent, null, '1/z', x, y, 80, 80, 'DOLLAR_f');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'DOLLAR') {
-                        v1 = graph.insertVertex(parent, null, '1/z', x, y, 80, 80, 'DOLLAR');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'DOLLAR_m') {
-                        v1 = graph.insertVertex(parent, null, '1/z', x, y, 80, 80, 'DOLLAR_m');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'SAMPHOLD_m') {
-                        v1 = graph.insertVertex(parent, null, 'S / H', x, y, 80, 80, 'SAMPHOLD_m');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'REGISTER') {
-                        v1 = graph.insertVertex(parent, null, 'Shift<BR>register', x, y, 80, 80, 'REGISTER');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'CFSCOPE') {
-                        var details = CFSCOPE("define");
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        node.setAttribute('label',label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
-                        createPorts(graph, v1, [], ['CONTROL'], [], []);
+                    if (blockModel.evtout.width != null) {
+                        for (i = 0; i < blockModel.evtout.width; i++) {
+                            commandPorts.push("COMMAND");
+                        }
                     }
-                    // EVENTS
-                    else if (name == 'CLOCK_c') {
-                        var details = CLOCK_c("define");
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        node.setAttribute('label',label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CLOCK_c');
-                        createPorts(graph, v1, [], [], [], ['COMMAND']);
-                    } else if (name == 'SampleCLK') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'SampleCLK');
-                        createPorts(graph, v1, [], [], [], ['COMMAND']);
-                    } else if (name == 'VirtualCLK0') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'VirtualCLK0');
-                        createPorts(graph, v1, [], ['CONTROL'], [], []);
-                    }
-                    // ANDBLK to come here
-                    else if (name == 'ANDLOG_f') {
-                        v1 = graph.insertVertex(parent, null, 'LOGICAL<BR>AND', x, y, 80, 80, 'ANDLOG_f');
-                        createPorts(graph, v1, [], ['CONTROL', 'CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'CEVENTSCOPE') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'CEVENTSCOPE');
-                        createPorts(graph, v1, [], ['CONTROL'], [], []);
-                    } else if (name == 'CLKFROM') {
-                        v1 = graph.insertVertex(parent, null, 'A', x, y, 80, 80, 'CLKFROM');
-                        createPorts(graph, v1, [], [], [], ['COMMAND']);
-                    } else if (name == 'CLKGOTO') {
-                        v1 = graph.insertVertex(parent, null, 'A', x, y, 80, 80, 'CLKGOTO');
-                        createPorts(graph, v1, [], ['CONTROL'], [], []);
-                    } else if (name == 'CLKGotoTagVisibility') {
-                        v1 = graph.insertVertex(parent, null, '{A}', x, y, 80, 80, 'CLKGotoTagVisibility');
-                        createPorts(graph, v1, [], [], [], []);
-                    } else if (name == 'CLKOUTV_f') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'CLKOUTV_f');
-                        createPorts(graph, v1, [], ['CONTROL'], [], []);
-                    } else if (name == 'CLKSOMV_f') {
-                        v1 = graph.insertVertex(parent, null, '+', x, y, 80, 80, 'CLKSOMV_f');
-                        createPorts(graph, v1, [], ['CONTROL', 'CONTROL', 'CONTROL'], [], ['COMMAND']);
-                    } else if (name == 'EDGE_TRIGGER') {
-                        v1 = graph.insertVertex(parent, null, 'Edge<BR>trigger', x, y, 80, 80, 'EDGE_TRIGGER');
-                        createPorts(graph, v1, ['EXPLICIT'], [], [], ['COMMAND']);
-                    } else if (name == 'ENDBLK') {
-                        v1 = graph.insertVertex(parent, null, 'END', x, y, 80, 80, 'ENDBLK');
-                        createPorts(graph, v1, [], [], [], []);
-                    } else if (name == 'END_c') {
-                        v1 = graph.insertVertex(parent, null, 'END', x, y, 80, 80, 'END_c');
-                        createPorts(graph, v1, [], ['CONTROL'], [], ['COMMAND']);
-                    } else if (name == 'ESELECT_f') {
-                        v1 = graph.insertVertex(parent, null, 'Event select', x, y, 80, 80, 'ESELECT_f');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], [], ['COMMAND', 'COMMAND']);
-                    } else if (name == 'EVTDLY_c') {
-                        v1 = graph.insertVertex(parent, null, 'Delay: 0.1', x, y, 80, 80, 'EVTDLY_c');
-                        createPorts(graph, v1, [], ['CONTROL'], [], ['COMMAND']);
-                    } else if (name == 'EVTGEN_f') {
-                        v1 = graph.insertVertex(parent, null, 'Event at<BR>time 0', x, y, 80, 80, 'EVTGEN_f');
-                        createPorts(graph, v1, [], [], [], ['COMMAND']);
-                    } else if (name == 'EVTVARDLY') {
-                        v1 = graph.insertVertex(parent, null, 'Event<BR>delay', x, y, 80, 80, 'EVTVARDLY');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], [], ['COMMAND']);
-                    } else if (name == 'Extract_Activation') {
-                        v1 = graph.insertVertex(parent, null, 'Extract<BR>activation', x, y, 80, 80, 'Extract_Activation');
-                        createPorts(graph, v1, ['EXPLICIT'], [], [], ['COMMAND']);
-                    } else if (name == 'HALT_f') {
-                        v1 = graph.insertVertex(parent, null, 'HALT', x, y, 80, 80, 'HALT_f');
-                        createPorts(graph, v1, [], ['CONTROL'], [], []);
-                    } else if (name == 'IFTHEL_f') {
-                        v1 = graph.insertVertex(parent, null, 'if in>0<BR>then else', x, y, 80, 80, 'IFTHEL_f');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], [], ['COMMAND', 'COMMAND']);
-                    } else if (name == 'M_freq') {
-                        v1 = graph.insertVertex(parent, null, 'Multiple<BR>frequency', x, y, 80, 80, 'M_freq');
-                        createPorts(graph, v1, [], ['CONTROL'], [], ['COMMAND', 'COMMAND', 'COMMAND']);
-                    } else if (name == 'MCLOCK_f') {
-                        v1 = graph.insertVertex(parent, null, '2freq clock<BR>f/n f', x, y, 80, 80, 'MCLOCK_f');
-                        createPorts(graph, v1, [], [], [], ['COMMAND', 'COMMAND']);
-                    } else if (name == 'MFCLCK_f') {
-                        v1 = graph.insertVertex(parent, null, 'M. freq<BR>clock', x, y, 80, 80, 'MFCLCK_f');
-                        createPorts(graph, v1, [], ['CONTROL'], [], ['COMMAND', 'COMMAND']);
-                    } else if (name == 'freq_div') {
-                        v1 = graph.insertVertex(parent, null, 'Frequency<BR>division', x, y, 80, 80, 'freq_div');
-                        createPorts(graph, v1, [], ['CONTROL'], [], ['COMMAND']);
-                    }
-                    // LOOKUP TABLES
-                    else if (name == 'INTRP2BLK_f') {
-                        v1 = graph.insertVertex(parent, null, 'Interp 2', x, y, 80, 80, 'INTRP2BLK_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'INTRPLBLK_f') {
-                        v1 = graph.insertVertex(parent, null, 'Interp', x, y, 80, 80, 'INTRPLBLK_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'LOOKUP_f') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'LOOKUP_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    }
-                    // MATHEMATICAL OPERATIONS
-                    else if (name == 'ABS_VALUE') {
-                        v1 = graph.insertVertex(parent, null, 'ABS', x, y, 80, 80, 'ABS_VALUE');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'BIGSOM_f') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'BIGSOM_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'COSBLK_f') {
-                        v1 = graph.insertVertex(parent, null, 'COS', x, y, 80, 80, 'COSBLK_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'EXPBLK_m') {
-                        v1 = graph.insertVertex(parent, null, 'a^u', x, y, 80, 80, 'EXPBLK_m');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'GAINBLK_f') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'GAINBLK_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'GAINBLK') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'GAINBLK');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'GAIN_f') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'GAIN_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'INVBLK') {
-                        v1 = graph.insertVertex(parent, null, '1/u', x, y, 80, 80, 'INVBLK');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'LOGBLK_f') {
-                        v1 = graph.insertVertex(parent, null, 'LOG', x, y, 80, 80, 'LOGBLK_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'MATMAGPHI') {
-                        v1 = graph.insertVertex(parent, null, 'Mag & Phi', x, y, 80, 80, 'MATMAGPHI');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], []);
-                    } else if (name == 'MATZREIM') {
-                        v1 = graph.insertVertex(parent, null, 'Re & Im', x, y, 80, 80, 'MATZREIM');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], []);
-                    } else if (name == 'MAXMIN') {
-                        v1 = graph.insertVertex(parent, null, 'MAX', x, y, 80, 80, 'MAXMIN');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'MAX_f') {
-                        v1 = graph.insertVertex(parent, null, 'MAX', x, y, 80, 80, 'MAX_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'MIN_f') {
-                        v1 = graph.insertVertex(parent, null, 'MIN', x, y, 80, 80, 'MIN_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'POWBLK_f') {
-                        v1 = graph.insertVertex(parent, null, 'u^a', x, y, 80, 80, 'POWBLK_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'PRODUCT') {
-                        v1 = graph.insertVertex(parent, null, '<TABLE><TR><TD>*</TD><TD ROWSPAN="2"><FONT SIZE="6">∏</FONT><TD></TR><TR><TD>÷</TD><TD/></TR></TABLE>', x, y, 80, 80, 'PRODUCT');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'PROD_f') {
-                        v1 = graph.insertVertex(parent, null, 'X', x, y, 80, 80, 'PROD_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SIGNUM') {
-                        v1 = graph.insertVertex(parent, null, 'SIGN', x, y, 80, 80, 'SIGNUM');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SINBLK_f') {
-                        v1 = graph.insertVertex(parent, null, 'SIN', x, y, 80, 80, 'SINBLK_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SQRT') {
-                        v1 = graph.insertVertex(parent, null, 'SQRT', x, y, 80, 80, 'SQRT');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SUMMATION') {
-                        v1 = graph.insertVertex(parent, null, '<TABLE><TR><TD>+</TD> <TD ROWSPAN="2"><FONT SIZE="6">∑</FONT><TD></TR><TR><TD>-</TD> <TD/></TR></TABLE>', x, y, 80, 80, 'SUMMATION');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SUM_f') {
-                        v1 = graph.insertVertex(parent, null, '+', x, y, 80, 80, 'SUM_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SOM_f') {
-                        v1 = graph.insertVertex(parent, null, '+', x, y, 80, 80, 'SOM_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'TANBLK_f') {
-                        v1 = graph.insertVertex(parent, null, 'TAN', x, y, 80, 80, 'TANBLK_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'TrigFun') {
-                        v1 = graph.insertVertex(parent, null, 'Trig function', x, y, 80, 80, 'TrigFun');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    }
-                    // MATRIX
-                    else if (name == 'OpAmp') {
-                        v1 = graph.insertVertex(parent, null, '<table><tr><td>+</td><td></td></tr><tr><td></td><td>OP</td></tr><tr><td>-</td><td></td></tr></table>', x, y, 80, 80, 'OpAmp');
-                        createPorts(graph, v1, ['IMPLICIT', 'IMPLICIT'], [], ['IMPLICIT'], []);
-                    } else if (name == 'TEXT_f') {
-                        v1 = graph.insertVertex(parent, null, '', x, y, 80, 80, 'TEXT_f');
-                        createPorts(graph, v1, [], [], [], []);
-                    }
+                    v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
+                    // @Chhavi: Additional attribute to store the block's instance
+                    v1.blockInstance = createInstanceTag(details_instance);
+                    createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
                     v1.setConnectable(false);
                 } finally {
                     model.endUpdate();
@@ -2034,9 +1762,9 @@
                 port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
             } else if (portType == 'CONTROL') {
                 port = graph.insertVertex(block, null, 'ControlPort', x, y, 10, 10, 'ControlPort', true);
-            } else if (portType == 'IMPLICIT') {
+            } else if (portType == 'I') {
                 port = graph.insertVertex(block, null, 'ImplicitInputPort', x, y, 10, 10, 'ImplicitInputPort', true);
-            } else if (portType == 'EXPLICIT') {
+            } else if (portType == 'E') {
                 port = graph.insertVertex(block, null, 'ExplicitInputPort', x, y, 10, 10, 'ExplicitInputPort', true);
             }
             if (port != null) {
@@ -2045,7 +1773,7 @@
                 } else if (position == 'left') {
                     port.geometry.offset = new mxPoint(-10, -6);
                 }
-                port.ordering=ordering;
+                port.ordering = ordering;
             }
         };
 
@@ -2055,9 +1783,9 @@
                 port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
             } else if (portType == 'CONTROL') {
                 port = graph.insertVertex(block, null, 'ControlPort', x, y, 10, 10, 'ControlPort', true);
-            } else if (portType == 'IMPLICIT') {
+            } else if (portType == 'I') {
                 port = graph.insertVertex(block, null, 'ImplicitOutputPort', x, y, 10, 10, 'ImplicitOutputPort', true);
-            } else if (portType == 'EXPLICIT') {
+            } else if (portType == 'E') {
                 port = graph.insertVertex(block, null, 'ExplicitOutputPort', x, y, 10, 10, 'ExplicitOutputPort', true);
             }
             if (port != null) {
@@ -2067,7 +1795,7 @@
                 if (position == 'right') {
                     port.geometry.offset = new mxPoint(0, -6);
                 }
-                port.ordering=ordering;
+                port.ordering = ordering;
             }
         };
 
