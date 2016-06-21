@@ -2354,9 +2354,21 @@
             var hint = null;
 
             // Gets the initial connection from the source terminal or edge
-            if (source != null && (state.view.graph.model.isEdge(source.cell) || source.cell.name == 'SPLIT_f')) {
-                horizontal = state.style['sourceConstraint'] == 'horizontal';
-            } else if (source != null) {
+            if (source != null && state.view.graph.model.isEdge(source.cell)) {
+                  horizontal = state.style['sourceConstraint'] == 'horizontal';
+            }
+            else if(source != null && source.cell.name == 'SPLIT_f') {
+              if(state.cell.source != null) {
+
+                if((state.cell.source.getId() - state.cell.source.parent.getId()) == 3) {
+                  horizontal = state.style['sourceConstraint'] == 'horizontal';
+                }
+              }
+            }
+            else if (source != null) {
+              console.log(state.style['portConstraint']);
+              console.log(state.style['portConstraint'] == 'vertical');
+
                 horizontal = source.style['portConstraint'] != 'vertical';
 
                 // Checks the direction of the shape and rotates
@@ -2418,6 +2430,14 @@
             } else if (pt.x != hint.x && first.y != pt.y) {
                 result.push(new mxPoint(hint.x, pt.y));
             }
+            if(state.cell.target != null) {
+              console.log(state.cell.target.parent.name);
+              if(state.cell.target.parent.name == "SPLIT_f") {
+                result.pop();
+                result.push(new mxPoint(hint.x, pt.y))
+              }
+            }
+
         };
 
         mxStyleRegistry.putValue('wireEdgeStyle', mxEdgeStyle.WireConnector);
