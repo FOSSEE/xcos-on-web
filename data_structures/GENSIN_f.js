@@ -5,7 +5,7 @@ function GENSIN_f () {
 
 	var model = scicos_model();
 	model.sim = new ScilabString(["gensin"]);
-	model.in = new ScilabDouble();
+	model.in1 = new ScilabDouble();
 	model.out = new ScilabDouble([1]);
 	model.out2 = new ScilabDouble([1]);
 	model.outtyp = new ScilabDouble([1]);
@@ -13,8 +13,9 @@ function GENSIN_f () {
 	model.blocktype = new ScilabString(["c"]);
 	model.dep_ut = new ScilabBoolean([false,true]);
 
-	var exprs = [[rpar(1.toString())],[rpar(2.toString())],[rpar(3.toString())]];
+	var exprs = [[string(rpar(1))],[string(rpar(2))],[string(rpar(3))]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,2]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }

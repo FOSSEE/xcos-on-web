@@ -4,8 +4,8 @@ function CBLOCK4 () {
 	var funam = "toto";
 
 	var model = scicos_model();
-	model.sim=list(" ",2004);
-	model.in = new ScilabDouble([1]);
+	model.sim=list(new ScilabString([" "]),new ScilabDouble([2004]));
+	model.in1 = new ScilabDouble([1]);
 	model.in2 = new ScilabDouble([1]);
 	model.intyp = new ScilabDouble([1]);
 	model.out = new ScilabDouble([1]);
@@ -15,7 +15,7 @@ function CBLOCK4 () {
 
 	var label = list([funam;
 	"n";
-	sci2exp([model.in model.in2]);
+	sci2exp([model.in1 model.in2]);
 	sci2exp(model.intyp);
 	sci2exp([model.out model.out2]);
 	sci2exp(model.outtyp);
@@ -35,4 +35,5 @@ function CBLOCK4 () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([4,2]),model,label,gr_i);
+	return new BasicBlock(this.x)
 }

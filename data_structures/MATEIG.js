@@ -7,7 +7,7 @@ function MATEIG () {
 
 	var funtyp = 4;
 	model.sim=list(function_name,funtyp);
-	model.in = new ScilabDouble([-1]);
+	model.in1 = new ScilabDouble([-1]);
 	model.in2 = new ScilabDouble([-1]);
 	model.intyp = new ScilabDouble([1]);
 	model.out = new ScilabDouble([-1]);
@@ -27,4 +27,5 @@ function MATEIG () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,label,gr_i);
+	return new BasicBlock(this.x)
 }

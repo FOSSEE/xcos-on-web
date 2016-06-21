@@ -8,8 +8,8 @@ function SWITCH2_m () {
 	var rpar = 0;
 
 	var model = scicos_model();
-	model.sim=list("switch2_m",4);
-	model.in = new ScilabDouble([-1],[1],[-1]);
+	model.sim=list(new ScilabString(["switch2_m"]),new ScilabDouble([4]));
+	model.in1 = new ScilabDouble([-1],[1],[-1]);
 	model.in2 = new ScilabDouble([-2],[1],[-2]);
 	model.intyp = new ScilabDouble([1]);
 	model.out = new ScilabDouble([-1]);
@@ -22,8 +22,9 @@ function SWITCH2_m () {
 	model.blocktype = new ScilabString(["c"]);
 	model.dep_ut = new ScilabBoolean([true,false]);
 
-	var exprs = [[sci2exp(1)],[ipar.toString()],[rpar.toString()],[nzz.toString()]];
+	var exprs = [[sci2exp(1)],[string(ipar)],[string(rpar)],[string(nzz)]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }
