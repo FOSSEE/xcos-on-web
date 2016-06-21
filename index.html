@@ -357,31 +357,39 @@
                         var name = cell.value.getAttribute('blockElementName');
                         var cellvar = cell.blockInstance.instance.details();
 
-                        // If cell is a block or port
+                        // If cell is a block or ports
                         if (cell.source == null && cell.target == null) {
-                            if (cell.connectable) { // Cell is a port
+                            if (cell.connectable) { // Cell is a Port
                                 // @ToDo: Port Number
                                 text = 'Style : ' + cell.style + "\n";
                             } else { //Cell is a block
                                 // @ToDo: Block Name, Simulation, Flip, Mirror
                                 // @ToDo: Number of Input, Output, Control, Command Ports
-                                var inputport, outputport, controlport, commandport;
-                                if (cellvar.model.in.height == null)
-                                    inputport = 0;
-                                else
-                                    inputport = cellvar.model.in.height;
-                                if (cellvar.model.out.height == null)
-                                    outputport = 0;
-                                else
-                                    outputport = cellvar.model.out.height;
-                                if (cellvar.model.evtin.width == null)
-                                    controlport = 0;
-                                else
-                                    controlport = cellvar.model.evtin.width;
-                                if (cellvar.model.evtout.width == null)
-                                    commandport = 0;
-                                else
-                                    commandport = cellvar.model.evtout.width;
+                                var inputPort, outputPort, controlPort, commandPort;
+                                if (cellvar.model.in.height == null) {
+                                    inputPort = 0;
+								}
+                                else {
+                                    inputPort = cellvar.model.in.height;
+								}
+                                if (cellvar.model.out.height == null) {
+                                    outputPort = 0;
+                                }
+								else {
+                                    outputPort = cellvar.model.out.height;
+								}
+                                if (cellvar.model.evtin.width == null) {
+                                    controlPort = 0;
+								}
+                                else {
+                                    controlPort = cellvar.model.evtin.width;
+								}
+                                if (cellvar.model.evtout.width == null) {
+                                    commandPort = 0;
+								}
+                                else {
+                                    commandPort = cellvar.model.evtout.width;
+								}
                                 var geometry = cell.getGeometry();
                                 text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
                                     'Simulation : ' + cell.value.getAttribute('simulationFunctionName') + "\n" +
@@ -389,10 +397,10 @@
                                     'Style : ' + cell.style + "\n" +
                                     'Flip : ' + getData(cellvar.graphics.flip)[0] + "\n" +
                                     'Mirror : false' + "\n" +
-                                    'Input Ports : ' + inputport + "\n" +
-                                    'Output Ports : ' + outputport + "\n" +
-                                    'Control Ports : ' + controlport + "\n" +
-                                    'Command Ports : ' + commandport + "\n" +
+                                    'Input Ports : ' + inputPort + "\n" +
+                                    'Output Ports : ' + outputPort + "\n" +
+                                    'Control Ports : ' + controlPort + "\n" +
+                                    'Command Ports : ' + commandPort + "\n" +
                                     'x : ' + geometry.x + "\n" +
                                     'y : ' + geometry.y + "\n" +
                                     'w : ' + geometry.width + "\n" +
@@ -1629,7 +1637,7 @@
                     var temp = enc.encode(parent);
                     node.setAttribute('parent', temp.getAttribute('id'));
                     var i, arr = [];
-                    var Model = details_instance.x.model;
+                    var blockModel = details_instance.x.model;
                     var graphics = details_instance.x.graphics;
 
                     /* To determine number and type of Port*/
@@ -1637,386 +1645,40 @@
                         outputPorts = [],
                         controlPorts = [],
                         commandPorts = [];
-                    if (Model.in.height != null) {
+                    if (blockModel.in.height != null) {
                         arr = getData(graphics.in_implicit);
                         if (arr.length != 0) {
                             inputPorts = arr;
                         } else {
-                            for (i = 0; i < Model.in.height; i++) {
+                            for (i = 0; i < blockModel.in.height; i++) {
                                 inputPorts.push("E");
                             }
                         }
                     }
-                    if (Model.out.height != null) {
+                    if (blockModel.out.height != null) {
                         arr = getData(graphics.out_implicit);
                         if (arr.length != 0) {
                             outputPorts = arr;
                         } else {
-                            for (i = 0; i < Model.out.height; i++) {
+                            for (i = 0; i < blockModel.out.height; i++) {
                                 outputPorts.push("E");
                             }
                         }
                     }
-                    if (Model.evtin.width != null) {
-                        for (i = 0; i < Model.evtin.width; i++) {
+                    if (blockModel.evtin.width != null) {
+                        for (i = 0; i < blockModel.evtin.width; i++) {
                             controlPorts.push("CONTROL");
                         }
                     }
-                    if (Model.evtout.width != null) {
-                        for (i = 0; i < Model.evtout.width; i++) {
+                    if (blockModel.evtout.width != null) {
+                        for (i = 0; i < blockModel.evtout.width; i++) {
                             commandPorts.push("COMMAND");
                         }
                     }
                     v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
-                    // Additional attribute to store the block's instance
+                    // @Chhavi: Additional attribute to store the block's instance
                     v1.blockInstance = createInstanceTag(details_instance);
                     createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
-                    /*if (name == 'ANDBLK') {
-                        var a = new ANDBLK();
-                        var details = a.define();
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        node.setAttribute('label',label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'ANDBLK');
-                        v1.inst = a;
-                        
-                        createPorts(graph, v1, [], ['CONTROL', 'CONTROL'], [], ['COMMAND']);
-                    } else if (name == 'CMSCOPE') {
-                        var a = new CMSCOPE();
-                        var details = a.define();
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        node.setAttribute('label',label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CMSCOPE');
-                        v1.inst = a;
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], [], []);
-                    } else if (name == 'CONST_m') {
-                        var a = new CONST_m();
-                        var details = a.define();
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        node.setAttribute('label',"1");
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, "CONST_m");
-                        v1.inst = a;
-                        createPorts(graph, v1, [], [], ['EXPLICIT'], []);
-                    } else if (name == 'CONVERT') {
-                        v1 = graph.insertVertex(parent, null, 'Convert to', x, y, 80, 80, 'CONVERT');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'CSCOPXY') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'CSCOPXY');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], [], []);
-                    } else if (name == 'DEMUX') {
-                        v1 = graph.insertVertex(parent, null, '', x, y, 80, 80, 'DEMUX');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], []);
-                    } else if (name == 'IN_f') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'IN_f');
-                        createPorts(graph, v1, [], [], ['EXPLICIT'], []);
-                    } else if (name == 'LOGICAL_OP') {
-                        v1 = graph.insertVertex(parent, null, 'AND', x, y, 80, 80, 'LOGICAL_OP');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'MUX') {
-                        v1 = graph.insertVertex(parent, null, '', x, y, 80, 80, 'MUX');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'NRMSOM_f') {
-                        v1 = graph.insertVertex(parent, null, '', x, y, 80, 80, 'NRMSOM_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'OUT_f') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'OUT_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], [], []);
-                    } else if (name == 'RELATIONALOP') {
-                        v1 = graph.insertVertex(parent, null, '<FONT SIZE="6"><</FONT>', x, y, 80, 80, 'RELATIONALOP');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SWITCH2_m') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'SWITCH2_m');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    }
-                    // CONTINUOUS
-                    else if (name == 'CLINDUMMY_f') {
-                        v1 = graph.insertVertex(parent, null, 'DUMMY<BR>CLSS', x, y, 80, 80, 'CLINDUMMY_f');
-                        createPorts(graph, v1, [], [], [], []);
-                    } else if (name == 'CLR') {
-                        v1 = graph.insertVertex(parent, null, '1<BR><HR>1 + s', x, y, 80, 80, 'CLR');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'CLSS') {
-                        v1 = graph.insertVertex(parent, null, '<TABLE><TR><TD ALIGN="RIGHT">xd</TD><TD>=</TD><TD>Ax+Bu</TD></TR><TR><TD ALIGN="RIGHT">y</TD><TD>=</TD><TD>Cx+Du</TD></TR></TABLE>', x, y, 130, 80, 'CLSS');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'DERIV') {
-                        v1 = graph.insertVertex(parent, null, 'du / dt', x, y, 80, 80, 'DERIV');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'INTEGRAL_f') {
-                        v1 = graph.insertVertex(parent, null, '1/s', x, y, 80, 80, 'INTEGRAL_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'INTEGRAL_m') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'INTEGRAL_m');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'PID') {
-                        v1 = graph.insertVertex(parent, null, 'PID', x, y, 80, 80, 'PID');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'TCLSS') {
-                        v1 = graph.insertVertex(parent, null, 'Jump<BR>(A,B,C,D)', x, y, 80, 80, 'TCLSS');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'TIME_DELAY') {
-                        v1 = graph.insertVertex(parent, null, 'Continuous<BR>fix delay', x, y, 80, 80, 'TIME_DELAY');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'VARIABLE_DELAY') {
-                        v1 = graph.insertVertex(parent, null, 'Variable<BR>delay', x, y, 80, 80, 'VARIABLE_DELAY');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'PDE') {
-                        v1 = graph.insertVertex(parent, null, 'PDE', x, y, 80, 80, 'PDE');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT', 'EXPLICIT', 'EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], []);
-                    }
-                    // DISCONTINUOUS
-                    else if (name == 'BACKLASH') {
-                        v1 = graph.insertVertex(parent, null, 'Backlash', x, y, 80, 80, 'BACKLASH');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'DEADBAND') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'DEADBAND');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'DELAYV_f') {
-                        v1 = graph.insertVertex(parent, null, 'Variable<BR>delay', x, y, 80, 80, 'DELAYV_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], ['EXPLICIT'], ['COMMAND', 'COMMAND']);
-                    } else if (name == 'HYSTHERESIS') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'HYSTHERESIS');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'RATELIMITER') {
-                        v1 = graph.insertVertex(parent, null, 'Rate limiter', x, y, 80, 80, 'RATELIMITER');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'QUANT_f') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'QUANT_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SATURATION') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'SATURATION');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    }
-                    // DISCRETE
-                    else if (name == 'AUTOMAT') {
-                        v1 = graph.insertVertex(parent, null, 'Automaton<BR>nM=2, nX=1', x, y, 80, 80, 'AUTOMAT');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], ['COMMAND']);
-                    } else if (name == 'DELAY_f') {
-                        v1 = graph.insertVertex(parent, null, 'Delay', x, y, 80, 80, 'DELAYV_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'DLR') {
-                        v1 = graph.insertVertex(parent, null, '1<BR><HR>1 + z', x, y, 80, 80, 'DLR');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'DLRADAPT_f') {
-                        v1 = graph.insertVertex(parent, null, 'N(z,p)<BR><HR>D(z,p)', x, y, 80, 80, 'DLRADAPT_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'DLSS') {
-                        v1 = graph.insertVertex(parent, null, '<TABLE><TR><TD ALIGN="RIGHT">x</TD><TD ALIGN="CENTER">+=</TD><TD>Ax+Bu</TD></TR><TR><TD ALIGN="RIGHT">y</TD><TD ALIGN="CENTER">=</TD><TD>Cx+Du</TD></TR></TABLE>', x, y, 80, 80, 'DLSS');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'DOLLAR_f') {
-                        v1 = graph.insertVertex(parent, null, '1/z', x, y, 80, 80, 'DOLLAR_f');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'DOLLAR') {
-                        v1 = graph.insertVertex(parent, null, '1/z', x, y, 80, 80, 'DOLLAR');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'DOLLAR_m') {
-                        v1 = graph.insertVertex(parent, null, '1/z', x, y, 80, 80, 'DOLLAR_m');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'SAMPHOLD_m') {
-                        v1 = graph.insertVertex(parent, null, 'S / H', x, y, 80, 80, 'SAMPHOLD_m');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'REGISTER') {
-                        v1 = graph.insertVertex(parent, null, 'Shift<BR>register', x, y, 80, 80, 'REGISTER');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'CFSCOPE') {
-                        var a = new CFSCOPE();
-                        var details = a.define();
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        node.setAttribute('label',label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CFSCOPE');
-                        v1.inst = a;
-                        createPorts(graph, v1, [], ['CONTROL'], [], []);
-                    }
-                    // EVENTS
-                    else if (name == 'CLOCK_c') {
-                        var a = new CLOCK_c();
-                        var details = a.define();
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(details);
-                        node.setAttribute('label',label);
-                        var temp = enc.encode(parent);
-                        node.setAttribute('parent', temp.getAttribute('id'));
-                        v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, 'CLOCK_c');
-                        v1.inst = a;
-                        createPorts(graph, v1, [], [], [], ['COMMAND']);
-                    } else if (name == 'SampleCLK') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'SampleCLK');
-                        createPorts(graph, v1, [], [], [], ['COMMAND']);
-                    } else if (name == 'VirtualCLK0') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'VirtualCLK0');
-                        createPorts(graph, v1, [], ['CONTROL'], [], []);
-                    }
-                    // ANDBLK to come here
-                    else if (name == 'ANDLOG_f') {
-                        v1 = graph.insertVertex(parent, null, 'LOGICAL<BR>AND', x, y, 80, 80, 'ANDLOG_f');
-                        createPorts(graph, v1, [], ['CONTROL', 'CONTROL'], ['EXPLICIT'], []);
-                    } else if (name == 'CEVENTSCOPE') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'CEVENTSCOPE');
-                        createPorts(graph, v1, [], ['CONTROL'], [], []);
-                    } else if (name == 'CLKFROM') {
-                        v1 = graph.insertVertex(parent, null, 'A', x, y, 80, 80, 'CLKFROM');
-                        createPorts(graph, v1, [], [], [], ['COMMAND']);
-                    } else if (name == 'CLKGOTO') {
-                        v1 = graph.insertVertex(parent, null, 'A', x, y, 80, 80, 'CLKGOTO');
-                        createPorts(graph, v1, [], ['CONTROL'], [], []);
-                    } else if (name == 'CLKGotoTagVisibility') {
-                        v1 = graph.insertVertex(parent, null, '{A}', x, y, 80, 80, 'CLKGotoTagVisibility');
-                        createPorts(graph, v1, [], [], [], []);
-                    } else if (name == 'CLKOUTV_f') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'CLKOUTV_f');
-                        createPorts(graph, v1, [], ['CONTROL'], [], []);
-                    } else if (name == 'CLKSOMV_f') {
-                        v1 = graph.insertVertex(parent, null, '+', x, y, 80, 80, 'CLKSOMV_f');
-                        createPorts(graph, v1, [], ['CONTROL', 'CONTROL', 'CONTROL'], [], ['COMMAND']);
-                    } else if (name == 'EDGE_TRIGGER') {
-                        v1 = graph.insertVertex(parent, null, 'Edge<BR>trigger', x, y, 80, 80, 'EDGE_TRIGGER');
-                        createPorts(graph, v1, ['EXPLICIT'], [], [], ['COMMAND']);
-                    } else if (name == 'ENDBLK') {
-                        v1 = graph.insertVertex(parent, null, 'END', x, y, 80, 80, 'ENDBLK');
-                        createPorts(graph, v1, [], [], [], []);
-                    } else if (name == 'END_c') {
-                        v1 = graph.insertVertex(parent, null, 'END', x, y, 80, 80, 'END_c');
-                        createPorts(graph, v1, [], ['CONTROL'], [], ['COMMAND']);
-                    } else if (name == 'ESELECT_f') {
-                        v1 = graph.insertVertex(parent, null, 'Event select', x, y, 80, 80, 'ESELECT_f');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], [], ['COMMAND', 'COMMAND']);
-                    } else if (name == 'EVTDLY_c') {
-                        v1 = graph.insertVertex(parent, null, 'Delay: 0.1', x, y, 80, 80, 'EVTDLY_c');
-                        createPorts(graph, v1, [], ['CONTROL'], [], ['COMMAND']);
-                    } else if (name == 'EVTGEN_f') {
-                        v1 = graph.insertVertex(parent, null, 'Event at<BR>time 0', x, y, 80, 80, 'EVTGEN_f');
-                        createPorts(graph, v1, [], [], [], ['COMMAND']);
-                    } else if (name == 'EVTVARDLY') {
-                        v1 = graph.insertVertex(parent, null, 'Event<BR>delay', x, y, 80, 80, 'EVTVARDLY');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], [], ['COMMAND']);
-                    } else if (name == 'Extract_Activation') {
-                        v1 = graph.insertVertex(parent, null, 'Extract<BR>activation', x, y, 80, 80, 'Extract_Activation');
-                        createPorts(graph, v1, ['EXPLICIT'], [], [], ['COMMAND']);
-                    } else if (name == 'HALT_f') {
-                        v1 = graph.insertVertex(parent, null, 'HALT', x, y, 80, 80, 'HALT_f');
-                        createPorts(graph, v1, [], ['CONTROL'], [], []);
-                    } else if (name == 'IFTHEL_f') {
-                        v1 = graph.insertVertex(parent, null, 'if in>0<BR>then else', x, y, 80, 80, 'IFTHEL_f');
-                        createPorts(graph, v1, ['EXPLICIT'], ['CONTROL'], [], ['COMMAND', 'COMMAND']);
-                    } else if (name == 'M_freq') {
-                        v1 = graph.insertVertex(parent, null, 'Multiple<BR>frequency', x, y, 80, 80, 'M_freq');
-                        createPorts(graph, v1, [], ['CONTROL'], [], ['COMMAND', 'COMMAND', 'COMMAND']);
-                    } else if (name == 'MCLOCK_f') {
-                        v1 = graph.insertVertex(parent, null, '2freq clock<BR>f/n f', x, y, 80, 80, 'MCLOCK_f');
-                        createPorts(graph, v1, [], [], [], ['COMMAND', 'COMMAND']);
-                    } else if (name == 'MFCLCK_f') {
-                        v1 = graph.insertVertex(parent, null, 'M. freq<BR>clock', x, y, 80, 80, 'MFCLCK_f');
-                        createPorts(graph, v1, [], ['CONTROL'], [], ['COMMAND', 'COMMAND']);
-                    } else if (name == 'freq_div') {
-                        v1 = graph.insertVertex(parent, null, 'Frequency<BR>division', x, y, 80, 80, 'freq_div');
-                        createPorts(graph, v1, [], ['CONTROL'], [], ['COMMAND']);
-                    }
-                    // LOOKUP TABLES
-                    else if (name == 'INTRP2BLK_f') {
-                        v1 = graph.insertVertex(parent, null, 'Interp 2', x, y, 80, 80, 'INTRP2BLK_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'INTRPLBLK_f') {
-                        v1 = graph.insertVertex(parent, null, 'Interp', x, y, 80, 80, 'INTRPLBLK_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'LOOKUP_f') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'LOOKUP_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    }
-                    // MATHEMATICAL OPERATIONS
-                    else if (name == 'ABS_VALUE') {
-                        v1 = graph.insertVertex(parent, null, 'ABS', x, y, 80, 80, 'ABS_VALUE');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'BIGSOM_f') {
-                        v1 = graph.insertVertex(parent, null, label, x, y, 80, 80, 'BIGSOM_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'COSBLK_f') {
-                        v1 = graph.insertVertex(parent, null, 'COS', x, y, 80, 80, 'COSBLK_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'EXPBLK_m') {
-                        v1 = graph.insertVertex(parent, null, 'a^u', x, y, 80, 80, 'EXPBLK_m');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'GAINBLK_f') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'GAINBLK_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'GAINBLK') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'GAINBLK');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'GAIN_f') {
-                        v1 = graph.insertVertex(parent, null, '1', x, y, 80, 80, 'GAIN_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'INVBLK') {
-                        v1 = graph.insertVertex(parent, null, '1/u', x, y, 80, 80, 'INVBLK');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'LOGBLK_f') {
-                        v1 = graph.insertVertex(parent, null, 'LOG', x, y, 80, 80, 'LOGBLK_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'MATMAGPHI') {
-                        v1 = graph.insertVertex(parent, null, 'Mag & Phi', x, y, 80, 80, 'MATMAGPHI');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], []);
-                    } else if (name == 'MATZREIM') {
-                        v1 = graph.insertVertex(parent, null, 'Re & Im', x, y, 80, 80, 'MATZREIM');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT', 'EXPLICIT'], []);
-                    } else if (name == 'MAXMIN') {
-                        v1 = graph.insertVertex(parent, null, 'MAX', x, y, 80, 80, 'MAXMIN');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'MAX_f') {
-                        v1 = graph.insertVertex(parent, null, 'MAX', x, y, 80, 80, 'MAX_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'MIN_f') {
-                        v1 = graph.insertVertex(parent, null, 'MIN', x, y, 80, 80, 'MIN_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'POWBLK_f') {
-                        v1 = graph.insertVertex(parent, null, 'u^a', x, y, 80, 80, 'POWBLK_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'PRODUCT') {
-                        v1 = graph.insertVertex(parent, null, '<TABLE><TR><TD>*</TD><TD ROWSPAN="2"><FONT SIZE="6">∏</FONT><TD></TR><TR><TD>÷</TD><TD/></TR></TABLE>', x, y, 80, 80, 'PRODUCT');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'PROD_f') {
-                        v1 = graph.insertVertex(parent, null, 'X', x, y, 80, 80, 'PROD_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SIGNUM') {
-                        v1 = graph.insertVertex(parent, null, 'SIGN', x, y, 80, 80, 'SIGNUM');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SINBLK_f') {
-                        v1 = graph.insertVertex(parent, null, 'SIN', x, y, 80, 80, 'SINBLK_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SQRT') {
-                        v1 = graph.insertVertex(parent, null, 'SQRT', x, y, 80, 80, 'SQRT');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SUMMATION') {
-                        v1 = graph.insertVertex(parent, null, '<TABLE><TR><TD>+</TD> <TD ROWSPAN="2"><FONT SIZE="6">∑</FONT><TD></TR><TR><TD>-</TD> <TD/></TR></TABLE>', x, y, 80, 80, 'SUMMATION');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SUM_f') {
-                        v1 = graph.insertVertex(parent, null, '+', x, y, 80, 80, 'SUM_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'SOM_f') {
-                        v1 = graph.insertVertex(parent, null, '+', x, y, 80, 80, 'SOM_f');
-                        createPorts(graph, v1, ['EXPLICIT', 'EXPLICIT', 'EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'TANBLK_f') {
-                        v1 = graph.insertVertex(parent, null, 'TAN', x, y, 80, 80, 'TANBLK_f');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    } else if (name == 'TrigFun') {
-                        v1 = graph.insertVertex(parent, null, 'Trig function', x, y, 80, 80, 'TrigFun');
-                        createPorts(graph, v1, ['EXPLICIT'], [], ['EXPLICIT'], []);
-                    }
-                    // MATRIX
-                    else if (name == 'OpAmp') {
-                        v1 = graph.insertVertex(parent, null, '<table><tr><td>+</td><td></td></tr><tr><td></td><td>OP</td></tr><tr><td>-</td><td></td></tr></table>', x, y, 80, 80, 'OpAmp');
-                        createPorts(graph, v1, ['IMPLICIT', 'IMPLICIT'], [], ['IMPLICIT'], []);
-                    } else if (name == 'TEXT_f') {
-                        v1 = graph.insertVertex(parent, null, '', x, y, 80, 80, 'TEXT_f');
-                        createPorts(graph, v1, [], [], [], []);
-                    }*/
                     v1.setConnectable(false);
                 } finally {
                     model.endUpdate();
