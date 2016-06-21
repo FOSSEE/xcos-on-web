@@ -355,7 +355,7 @@
                     var text = null;
                     if (cell.isVertex() == true && cell.isConnectable() == false) {
                         var name = cell.value.getAttribute('blockElementName');
-                        var cellvar = cell.inst.details();
+                        var cellvar = cell.blockInstance.instance.details();
 
                         // If cell is a block or port
                         if (cell.source == null && cell.target == null) {
@@ -925,7 +925,7 @@
         function showPropertiesWindow(graph, cell) {
 
             var name = cell.getAttribute('blockElementName');
-            var defaultProperties = cell.inst.get(); //window[name]("get");
+            var defaultProperties = cell.blockInstance.instance.get(); //window[name]("get");
             /*{
                 nbr_curves: ["Number of curves", 1],
                 clrs: ["color (>0) or mark (<0)", [1, 2, 3, 4, 5, 6, 7, 13]],
@@ -1009,7 +1009,7 @@
                         propertiesObject[key] = document.getElementById(key.toString()).value;
                     }
                 }
-                var details = cell.inst.set(cell.value, propertiesObject); //window[name]("set",cell.value,propertiesObject);
+                var details = cell.blockInstance.instance.set(propertiesObject); //window[name]("set",cell.value,propertiesObject);
                 var enc = new mxCodec();
                 var node = enc.encode(details);
                 node.setAttribute('label', getData(details.exprs)[0]);
@@ -1631,6 +1631,8 @@
                     var i, arr = [];
                     var Model = details_instance.x.model;
                     var graphics = details_instance.x.graphics;
+
+                    /* To determine number and type of Port*/
                     var inputPorts = [],
                         outputPorts = [],
                         controlPorts = [],
@@ -1666,7 +1668,8 @@
                         }
                     }
                     v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
-                    v1.inst = details_instance;
+                    // Additional attribute to store the block's instance
+                    v1.blockInstance = createInstanceTag(details_instance);
                     createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
                     /*if (name == 'ANDBLK') {
                         var a = new ANDBLK();
@@ -1694,10 +1697,8 @@
                     } else if (name == 'CONST_m') {
                         var a = new CONST_m();
                         var details = a.define();
-                        console.log(a);
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
-                        console.log(node);
                         node.setAttribute('label',"1");
                         var temp = enc.encode(parent);
                         node.setAttribute('parent', temp.getAttribute('id'));
@@ -1827,7 +1828,6 @@
                     } else if (name == 'CFSCOPE') {
                         var a = new CFSCOPE();
                         var details = a.define();
-                        console.log(a);
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
                         node.setAttribute('label',label);
@@ -1841,7 +1841,6 @@
                     else if (name == 'CLOCK_c') {
                         var a = new CLOCK_c();
                         var details = a.define();
-                        console.log(a);
                         var enc = new mxCodec(mxUtils.createXmlDocument());
                         var node = enc.encode(details);
                         node.setAttribute('label',label);
@@ -2561,4 +2560,5 @@
         });
     });
 </script>
+
 </html>

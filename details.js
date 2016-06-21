@@ -310,6 +310,15 @@ function modelica() {
     return mo;
 }
 
+// To add Block name under the instance tag in xml.
+function instance() {
+    this.instance = arguments[0];
+}
+
+function createInstanceTag() {
+    return new instance(arguments[0]);
+}
+
 function CONST_m() {
     CONST_m.prototype.get = function() {
 
@@ -319,9 +328,9 @@ function CONST_m() {
         return options;
     }
     CONST_m.prototype.set = function() {
-        this.c = [arguments[1]["vec"]];
-        this.x.realParameters = new ScilabDouble();
-        this.x.exprs = new ScilabString([sci2exp(this.c)]);
+        this.c = [arguments[0]["vec"]];
+        this.x.model.rpar = new ScilabDouble();
+        this.x.graphics.exprs = new ScilabString([sci2exp(this.c)]);
         return new BasicBlock(this.x);
     }
     CONST_m.prototype.define = function() {
