@@ -112,10 +112,10 @@ function ANDBLK() {
         this.x.gui = new ScilabString(["ANDBLK"]);
         this.x.graphics.sz = new ScilabDouble([2, 2]);
         this.x.graphics.gr_i = new ScilabDouble();
-        this.x.graphics.pein = new ScilabDouble([0, 0]);
+        this.x.graphics.pein = new ScilabDouble([0], [0]);
         this.x.graphics.peout = new ScilabDouble([0]);
         this.x.model.sim = new ScilabString(["csuper"]);
-        this.x.model.evtin = new ScilabDouble([1, 1]);
+        this.x.model.evtin = new ScilabDouble([1], [1]);
         this.x.model.evtout = new ScilabDouble([1]);
         this.x.model.blocktype = new ScilabString(["h"]);
         this.x.model.firing = new ScilabBoolean([false]);
