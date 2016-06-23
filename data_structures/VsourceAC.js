@@ -2,7 +2,7 @@ function VsourceAC () {
 
 
 	var model = scicos_model();
-	model.in = new ScilabDouble([1]);
+	model.in1 = new ScilabDouble([1]);
 	model.out = new ScilabDouble([1]);
 
 	var VA = 220;
@@ -17,13 +17,14 @@ function VsourceAC () {
 	mo.model = new ScilabString(["VsourceAC"]);
 	mo.inputs = new ScilabString(["p"]);
 	mo.outputs = new ScilabString(["n"]);
-	mo.parameters=list(["VA";"f"],list(VA,FR));
+	mo.parameters=list(new ScilabString(["VA";"f"]),list(VA,FR));
 	model.equations=mo;
 
-	var exprs = [[VA.toString()],[FR.toString()]];
+	var exprs = [[string(VA)],[string(FR)]];
 
 	var gr_i = [];
-	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,list(gr_i,0));
+	this.x=standard_define([2,2],model,exprs,list(gr_i,0));
 	this.x.graphics.in_implicit = new ScilabString(["I"]);
 	this.x.graphics.out_implicit = new ScilabString(["I"]);
+	return new BasicBlock(this.x)
 }

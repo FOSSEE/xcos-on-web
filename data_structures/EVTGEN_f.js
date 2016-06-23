@@ -10,8 +10,9 @@ function EVTGEN_f () {
 	model.firing=new ScilabDouble([tt]);
 	model.dep_ut = new ScilabBoolean([false,false]);
 
-	var exprs = tt.toString();
+	var exprs = string(tt);
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,2]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }

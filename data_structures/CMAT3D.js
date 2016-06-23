@@ -17,8 +17,8 @@ function CMAT3D () {
 	var size_y = 1;
 
 	var model = scicos_model();
-	model.sim=list("cmat3d",4);
-	model.in = new ScilabDouble([-1]);
+	model.sim=list(new ScilabString(["cmat3d"]),new ScilabDouble([4]));
+	model.in1 = new ScilabDouble([-1]);
 	model.in2 = new ScilabDouble([-2]);
 	model.intyp = new ScilabDouble([1]);
 	model.evtin = new ScilabDouble([1]);
@@ -27,8 +27,9 @@ function CMAT3D () {
 	model.blocktype = new ScilabString(["c"]);
 	model.dep_ut = new ScilabBoolean([true,false]);
 
-	var exprs = [[strcat(x.toString()," ");strcat(y.toString()," ");"jetcolormap(25.toString()")],[cmin.toString()],[cmax.toString()]];
+	var exprs = [[strcat(string(x)," ");strcat(string(y)," ");string("jetcolormap(25)")],[string(cmin)],[string(cmax)]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }

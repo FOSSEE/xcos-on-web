@@ -4,8 +4,8 @@ function INTMUL () {
 	var sgn = 0;
 
 	var model = scicos_model();
-	model.sim=list("matmul_i32",4);
-	model.in = new ScilabDouble([-1],[-2]);
+	model.sim=list(new ScilabString(["matmul_i32"]),new ScilabDouble([4]));
+	model.in1 = new ScilabDouble([-1],[-2]);
 	model.out = new ScilabDouble([-1]);
 	model.in2 = new ScilabDouble([-2],[-3]);
 	model.out2 = new ScilabDouble([-3]);
@@ -20,4 +20,5 @@ function INTMUL () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,,exprs,gr_i);
+	return new BasicBlock(this.x)
 }
