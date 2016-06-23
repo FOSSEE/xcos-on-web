@@ -286,6 +286,61 @@ function ScilabDouble() {
     }
 }
 
+function ScilabInteger() {
+    var i = 0,
+        j = 0;
+    if (arguments.length) {
+        var array = arguments;
+        this.height = array.length;
+        this.width = array[0].length;
+        for (i = 0; i < this.height; i++) {
+            for (j = 0; j < this.width; j++) {
+                this["data" + i + j] = new data();
+                this["data" + i + j].value = array[i][j];
+                this["data" + i + j].line = i;
+                this["data" + i + j].column = j;
+            }
+        }
+    }
+}
+
+function int32() {
+    var int = new ScilabInteger(arguments[0]);
+    int.intPrecision = "sci_int32";
+    return int;
+}
+
+function int16() {
+    var int = new ScilabInteger(arguments[0]);
+    int.intPrecision = "sci_int16";
+    return int;
+}
+
+function int8() {
+    var int = new ScilabInteger(arguments[0]);
+    int.intPrecision = "sci_int8";
+    return int;
+}
+
+function uint32() {
+    var int = new ScilabInteger(arguments[0]);
+    int.intPrecision = "sci_uint32";
+    return int;
+}
+
+function uint16() {
+    var int = new ScilabInteger(arguments[0]);
+    int.intPrecision = "sci_uint16";
+    return int;
+}
+
+function uint8() {
+    var int = new ScilabInteger(arguments[0]);
+    int.intPrecision = "sci_uint8";
+    return int;
+}
+
+
 function data() {
     this.line;
     this.column;
@@ -307,6 +362,10 @@ function getData() {
         }
     }
     return dataArray;
+}
+
+function isEmpty() {
+    return !getData(arguments[0]).length;
 }
 
 function modelica() {
@@ -476,7 +535,12 @@ function BasicBlock() {
         this.objectsParameters = options.model.opar;
         this.nbZerosCrossing = options.model.nzcross;
         this.nmode = options.model.nmode;
-        this.state = options.model.state;
+        if(!isEmpty(options.model.state)) {
+            this.state = options.model.state;
+        }
+        if(!isEmpty(options.model.dstate)) {
+            this.dState = options.model.dstate;
+        }
         this.oDState = options.model.odstate;
         this.equations = options.model.equations;
         this.blockName = "BasicBlock";
@@ -485,8 +549,12 @@ function BasicBlock() {
 }
 
 function sci2exp(c) {
-    if (c.length == 0)
+    if(typeof c.length === "undefined") {
+        return c.toString();
+    }
+    else if (c.length == 0) {
         return "[]";
+    }
     else if (c.length == 1)
         return c.toString();
     else {

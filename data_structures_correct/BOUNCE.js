@@ -63,6 +63,6 @@ function BOUNCE() {
 
     BOUNCE.prototype.details = function BOUNCE() {
 
-        return this.x
+        return this.x;
     }
 }
