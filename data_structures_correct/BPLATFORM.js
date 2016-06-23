@@ -3,17 +3,11 @@ function BPLATFORM() {
     BPLATFORM.prototype.define = function BPLATFORM() {
 
         this.plen = 2;
-
         this.csiz = 2;
-
         this.phi = 0;
-
         this.xmin = -5;
-
         this.xmax = 5;
-
         this.ymin = 0;
-
         this.ymax = 15;
 
         var model = scicos_model();
