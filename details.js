@@ -273,10 +273,12 @@ function ScilabDouble() {
         for (i = 0; i < this.height; i++) {
             for (j = 0; j < this.width; j++) {
                 this["data" + i + j] = new data();
-                if(array[i][j] % 1 == 0)
+                if(array[i][j] % 1 == 0) {
                 this["data" + i + j].realPart = array[i][j].toFixed(1);
-                else
+                } 
+                else {
                 this["data" + i + j].realPart = array[i][j];
+                }
                 this["data" + i + j].line = i;
                 this["data" + i + j].column = j;
             }
@@ -474,6 +476,7 @@ function BasicBlock() {
         this.objectsParameters = options.model.opar;
         this.nbZerosCrossing = options.model.nzcross;
         this.nmode = options.model.nmode;
+        this.state = options.model.state;
         this.oDState = options.model.odstate;
         this.equations = options.model.equations;
         this.blockName = "BasicBlock";
