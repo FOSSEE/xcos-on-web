@@ -1,4 +1,41 @@
 function CMSCOPE() {
+    CMSCOPE.prototype.get = function CMSCOPE() {
+
+        var options = {
+            in1: ["Input ports sizes", this.in1.toString().replace(/,/g, " ")],
+            clrs: ["Drawing colors (>0) or mark (<0)", this.clrs.toString().replace(/,/g, " ")],
+            win: ["Output window number (-1 for automatic)", this.win],
+            wpos: ["Output window position", sci2exp([])],
+            wdim: ["Output window sizes", sci2exp([])],
+            ymin: ["Ymin vector", this.ymin.toString().replace(/,/g, " ")],
+            ymax: ["Ymax vector", this.ymax.toString().replace(/,/g, " ")],
+            per: ["Refresh period", this.per.toString().replace(/,/g, " ")],
+            N: ["Buffer size", this.N],
+            heritance: ["Accept herited events 0/1", 0],
+            nom: ["Name of Scope (label&Id)", ""]
+        };
+        return options;
+    }
+    CMSCOPE.prototype.set = function CMSCOPE() {
+        this.in1 = inverse(arguments[0]["in1"]);
+        this.clrs = inverse(arguments[0]["clrs"]);
+        this.win = parseInt((arguments[0]["win"]));
+        this.ymin = inverse(arguments[0]["ymin"]);
+        this.ymax = inverse(arguments[0]["ymax"]);
+        this.per = inverse(arguments[0]["per"]);
+        this.N = parseInt((arguments[0]["N"]));
+        this.heritance = parseInt((arguments[0]["heritance"]));
+        this.nom = arguments[0]["nom"];
+        this.yy = [...transpose(this.ymin), ...transpose(this.ymax)];
+        this.period = transpose(this.per);
+        this.x.model.ipar = new ScilabDouble([this.win], [this.in1.length], [this.N], ...this.wpos, ...this.wdim, ...this.in1, this.clrs[0], this.clrs[1],[this.heritance]);
+        this.x.model.label = new ScilabString([this.nom]);
+        this.x.model.evtin = new ScilabDouble(...ones(1-this.heritance,1));
+        this.x.graphics.id = new ScilabString([this.nom]);
+        this.x.model.rpar = new ScilabDouble([0], ...colon_operator(this.period), ...colon_operator(this.yy));
+        this.x.graphics.exprs = new ScilabString([this.in1.toString().replace(/,/g, " ")], [this.clrs.toString().replace(/,/g, " ")], [this.win], [sci2exp([])], [sci2exp([])], [this.ymin.toString().replace(/,/g, " ")], [this.ymax.toString().replace(/,/g, " ")], [this.per.toString().replace(/,/g, " ")], [this.N], [0], [""]);
+        return new BasicBlock(this.x);
+    }
     CMSCOPE.prototype.define = function CMSCOPE() {
         this.win = -1;
         this.in1 = [

@@ -8,6 +8,8 @@ function CONST_m() {
     }
     CONST_m.prototype.set = function CONST_m() {
         this.c = [arguments[0]["vec"]];
+        this.x.model.sim = list(new ScilabString(["cstblk4_m"]), new ScilabDouble([4]));
+        this.x.model.opar = list(new ScilabDouble(this.c));
         this.x.model.rpar = new ScilabDouble();
         this.x.graphics.exprs = new ScilabString([sci2exp(this.c)]);
         return new BasicBlock(this.x);
