@@ -549,7 +549,17 @@ function BasicBlock() {
 }
 
 function sci2exp(c) {
-    if(typeof c.length === "undefined") {
+    if(c.scilabClass == "ScilabList") {
+        c = Object.create(c);
+        c.scilabClass = "";
+        if(c.length) {
+            return "list(" + sci2exp(c) + ")";
+        }
+        else {
+            return "list()";
+        }
+    }
+    else if(typeof c.length === "undefined") {
         return c.toString();
     }
     else if (c.length == 0) {
