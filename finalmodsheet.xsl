@@ -172,7 +172,7 @@ Look for TAG:Break1!!!
     </xsl:template>
     <xsl:template name="Object" match="Object">
         <xsl:element name="Array">
-            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom' or name(..)='EventInBlock' or name(..)='EventOutBlock'">
+            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom' or name(..)='EventInBlock' or name(..)='EventOutBlock'   or name(..)='RoundBlock'">
                 <xsl:if test="@as">
                     <xsl:attribute name="as">
                         <xsl:value-of select="@as" />
@@ -200,7 +200,7 @@ Look for TAG:Break1!!!
     -->
     <xsl:template name="Array" match="Array">
         <xsl:element name="Array">
-            <xsl:if test="name(..)='BasicBlock' or @as='context' or name(..)='AfficheBlock' or name(..)='BigSom'  or name(..)='EventInBlock' or name(..)='EventOutBlock'">
+            <xsl:if test="name(..)='BasicBlock' or @as='context' or name(..)='AfficheBlock' or name(..)='BigSom'  or name(..)='EventInBlock' or name(..)='EventOutBlock'   or name(..)='RoundBlock'">
                 <xsl:if test="@as">
                     <xsl:attribute name="as">
                         <xsl:value-of select="@as" />
@@ -1581,7 +1581,7 @@ Look for TAG:Break1!!!
     </xsl:template>
     <xsl:template name="ScilabDouble" match="ScilabDouble">
         <xsl:element name="ScilabDouble">
-            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom'   or name(..)='EventInBlock' or name(..)='EventOutBlock'">
+            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom'   or name(..)='EventInBlock' or name(..)='EventOutBlock'   or name(..)='RoundBlock'">
                 <xsl:if test="@as">
                     <xsl:attribute name="as">
                         <xsl:value-of select="@as" />
@@ -1613,7 +1613,7 @@ Look for TAG:Break1!!!
     </xsl:template>
     <xsl:template name="ScilabString" match="ScilabString">
         <xsl:element name="ScilabString">
-            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom'   or name(..)='EventInBlock' or name(..)='EventOutBlock'">
+            <xsl:if test="name(..)='BasicBlock' or name(..)='AfficheBlock' or name(..)='BigSom'   or name(..)='EventInBlock' or name(..)='EventOutBlock'  or name(..)='RoundBlock'">
                 <xsl:if test="@as">
                     <xsl:attribute name="as">
                         <xsl:value-of select="@as" />
