@@ -255,25 +255,12 @@
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
                 editor.configure(config);
 
-                graph.isCellSelectable = function(cell)
-                {
-                  if(cell.getStyle() == 'Split') {
-                    return false;
-                  }
-                  return true;
-                };
-                graph.resizeCell = function(cell, bounds, recurse) {
-                  if(cell.getStyle() == 'Split') {
-                    return null;
-                  }
-                  return mxGraph.prototype.resizeCell.apply(this, arguments);
-                }
 
                 /*
                   For a new edge on the graph, check if that edge satisfies one of the port constraints.
                 */
                 graph.addEdge = function(edge, parent, source, target, index) {
-                    console.log(source);
+
                     var edgeSource = source;
 
                     // If the source of the edge is also an edge, find the port.
@@ -281,7 +268,6 @@
                         edgeSource = edgeSource.source;
                     }
 
-                    /*
                     // If the edge violates any port constraints, return null.
                     if (!((edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() &&
                                 target.getEdgeCount() == 0 && target.isVertex()) ||
@@ -305,118 +291,6 @@
                     }
 
                     return null;
-                    */
-                    
-                    if(source.isEdge() == true) {
-                      graph.getModel().beginUpdate();
-                			try
-                			{
-                        var edgeSource = source;
-                        while (edgeSource.isEdge() == true) {
-                            edgeSource = edgeSource.source;
-                        } 
-                        var cell = graph.insertVertex(graph.getDefaultParent(), null, '', source.sourcePoint.x, source.sourcePoint.y, 10, 10,'Split', false);
-                        if (edgeSource.value == 'ExplicitOutputPort') {
-                          createPorts(graph, cell, ['E'], [], ['E'], ['E']);
-                          cell.name = 'SPLIT_f';
-                          var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), source.target);
-                          graph.insertEdge(parent, null, '', cell.getChildAt(2), target);
-                        } 
-                        else if (edgeSource.value == 'ImplicitOutputPort') {
-                          createPorts(graph, cell, ['I'], [], ['I', 'I'], []);
-                          cell.name = 'SPLIT_f';
-                          var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), source.target);
-                          graph.insertEdge(parent, null, '', cell.getChildAt(2), target);
-                        }
-                        else {
-                          createPorts(graph, cell, ['CONTROL'], [], ['COMMAND', 'COMMAND'], []);
-                          cell.name = 'SPLIT_f';
-                          var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), source.target);
-                          graph.insertEdge(parent, null, '', cell.getChildAt(2), target);
-                        } 
-                        cell.getChildAt(0).setVisible(false);
-                        cell.getChildAt(1).setVisible(false);
-                        cell.getChildAt(2).setVisible(false);
-                        var waypoints = source.waypoints;
-                        var sdsd = graph.view.getState(source);
-                        var seg = mxUtils.findNearestSegment(sdsd, source.sourcePoint.x, source.sourcePoint.y);
-                        //console.log(graph.view.getNextPoint(graph.view.getState(source), graph.view.getState(cell), false));
-                        graph.removeCells([source], true);
-                        source = graph.insertEdge(parent, null, '', source.source, cell.getChildAt(0));
-                        //var seg = mxUtils.findNearestSegment(source, source.sourcePoint.x, source.sourcePoint.x);
-                        //console.log(seg);
-                        console.log(waypoints);
-                        console.log(sdsd.absolutePoints);
-                        console.log(seg);
-                        if(waypoints != null)  {
-                          var waypoints1 = [];
-                          for(var i = 0; i < seg; i++) {
-                            waypoints1.push(waypoints[i]);
-                          }
-                          var waypoints2 = [];
-                          for(var i = seg; i < waypoints.length; i++) {
-                            waypoints2.push(waypoints[i]);
-                          }
-                          source.geometry.points = waypoints1;
-                          someEdge.geometry.points = waypoints2;
-                        }
-                        cell.getChildAt(0).setConnectable(false);
-                        cell.getChildAt(1).setConnectable(false);
-                        cell.getChildAt(2).setConnectable(false);
-                        cell.setConnectable(false);
-                        graph.refresh(); 
-                      }
-                      finally
-                      {
-                        graph.getModel().endUpdate();
-                      }
-                      return null;
-                    }
-                    
-                    if(target.isEdge() == true) {
-                      graph.getModel().beginUpdate();
-                			try
-                			{
-                        var edgeSource = target;
-                        while (edgeSource.isEdge() == true) {
-                            edgeSource = edgeSource.source;
-                        }
-                        var cell = graph.insertVertex(graph.getDefaultParent(), null, '', target.sourcePoint.x, target.sourcePoint.y, 5, 5,'Split', false);
-                        if (edgeSource.value == 'ExplicitOutputPort') {
-                          createPorts(graph, cell, ['E'], [], ['E'], ['E']);
-                          cell.name = 'SPLIT_f';
-                          graph.insertEdge(parent, null, '', cell.getChildAt(1), target.target);
-                          graph.insertEdge(parent, null, '', cell.getChildAt(2), source);
-                        }
-                        else if (edgeSource.value == 'ImplicitOutputPort') {
-                          createPorts(graph, cell, ['I'], [], ['I', 'I'], []);
-                          cell.name = 'SPLIT_f';
-                          graph.insertEdge(parent, null, '', cell.getChildAt(1), target.target);
-                          graph.insertEdge(parent, null, '', cell.getChildAt(2), source);
-                        }
-                        else {
-                          createPorts(graph, cell, ['CONTROL'], [], ['COMMAND', 'COMMAND'], []);
-                          cell.name = 'SPLIT_f';
-                          graph.insertEdge(parent, null, '', cell.getChildAt(1), target.target);
-                          graph.insertEdge(parent, null, '', cell.getChildAt(2), source);
-                        }
-                        cell.getChildAt(0).setVisible(false);
-                        cell.getChildAt(1).setVisible(false);
-                        cell.getChildAt(2).setVisible(false);
-                        graph.getModel().setTerminal(target, cell.getChildAt(0), false);
-                        cell.getChildAt(0).setConnectable(false);
-                        cell.getChildAt(1).setConnectable(false);
-                        cell.getChildAt(2).setConnectable(false);
-                        cell.setConnectable(false);
-                        graph.refresh();
-                      }
-                      finally
-                      {
-                        graph.getModel().endUpdate();
-                      }
-                      return null;
-                    }
-                    return mxGraph.prototype.addEdge.apply(this, arguments);
                 }
 
                 // Shows a "modal" window when double clicking a vertex.
@@ -541,13 +415,14 @@
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 // https://jgraph.github.io/mxgraph/docs/js-api/files/model/mxCell-js.html
                 // Uncomment this block to see XML tags work
-                graph.convertValueToString = function(cell)
+                /*graph.convertValueToString = function(cell)
                 {
                   if (mxUtils.isNode(cell.value))
                   {
                     return cell.getAttribute('label', '');
                   }
-                };
+                };*/
+
                 var cellLabelChanged = graph.cellLabelChanged;
                 graph.cellLabelChanged = function(cell, newValue, autoSize) {
                     if (mxUtils.isNode(cell.value)) {
@@ -598,74 +473,52 @@
                    Used Preorder traversal for edges.
                 */
                 editor.addAction('deleteBlock', function(editor, cell) {
-                  graph.getModel().beginUpdate();
-                  try {
-                  function getEdgeId(edgeObject) {
-                    var cellStack = [];
-                    if(edgeObject != null && edgeObject.isEdge() == true) {
-                      cellStack.push(edgeObject);
-                      while(cellStack.length != 0) {
-                        var tempEdgeObject = cellStack.pop();
-                        if (tempEdgeObject.edge == true && (cells.indexOf(tempEdgeObject) == -1)) {
-                            cells.push(tempEdgeObject);
-                        }
-                        if(tempEdgeObject.source.parent.name == "SPLIT_f") {
-                          //console.log(tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0));
-                          //console.log(sdsd);
-                            if(tempEdgeObject.source == tempEdgeObject.source.parent.getChildAt(1)) {
-                              console.log('sdsd');
-                              var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
-                              var target = tempEdgeObject.source.parent.getChildAt(2).getEdgeAt(0).target;
-                              graph.getModel().setTerminal(sourceEdge, target, false);
-                              cells.push(tempEdgeObject.source.parent);
-                            }
-                            else {
-                              console.log()
-                              //var points = graph.view.getState(tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0)).absolutePoints;
-                              var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
-                              var target = tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0).target;
-                              graph.getModel().setTerminal(sourceEdge, target, false);
-                              cells.push(tempEdgeObject.source.parent);
-                            }
-                        }
-                        if(tempEdgeObject.target.parent.name == "SPLIT_f") {
-                          if(cells.indexOf(tempEdgeObject.target.parent) == -1) {
-                            cells.push(tempEdgeObject.target.parent);
-                          }
-                          cellStack.push(tempEdgeObject.target.parent.getChildAt(1).getEdgeAt(0));
-                          cellStack.push(tempEdgeObject.target.parent.getChildAt(2).getEdgeAt(0));
-                        }
-                      }
-                    }
-                  }
                     var cells = [];
                     var selectionCells = graph.getSelectionCells();
                     for (var k = 0; k < selectionCells.length; k++) {
-                        if(selectionCells[k].isEdge() == true) {
-                          getEdgeId(selectionCells[k]);
+                        var portCount = selectionCells[k].getChildCount();
+                        cells.push(selectionCells[k]);
+                        // Finds all the port with edges of the selected cell, and calls getEdgeId() for
+                        // each edge object of that port.
+                        for (var i = 0; i < portCount; i++) {
+                            var edgeCount = selectionCells[k].getChildAt(i).getEdgeCount();
+                            if (edgeCount != 0) {
+                                getEdgeId(selectionCells[k].getChildAt(i));
+
+                                for (var j = 0; j < edgeCount; j++) {
+                                    var edgeObject = selectionCells[k].getChildAt(i).getEdgeAt(j);
+                                    getEdgeId(edgeObject);
+                                }
+                            }
                         }
-                        else {
-                          var portCount = selectionCells[k].getChildCount();
-                          cells.push(selectionCells[k]);
-                          for (var i = 0; i < portCount; i++) {
-                              var edgeCount = selectionCells[k].getChildAt(i).getEdgeCount();
-                              if (edgeCount != 0) {
-                                  for (var j = 0; j < edgeCount; j++) {
-                                      var edgeObject = selectionCells[k].getChildAt(i).getEdgeAt(j);
-                                      getEdgeId(edgeObject);
-                                  }
-                              }
-                          }
-                       }
                     }
-                    //graph.getSelectionModel().setCells(cells);
-                    //editor.execute('delete');
-                    graph.removeCells(cells, true);
-                  }
-                  finally {
-                    graph.getModel().endUpdate();
-                  }
+
+
+                    /* getEdgeId() find all the associated edges from an edge.
+                     Pushes the object of that edge into an array of mxCell objects.
+                     */
+                    function getEdgeId(edgeObject) {
+                        var cellStack = [];
+                        if (edgeObject != null && edgeObject.isEdge() == true) {
+                            cellStack.push(edgeObject);
+                            while (cellStack.length != 0) {
+                                var tempEdgeObject = cellStack.pop();
+                                if (tempEdgeObject.edge == true && (cells.indexOf(tempEdgeObject) == -1)) {
+                                    cells.push(tempEdgeObject);
+                                }
+                                for (var j = 0; j < tempEdgeObject.getEdgeCount(); j++) {
+                                    cellStack.push(tempEdgeObject.getEdgeAt(j));
+                                }
+                            }
+                        }
+                    }
+
+                    // The mxCells to be deleted are first highlighted,
+                    // and then the selection is deleted in a single go.
+                    graph.getSelectionModel().setCells(cells);
+                    editor.execute('delete');
                 });
+
                 addToolbarButton(editor, toolbar, 'toggle', 'Expand All', 'images/navigate_plus.png');
                 toolbar.appendChild(spacer.cloneNode(true));
 
@@ -675,7 +528,7 @@
 
                 toolbar.appendChild(spacer.cloneNode(true));
 
-                addToolbarButton(editor, toolbar, 'deleteBlock', '', 'images/delete2.png');
+                addToolbarButton(editor, toolbar, 'delete', '', 'images/delete2.png');
                 addToolbarButton(editor, toolbar, 'undo', '', 'images/undo.png');
                 addToolbarButton(editor, toolbar, 'redo', '', 'images/redo.png');
                 toolbar.appendChild(spacer.cloneNode(true));
@@ -692,115 +545,111 @@
                     Reference: http://www.w3schools.com/xsl/xsl_client.asp
 	        */
 
-               function loadXMLDoc(filename) {
+                function loadXMLDoc(filename) {
+                    if (window.ActiveXObject) {
+                        xhttp = new ActiveXObject("Msxml2.XMLHTTP");
+                    } else {
                         xhttp = new XMLHttpRequest();
-                        xhttp.open("GET", filename, false);
-                        try {
-                            xhttp.responseType = "text/xml";
-                        } catch (err) {
-                        }
-                        xhttp.send("");
-                        return xhttp.responseXML;
                     }
+                    xhttp.open("GET", filename, false);
+                    try {
+                        xhttp.responseType = "msxml-document"
+                    } catch (err) {}
+                    xhttp.send("");
+                    return xhttp.responseXML;
+                }
 
 
-                    /*
-                     Maverick
-                     The Export buttons in toolbar call this function with varying
-                     arguments.
-                     The third argument is used to deciFde which button is being
-                     pressed.
-                     exportXML : 2 arguments
-                     exportXcos: 3 arguments
-                     */
-                    function displayXMLorXcos() {
-                        var textarea = document.createElement('textarea');
-                        textarea.style.width = '400px';
-                        textarea.style.height = '400px';
-
-                        var enc = new mxCodec(mxUtils.createXmlDocument());
-                        var node = enc.encode(diagRoot);
-
-                        var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + mxUtils.getPrettyXml(node);
-
-                        textarea.value = str;
-
-                        if (arguments[2] == null) {
-                            showModalWindow(graph, 'XML', textarea, 410, 440);
-                        } else {
-
-                            return mxUtils.getPrettyXml(node);
-                        }
-                    }
-
-                    function getXcosDiagram(editor, cell) {
-                        //Mind the 3 parameters.
-                        var xmlFromExportXML = displayXMLorXcos(editor, cell, true);
-                        if (xmlFromExportXML === null)
-                            alert('First create the XML file.');
-                        else {
-
-                            var xml = mxUtils.parseXml(xmlFromExportXML);
-
-                            var xsl = loadXMLDoc("finalmodsheet.xsl");
-
-                            xsltProcessor = new XSLTProcessor();
-                            xsltProcessor.importStylesheet(xsl);
-                            resultDocument = xsltProcessor.transformToDocument(xml);
-                            /*
-                             Maverick
-                             Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
-                             */
-                            var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocument.documentElement);
-
-                            str = str.replace(/\n\n/g, "\n");
-                            return str;
-                        }
-                    }
-
-                    // Defines a new export action
-                    editor.addAction('exportXML', function (editor, cell) {
-                        //Only two parameters passed here.
-                        displayXMLorXcos(editor, cell);
-                    });
-
-                    /* Maverick
-                     Reference: http://www.w3schools.com/xsl/xsl_client.asp
-                     */
-
-                    editor.addAction('exportXcos', function (editor, cell) {
-                        var textarea = document.createElement('textarea');
-                        textarea.style.width = '400px';
-                        textarea.style.height = '400px';
-                        textarea.value = getXcosDiagram(editor, cell);
-                        showModalWindow(graph, 'Xcos', textarea, 410, 440);
-                    });
-
-                    addToolbarButton(editor, toolbar, 'exportXML', 'Export XML', 'images/export1.png');
-                    addToolbarButton(editor, toolbar, 'exportXcos', 'Export Xcos', 'images/export1.png');
-
-                    toolbar.appendChild(spacer.cloneNode(true));
-
-                    addToolbarButton(editor, toolbar, 'simulate', 'Simulate', 'images/ScilabExecute.png');
-
-                    editor.addAction('simulate', function (editor, cell) {
-                        var diagram = getXcosDiagram(editor, cell);
+                /*
+				Maverick
+                The Export buttons in toolbar call this function with varying
+                arguments.
+                The third argument is used to decide which button is being
+                pressed.
+				exportXML : 2 arguments
+				exportXcos: 3 arguments
+                */
+                function displayXMLorXcos() {
+                    var textarea = document.createElement('textarea');
+                    textarea.style.width = '400px';
+                    textarea.style.height = '400px';
+                    var enc = new mxCodec(mxUtils.createXmlDocument());
+                    /*var array=[],key;
+                    for (key in diagRoot.model.cells) {
                         
-                        //var parameters = {'diagram' : diagram};
-                        $.ajax({
-                            type: "POST",
-                            url: 'servlet/SciExec',
-                            dataType:"text/xml",
-                            processData: false,
-                            data: "name=" + encodeURIComponent(diagram),
-                            success: function (response) {
-                                console.log(response.responseText);
-                            },
-                            error: function (response) {
-                                console.log(response.responseText);
-                            }
-                        });
-                    });
+                        if(diagRoot.model.cells[key].connectable == false)
+                        {
+                            array.push(diagRoot.model.cells[key].inst);
+                            diagRoot.model.cells[key].inst=null;
+                        }
+                    }*/
+                    var node = enc.encode(diagRoot);
+
+                    var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + mxUtils.getPrettyXml(node);
+
+                    textarea.value = str;
+                    /*var j = 0;
+                    for (key in diagRoot.model.cells) {
+                        
+                        if(diagRoot.model.cells[key].connectable == false)
+                        {
+                            diagRoot.model.cells[key].inst=array[j++];
+                        }
+                    }*/
+                    if (arguments[2] == null) {
+                        showModalWindow(graph, 'XML', textarea, 410, 440);
+                    } else {
+
+                        return mxUtils.getPrettyXml(node);
+                    }
+                }
+
+                // Defines a new export action
+                editor.addAction('exportXML', function(editor, cell) {
+                    //Only two parameters passed here.
+                    displayXMLorXcos(editor, cell);
+                });
+
+                /* Maverick
+                 Reference: http://www.w3schools.com/xsl/xsl_client.asp
+                */
+
+                editor.addAction('exportXcos', function(editor, cell) {
+                    //Mind the 3 parameters.
+                    var xmlFromExportXML = displayXMLorXcos(editor, cell, true);
+                    if (xmlFromExportXML == null) alert('First create the XML file.');
+                    else {
+
+                        var xml = mxUtils.parseXml(xmlFromExportXML);
+
+                        var xsl = loadXMLDoc("finalmodsheet.xsl");
+
+                        xsltProcessor = new XSLTProcessor();
+                        xsltProcessor.importStylesheet(xsl);
+                        resultDocument = xsltProcessor.transformToDocument(xml);
+
+
+                        var textarea = document.createElement('textarea');
+                        textarea.style.width = '400px';
+                        textarea.style.height = '400px';
+                        /*
+                            Maverick
+                            Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
+                        */
+                        var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocument.documentElement);
+
+                        textarea.value = str.replace(/\n\n/g, "\n");
+                        showModalWindow(graph, 'Xcos', textarea, 410, 440);
+                    }
+                });
+
+                addToolbarButton(editor, toolbar, 'exportXML', 'Export XML', 'images/export1.png');
+
+                addToolbarButton(editor, toolbar, 'exportXcos', 'Export Xcos', 'images/export1.png');
+
+                // Adds toolbar buttons into the status bar at the bottom
+                // of the window.
+
                 addToolbarButton(editor, status, 'zoomIn', '', 'images/zoom_in.png', true);
                 addToolbarButton(editor, status, 'zoomOut', '', 'images/zoom_out.png', true);
                 addToolbarButton(editor, status, 'actualSize', '', 'images/view_1_1.png', true);
@@ -1168,14 +1017,10 @@
                         propertiesObject[key] = document.getElementById(key.toString()).value;
                     }
                 }
-                var label = getImgHTML(name);
                 var details = cell.blockInstance.instance.set(propertiesObject); //window[name]("set",cell.value,propertiesObject);
                 var enc = new mxCodec();
                 var node = enc.encode(details);
-                if(name=='CONST_m')
                 node.setAttribute('label', getData(details.exprs)[0]);
-                else
-                node.setAttribute('label', label);
                 cell.value = node;
                 /*
                     Maverick
@@ -1788,11 +1633,6 @@
                     var details = details_instance.define();
                     var enc = new mxCodec(mxUtils.createXmlDocument());
                     var node = enc.encode(details);
-                    if(name=='CONST_m'){
-                        node.setAttribute('label', '1');
-                    } else if(name == 'ABS_VALUE') {
-                        node.setAttribute('label', 'ABS');
-                    } else
                     node.setAttribute('label', label);
                     var temp = enc.encode(parent);
                     node.setAttribute('parent', temp.getAttribute('id'));
@@ -2169,105 +2009,92 @@
 	   Implements a perpendicular wires connection edge style
     -->
     <script type="text/javascript">
-      mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
-        state.cell.waypoints = state.cell.geometry.points;
-        // Creates array of all way- and terminalpoints
-        var pts = state.absolutePoints;
-        var horizontal = true;
-        var hint = null;
-        // Gets the initial connection from the source terminal or edge
-        if (source != null && state.view.graph.model.isEdge(source.cell)) {
-              horizontal = state.style['sourceConstraint'] == 'horizontal';
-        }
-        // If the source terminal is a Split Block, set the horizontal false
-        else if(source != null && source.cell.name == 'SPLIT_f') {
-          if(state.cell.source != null) {
-            // If the port is the third child of splitBlock, only then set the horizontal as false
-            if(state.cell.source ==  state.cell.source.parent.getChildAt(2)) {
-              horizontal = state.style['sourceConstraint'] == 'horizontal';
-            }
-          }
-        }
-        else if (source != null) {
-            horizontal = source.style['portConstraint'] != 'vertical';
-            // Checks the direction of the shape and rotates
-            var direction = source.style[mxConstants.STYLE_DIRECTION];
-            if (direction == 'north' || direction == 'south') {
-                horizontal = !horizontal;
-            }
-        }
-        // Adds the first point
-        var pt = pts[0];
-        /* @jiteshjha splitBlock
-        */
-        if(state.cell.getGeometry().getTerminalPoint(true) != null) {
-          source.cell['sourcePoint'] = state.cell.getGeometry().getTerminalPoint(true);
-        }
-        /*if(target.cell != null) {
-          target.cell['targetPoint'] = pt;
-        }*/
-        if (pt == null && source != null) {
-            pt = new mxPoint(state.view.getRoutingCenterX(source), state.view.getRoutingCenterY(source));
-        } else if (pt != null) {
-            pt = pt.clone();
-        }
-        var first = pt;
-        if(state.cell.getGeometry().getTerminalPoint(false) != null) {
-          target.cell['sourcePoint'] = state.cell.getGeometry().getTerminalPoint(false);
-        }
-        // Adds the waypoints
-        if (hints != null && hints.length > 0) {
-            for (var i = 0; i < hints.length; i++) {
-                horizontal = !horizontal;
-                hint = state.view.transformControlPoint(state, hints[i]);
-                if (horizontal) {
-                    if (pt.y != hint.y) {
-                        pt.y = hint.y;
-                        result.push(pt.clone());
-                    }
-                } else if (pt.x != hint.x) {
-                    pt.x = hint.x;
-                    result.push(pt.clone());
+        mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
+            // Creates array of all way- and terminalpoints
+            var pts = state.absolutePoints;
+            var horizontal = true;
+            var hint = null;
+
+            // Gets the initial connection from the source terminal or edge
+            if (source != null && state.view.graph.model.isEdge(source.cell)) {
+                horizontal = state.style['sourceConstraint'] == 'horizontal';
+            } else if (source != null) {
+                horizontal = source.style['portConstraint'] != 'vertical';
+
+                // Checks the direction of the shape and rotates
+                var direction = source.style[mxConstants.STYLE_DIRECTION];
+
+                if (direction == 'north' || direction == 'south') {
+                    horizontal = !horizontal;
                 }
             }
-        } else {
-            hint = pt;
-        }
-        // Adds the last point
-        pt = pts[pts.length - 1];
-        if (pt == null && target != null) {
-            pt = new mxPoint(state.view.getRoutingCenterX(target), state.view.getRoutingCenterY(target));
-        }
-        if (horizontal) {
-            if (pt.y != hint.y && first.x != pt.x) {
-                result.push(new mxPoint(pt.x, hint.y));
+
+            // Adds the first point
+            var pt = pts[0];
+
+            if (pt == null && source != null) {
+                pt = new mxPoint(state.view.getRoutingCenterX(source), state.view.getRoutingCenterY(source));
+            } else if (pt != null) {
+                pt = pt.clone();
             }
-        } else if (pt.x != hint.x && first.y != pt.y) {
-            result.push(new mxPoint(hint.x, pt.y));
-        }
-        // If the target of the edge is a splitBlock, push final coordinate as vertical.
-        if(state.cell.target != null) {
-          if(state.cell.target.parent.name == "SPLIT_f") {
-            result.pop();
-            result.push(new mxPoint(hint.x, pt.y));
-          }
-        }
+
+            var first = pt;
+
+            // Adds the waypoints
+            if (hints != null && hints.length > 0) {
+                for (var i = 0; i < hints.length; i++) {
+                    horizontal = !horizontal;
+                    hint = state.view.transformControlPoint(state, hints[i]);
+
+                    if (horizontal) {
+                        if (pt.y != hint.y) {
+                            pt.y = hint.y;
+                            result.push(pt.clone());
+                        }
+                    } else if (pt.x != hint.x) {
+                        pt.x = hint.x;
+                        result.push(pt.clone());
+                    }
+                }
+            } else {
+                hint = pt;
+            }
+
+            // Adds the last point
+            pt = pts[pts.length - 1];
+
+            if (pt == null && target != null) {
+                pt = new mxPoint(state.view.getRoutingCenterX(target), state.view.getRoutingCenterY(target));
+            }
+
+            if (horizontal) {
+                if (pt.y != hint.y && first.x != pt.x) {
+                    result.push(new mxPoint(pt.x, hint.y));
+                }
+            } else if (pt.x != hint.x && first.y != pt.y) {
+                result.push(new mxPoint(hint.x, pt.y));
+            }
         };
+
         mxStyleRegistry.putValue('wireEdgeStyle', mxEdgeStyle.WireConnector);
+
         // This connector needs an mxEdgeSegmentHandler
         mxGraphCreateHandler = mxGraph.prototype.createHandler;
         mxGraph.prototype.createHandler = function(state) {
-        var result = null;
-        if (state != null) {
-            if (this.model.isEdge(state.cell)) {
-                var style = this.view.getEdgeStyle(state);
-                if (style == mxEdgeStyle.WireConnector) {
-                    return new mxEdgeSegmentHandler(state);
+            var result = null;
+
+            if (state != null) {
+                if (this.model.isEdge(state.cell)) {
+                    var style = this.view.getEdgeStyle(state);
+
+                    if (style == mxEdgeStyle.WireConnector) {
+                        return new mxEdgeSegmentHandler(state);
+                    }
                 }
             }
-        }
-        return mxGraphCreateHandler.apply(this, arguments);
-      };
+
+            return mxGraphCreateHandler.apply(this, arguments);
+        };
     </script>
 
 </head>
