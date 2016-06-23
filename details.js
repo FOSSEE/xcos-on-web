@@ -273,7 +273,10 @@ function ScilabDouble() {
         for (i = 0; i < this.height; i++) {
             for (j = 0; j < this.width; j++) {
                 this["data" + i + j] = new data();
+                if(array[i][j] % 1 == 0)
                 this["data" + i + j].realPart = array[i][j].toFixed(1);
+                else
+                this["data" + i + j].realPart = array[i][j];
                 this["data" + i + j].line = i;
                 this["data" + i + j].column = j;
             }
@@ -327,7 +330,7 @@ function createInstanceTag() {
 
 function CLKIN_f() {
 
-    CLKIN_f.prototype.internal = function() {
+    CLKIN_f.prototype.internal = function CLKIN_f() {
         var model = scicos_model();
         var port = 1;
 
@@ -350,7 +353,7 @@ function CLKIN_f() {
 
 function CLKOUT_f() {
 
-    CLKOUT_f.prototype.internal = function() {
+    CLKOUT_f.prototype.internal = function CLKOUT_f() {
         var model = scicos_model();
         var port = 1;
 
@@ -373,7 +376,7 @@ function CLKOUT_f() {
 
 function CLKSPLIT_f() {
 
-    CLKSPLIT_f.prototype.internal = function() {
+    CLKSPLIT_f.prototype.internal = function CLKSPLIT_f() {
         var model = scicos_model();
         model.sim = new ScilabString(["split"]);
         model.evtin = new ScilabDouble([-1]);

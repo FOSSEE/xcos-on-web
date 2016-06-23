@@ -1,6 +1,9 @@
 var dir = ["data_structures_correct"];
 var fileextension = ".";
 
+var script = document.createElement("script");
+                script.src = "math.js";
+                document.head.appendChild(script);
 $.each(dir, function(index, value) {
     $.ajax({ // http://stackoverflow.com/a/18480589
         url: value,
@@ -237,4 +240,13 @@ function size() {
                 return res[arguments[1]];
         }
     }
+}
+
+function inverse() {
+    var str = "[["
+    var arg = arguments[0];
+    arg = arg.replace(/ /g, "],[");
+    str += arg + "]]";
+    var array = JSON.parse(str);
+    return array;
 }

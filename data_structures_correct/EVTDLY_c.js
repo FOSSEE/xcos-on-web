@@ -1,6 +1,6 @@
 function EVTDLY_c() {
 
-    EVTDLY_c.prototype.internal = function() {
+    EVTDLY_c.prototype.internal = function EVTDLY_c() {
         var dt = 0.1;
         var ff = 0.0;
         var model = scicos_model();
@@ -21,7 +21,7 @@ function EVTDLY_c() {
 
     }
 
-    EVTDLY_c.prototype.define = function EVTDLY_C() {
+    EVTDLY_c.prototype.define = function EVTDLY_c() {
         this.dt = 0.1;
         this.ff = 0.0;
         var model = scicos_model();

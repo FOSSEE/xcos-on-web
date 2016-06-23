@@ -134,6 +134,9 @@ Look for TAG:Break1!!!
                     <xsl:when test="@style='CommandPort'">
                         <xsl:call-template name="CommandPort" />
                     </xsl:when>
+                    <xsl:when test="@style='Split'">
+                        <xsl:call-template name="SplitBlock" />
+                    </xsl:when>
                     <xsl:otherwise>
                         <!-- Maverick -->
                         <!-- TAG:Break1 
@@ -1160,14 +1163,10 @@ Look for TAG:Break1!!!
                     <xsl:value-of select="@simulationFunctionName" />
                 </xsl:attribute>
             </xsl:if>
-            <xsl:if test="@simulationFunctionType">
-                <xsl:attribute name="simulationFunctionType">
-                    <xsl:value-of select="@simulationFunctionType" />
-                </xsl:attribute>
-            </xsl:if>
+                <xsl:attribute name="simulationFunctionType">DEFAULT</xsl:attribute>
             <xsl:if test="@style">
                 <xsl:attribute name="style">
-                    <xsl:value-of select="@style" />
+                    <xsl:value-of select="@name" />
                 </xsl:attribute>
             </xsl:if>
             <xsl:if test="@value">

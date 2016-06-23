@@ -1,6 +1,6 @@
 function IFTHEL_f() {
 
-    IFTHEL_f.prototype.internal = function() {
+    IFTHEL_f.prototype.internal = function IFTHEL_f() {
         var model = scicos_model();
         model.sim = list(new ScilabString(["ifthel"]), new ScilabDouble([-1]));
         model.in = new ScilabDouble([1]);
@@ -27,7 +27,7 @@ function IFTHEL_f() {
         return block;
     }
 
-    IFTHEL_f.prototype.define = function IFTHEL_F() {
+    IFTHEL_f.prototype.define = function IFTHEL_f() {
         var model = scicos_model();
         model.sim = list(new ScilabString(["ifthel"]), new ScilabDouble([-1]));
         model.in = new ScilabDouble([1]);
@@ -54,7 +54,7 @@ function IFTHEL_f() {
         return new BasicBlock(this.x);
     }
 
-    IFTHEL_f.prototype.details = function IFTHEL_F() {
+    IFTHEL_f.prototype.details = function IFTHEL_f() {
         return this.x;
     }
 }
