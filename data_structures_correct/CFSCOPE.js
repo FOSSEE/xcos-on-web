@@ -2,28 +2,14 @@ function CFSCOPE() {
 
     CFSCOPE.prototype.define = function CFSCOPE() {
         this.win = -1;
-        this.wdim = [
-            [600],
-            [400]
-        ];
-        this.wpos = [
-            [-1],
-            [-1]
-        ];
-        this.clrs = [
-            [1],
-            [3],
-            [5],
-            [7],
-            [9],
-            [11],
-            [13],
-            [15]
-        ];
+        this.wdim = [[600],[400]];
+        this.wpos = [[-1],[-1]];
+        this.clrs = [[1],[3],[5],[7],[9],[11],[13],[15]];
         this.N = 2;
         this.ymin = -15;
         this.ymax = 15;
         this.per = 30;
+        
         var model = scicos_model();
         model.sim = list(new ScilabString(["cfscope"]), new ScilabDouble([4]));
         model.evtin = new ScilabDouble([1]);

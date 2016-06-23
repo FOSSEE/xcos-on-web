@@ -1,10 +1,7 @@
 function BIGSOM_f() {
 
     BIGSOM_f.prototype.define = function BIGSOM_f() {
-        this.sgn = [
-            [1],
-            [1]
-        ];
+        this.sgn = [[1],[1]];
 
         var model = scicos_model();
         model.sim = list(new ScilabString(["sum"]), new ScilabDouble([2]));

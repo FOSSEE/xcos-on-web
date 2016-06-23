@@ -2,26 +2,15 @@ function AUTOMAT() {
 
     AUTOMAT.prototype.define = function AUTOMAT() {
         this.NMode = 2;
-
         this.Minitial = 1;
-
         this.NX = 1;
-
         this.X0 = [0.0];
-
-        this.XP = [
-            [1],
-            [1]
-        ];
-
+        this.XP = [[1],[1]];
         this.C1 = [2];
-
         this.C2 = [1];
 
         var exprs = new ScilabString([this.NMode.toString()], [this.Minitial.toString()], [this.NX.toString()], [sci2exp(this.X0)], [sci2exp(this.XP)], [sci2exp(this.C1)], [sci2exp(this.C2)]);
-
         var ipar = new ScilabDouble([this.NMode], [this.Minitial], [this.NX], ...this.XP, this.C1, this.C2);
-
         var rpar = new ScilabDouble(this.X0);
 
         var model = scicos_model();

@@ -38,41 +38,14 @@ function CMSCOPE() {
     }
     CMSCOPE.prototype.define = function CMSCOPE() {
         this.win = -1;
-        this.in1 = [
-            [1],
-            [1]
-        ];
-        this.wdim = [
-            [-1],
-            [-1]
-        ];
-        this.wpos = [
-            [-1],
-            [-1]
-        ];
-        this.clrs = [
-            [1],
-            [3],
-            [5],
-            [7],
-            [9],
-            [11],
-            [13],
-            [15]
-        ];
+        this.in1 = [[1],[1]];
+        this.wdim = [[-1],[-1]];
+        this.wpos = [[-1],[-1]];
+        this.clrs = [[1],[3],[5],[7],[9],[11],[13],[15]];
         this.N = 20;
-        this.ymin = [
-            [-1],
-            [-5]
-        ];
-        this.ymax = [
-            [1],
-            [5]
-        ];
-        this.per = [
-            [30],
-            [30]
-        ];
+        this.ymin = [[-1],[-5]];
+        this.ymax = [[1],[5]];
+        this.per = [[30],[30]];
         this.yy = [...transpose(this.ymin), ...transpose(this.ymax)];
         this.period = transpose(this.per);
 

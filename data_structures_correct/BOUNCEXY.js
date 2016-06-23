@@ -2,25 +2,12 @@ function BOUNCEXY() {
 
     BOUNCEXY.prototype.define = function BOUNCEXY() {
         this.win = -1;
-
         this.imode = 1;
-
-        this.clrs = [
-            [1],
-            [2]
-        ];
-
-        this.siz = [
-            [1],
-            [1]
-        ];
-
+        this.clrs = [[1],[2]];
+        this.siz = [[1],[1]];
         this.xmin = -5;
-
         this.xmax = 5;
-
         this.ymin = 0;
-
         this.ymax = 15;
 
         var model = scicos_model();
