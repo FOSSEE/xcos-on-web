@@ -378,17 +378,17 @@
 								else {
                                     outputPort = cellvar.model.out.height;
 								}
-                                if (cellvar.model.evtin.width == null) {
+                                if (cellvar.model.evtin.height == null) {
                                     controlPort = 0;
 								}
                                 else {
-                                    controlPort = cellvar.model.evtin.width;
+                                    controlPort = cellvar.model.evtin.height;
 								}
-                                if (cellvar.model.evtout.width == null) {
+                                if (cellvar.model.evtout.height == null) {
                                     commandPort = 0;
 								}
                                 else {
-                                    commandPort = cellvar.model.evtout.width;
+                                    commandPort = cellvar.model.evtout.height;
 								}
                                 var geometry = cell.getGeometry();
                                 text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
@@ -1665,13 +1665,13 @@
                             }
                         }
                     }
-                    if (blockModel.evtin.width != null) {
-                        for (i = 0; i < blockModel.evtin.width; i++) {
+                    if (blockModel.evtin.height != null) {
+                        for (i = 0; i < blockModel.evtin.height; i++) {
                             controlPorts.push("CONTROL");
                         }
                     }
-                    if (blockModel.evtout.width != null) {
-                        for (i = 0; i < blockModel.evtout.width; i++) {
+                    if (blockModel.evtout.height != null) {
+                        for (i = 0; i < blockModel.evtout.height; i++) {
                             commandPorts.push("COMMAND");
                         }
                     }
