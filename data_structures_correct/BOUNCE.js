@@ -15,28 +15,11 @@ function BOUNCE() {
             }
         }
 
-        this.walls = [
-            [0],
-            [5],
-            [0],
-            [5]
-        ];
-        this.x1 = [
-            [2],
-            [2.5]
-        ];
-        this.xd = [
-            [0],
-            [0]
-        ];
-        this.y1 = [
-            [3],
-            [5]
-        ];
-        this.yd = [
-            [0],
-            [0]
-        ];
+        this.walls = [[0],[5],[0],[5]];
+        this.x1 = [[2],[2.5]];
+        this.xd = [[0],[0]];
+        this.y1 = [[3],[5]];
+        this.yd = [[0],[0]];
         this.g = 9.81;
         this.C = 0;
         this.rpar1 = ones(this.n, 1);
