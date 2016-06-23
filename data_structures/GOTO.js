@@ -3,7 +3,7 @@ function GOTO () {
 
 	var model = scicos_model();
 	model.sim = new ScilabString(["goto"]);
-	model.in = new ScilabDouble([-1]);
+	model.in1 = new ScilabDouble([-1]);
 	model.in2 = new ScilabDouble([-2]);
 	model.intyp = new ScilabDouble([-1]);
 	model.out = new ScilabDouble();
@@ -19,4 +19,5 @@ function GOTO () {
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,1]),model,exprs,gr_i);
 	this.x.graphics.id = new ScilabString(["Goto"]);
+	return new BasicBlock(this.x)
 }

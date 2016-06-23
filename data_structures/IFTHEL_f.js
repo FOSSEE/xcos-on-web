@@ -2,8 +2,8 @@ function IFTHEL_f () {
 
 
 	var model = scicos_model();
-	model.sim=list("ifthel",-1);
-	model.in = new ScilabDouble([1]);
+	model.sim=list(new ScilabString(["ifthel"]),new ScilabDouble([-1]));
+	model.in1 = new ScilabDouble([1]);
 	model.in2 = new ScilabDouble([1]);
 	model.intyp = new ScilabDouble([-1]);
 	model.evtin = new ScilabDouble([1]);
@@ -16,6 +16,7 @@ function IFTHEL_f () {
 
 	var gr_i = [];
 
-	var exprs = [[model.in.toString()],[model.nmode.toString()]];
+	var exprs = [[string(model.in1)],[string(model.nmode)]];
 	this.x=new standard_define(new ScilabDouble([3,3]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }

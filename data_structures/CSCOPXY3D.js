@@ -24,8 +24,8 @@ function CSCOPXY3D () {
 	var nbr_curves = 1;
 
 	var model = scicos_model();
-	model.sim=list("cscopxy3d",4);
-	model.in = new ScilabDouble([1],[1],[1]);
+	model.sim=list(new ScilabString(["cscopxy3d"]),new ScilabDouble([4]));
+	model.in1 = new ScilabDouble([1],[1],[1]);
 	model.in2 = new ScilabDouble([1],[1],[1]);
 	model.intyp = new ScilabDouble([1],[1],[1]);
 	model.evtin = new ScilabDouble([1]);
@@ -34,8 +34,9 @@ function CSCOPXY3D () {
 	model.blocktype = new ScilabString(["d"]);
 	model.dep_ut = new ScilabBoolean([false,false]);
 
-	var exprs = [[nbr_curves.toString();strcat(clrs.toString()," ");strcat(siz.toString()," ");win.toString();sci2exp([]);sci2exp(wdim);strcat(vec_x.toString()," ");strcat(vec_y.toString()," ");strcat(vec_z.toString()," ");strcat(param3ds.toString()," ")],[N.toString()]];
+	var exprs = [[string(nbr_curves);strcat(string(clrs)," ");strcat(string(siz)," ");string(win);sci2exp([]);sci2exp(wdim);strcat(string(vec_x)," ");strcat(string(vec_y)," ");strcat(string(vec_z)," ");strcat(string(param3ds)," ")],[string(N)]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }

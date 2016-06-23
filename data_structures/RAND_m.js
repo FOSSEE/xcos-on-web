@@ -15,7 +15,7 @@ function RAND_m () {
 
 	var model = scicos_model();
 	model.sim=list(function_name,funtyp);
-	model.in = new ScilabDouble();
+	model.in1 = new ScilabDouble();
 	model.in2 = new ScilabDouble();
 	model.intyp = new ScilabDouble();
 	model.out = new ScilabDouble([1]);
@@ -31,8 +31,9 @@ function RAND_m () {
 	model.firing = new ScilabDouble();
 	model.dep_ut = new ScilabBoolean([false,false]);
 
-	var exprs = [[sci2exp(1)],[flag.toString()],[sci2exp([a])],[sci2exp([b])],[sci2exp([model.dstate(1),int(rand()*(10^7-1))])]];
+	var exprs = [[sci2exp(1)],[string(flag)],[sci2exp([a])],[sci2exp([b])],[sci2exp([model.dstate(1),int(rand()*(10^7-1))])]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,2]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }

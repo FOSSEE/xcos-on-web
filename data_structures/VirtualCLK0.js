@@ -12,4 +12,5 @@ function VirtualCLK0 () {
 
 	var exprs = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs," ");
+	return new BasicBlock(this.x)
 }

@@ -14,8 +14,8 @@ function CMATVIEW () {
 	var beta_c = 1;
 
 	var model = scicos_model();
-	model.sim=list("cmatview",4);
-	model.in = new ScilabDouble([-1]);
+	model.sim=list(new ScilabString(["cmatview"]),new ScilabDouble([4]));
+	model.in1 = new ScilabDouble([-1]);
 	model.in2 = new ScilabDouble([-2]);
 	model.intyp = new ScilabDouble([1]);
 	model.evtin = new ScilabDouble([1]);
@@ -24,8 +24,9 @@ function CMATVIEW () {
 	model.blocktype = new ScilabString(["c"]);
 	model.dep_ut = new ScilabBoolean([true,false]);
 
-	var exprs = [["jetcolormap(25.toString()")],[cmin.toString()],[cmax.toString()]];
+	var exprs = [[string("jetcolormap(25)")],[string(cmin)],[string(cmax)]];
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }

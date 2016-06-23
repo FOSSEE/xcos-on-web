@@ -19,14 +19,15 @@ function SourceP () {
 	mo.model = new ScilabString(["Source"]);
 	mo.inputs = new ScilabDouble();
 	mo.outputs = new ScilabString(["C"]);
-	mo.parameters=list(["P0";"T0";"H0";"option_temperature"],[P0],[T0],[H0],[option_temperature]);
+	mo.parameters=list(new ScilabString(["P0";"T0";"H0";"option_temperature"]),[P0],[T0],[H0],[option_temperature]);
 	model.equations=mo;
-	model.in=ones(size(mo.inputs,"*"),1);
+	model.in1.push(ones(size(mo.inputs,"*"),1));
 	model.out=ones(size(mo.outputs,"*"),1);
 
-	var exprs = [[P0.toString()],[T0.toString()],[H0.toString()],[option_temperature.toString()]];
+	var exprs = [[string(P0)],[string(T0)],[string(H0)],[string(option_temperature)]];
 
 	var gr_i = [];
-	this.x=new standard_define(new ScilabDouble([2.5,2]),model,exprs,list(gr_i,0));
+	this.x=standard_define([2.5,2],model,exprs,list(gr_i,0));
 	this.x.graphics.out_implicit = new ScilabString(["I"]);
+	return new BasicBlock(this.x)
 }

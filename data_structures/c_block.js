@@ -1,7 +1,7 @@
 function c_block () {
 
 
-	var in = 1;
+	var in1 = 1;
 
 	var out = 1;
 
@@ -22,8 +22,8 @@ function c_block () {
 	var funam = "toto";
 
 	var model = scicos_model();
-	model.sim=list(" ",2001);
-	model.in=new ScilabDouble([in]);
+	model.sim=list(new ScilabString([" "]),new ScilabDouble([2001]));
+	model.in1.push(new ScilabDouble([in1]));
 	model.out=new ScilabDouble([out]);
 	model.evtin=clkin;
 	model.evtout=clkout;
@@ -35,8 +35,9 @@ function c_block () {
 	model.firing=auto;
 	model.dep_ut = new ScilabBoolean([true,false]);
 
-	var label = [list([sci2exp(in)],[sci2exp(out)],[	strcat(sci2exp(rpar))],[funam],list([]))];
+	var label = list([sci2exp(in1)],[sci2exp(out)],[	strcat(sci2exp(rpar))],[funam],list([]));
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([3,2]),model,label,gr_i);
+	return new BasicBlock(this.x)
 }

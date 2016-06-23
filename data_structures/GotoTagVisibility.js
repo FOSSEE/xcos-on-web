@@ -3,7 +3,7 @@ function GotoTagVisibility () {
 
 	var model = scicos_model();
 	model.sim = new ScilabString(["gototagvisibility"]);
-	model.in = new ScilabDouble();
+	model.in1 = new ScilabDouble();
 	model.in2 = new ScilabDouble();
 	model.out = new ScilabDouble();
 	model.out2 = new ScilabDouble();
@@ -19,4 +19,5 @@ function GotoTagVisibility () {
 
 	var gr_i = [];
 	this.x=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+	return new BasicBlock(this.x)
 }

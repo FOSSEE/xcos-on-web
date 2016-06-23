@@ -5,7 +5,7 @@ function MCLOCK_f () {
 
 	var dt = 0.1;
 
-	var exprs = [[dt.toString()],[nn.toString()]];
+	var exprs = [[string(dt)],[string(nn)]];
 
 	var mfclck = MFCLCK_f("define");
 	mfclck.graphics.orig = new ScilabDouble([334,199]);
@@ -77,4 +77,5 @@ function MCLOCK_f () {
 	this.x.model.blocktype = new ScilabString(["h"]);
 	this.x.model.rpar=diagram;
 	this.x.graphics.peout = new ScilabDouble([0],[0]);
+	return new BasicBlock(this.x)
 }
