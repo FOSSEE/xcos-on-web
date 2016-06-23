@@ -3,7 +3,7 @@ function Capacitor() {
     Capacitor.prototype.define = function Capacitor() {
 
         var model = scicos_model();
-        var C = 0.01,v = 0;
+        var C = 0.01, v = 0;
         model.rpar = new ScilabDouble([C],[v]);
         model.sim = new ScilabString(["Capacitor"]);
         model.blocktype = new ScilabString(["c"]);
