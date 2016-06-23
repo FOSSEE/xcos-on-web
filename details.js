@@ -274,10 +274,10 @@ function ScilabDouble() {
             for (j = 0; j < this.width; j++) {
                 this["data" + i + j] = new data();
                 if(array[i][j] % 1 == 0) {
-                this["data" + i + j].realPart = array[i][j].toFixed(1);
+                    this["data" + i + j].realPart = array[i][j].toFixed(1);
                 } 
                 else {
-                this["data" + i + j].realPart = array[i][j];
+                    this["data" + i + j].realPart = array[i][j];
                 }
                 this["data" + i + j].line = i;
                 this["data" + i + j].column = j;
