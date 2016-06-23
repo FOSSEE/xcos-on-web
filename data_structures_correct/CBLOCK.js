@@ -2,11 +2,11 @@ function CBLOCK() {
 
     CBLOCK.prototype.define = function CBLOCK() {
         this.in1 = 1;
-		this.out = 1;
-		this.clkin = [];
-		this.clkout = [];
-		this.x0 = [];
-		this.z0 = [];
+        this.out = 1;
+        this.clkin = [];
+        this.clkout = [];
+        this.x0 = [];
+        this.z0 = [];
         this.typ = "c";
         this.auto = [];
         this.rpar = [];
