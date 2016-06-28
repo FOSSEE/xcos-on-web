@@ -21,7 +21,7 @@ You can get support in the community mailing list and forums:
 
 An online demo with continous integration with repository can be found over here:
 
-    https://xcos.herokuapp.com/test.html
+    https://xcos.herokuapp.com/
 
 Our application is still in development stage - let us know your feedback!
     
