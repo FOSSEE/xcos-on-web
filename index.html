@@ -8,8 +8,6 @@
     <!-- Loads and initializes the library -->
     <script type="text/javascript" src="jquery/jquery-1.8.2.js"></script>
     <script type="text/javascript" src="mxClient.min.js"></script>
-    <script type="text/javascript" src="editor/mxDefaultKeyHandler.js"></script>
-    <script type="text/javascript" src="handler/mxKeyHandler.js"></script>
     <script type="text/javascript" src="jquery/farbtastic.js"></script>
 
     <link rel="stylesheet" href="jquery/farbtastic.css" type="text/css" />
@@ -17,7 +15,6 @@
 
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="setup.js"></script>
-    <script type="text/javascript" src="json2.js"></script>
     <script type="text/javascript">
         function main(container, outline, toolbar, sidebar, status) {
             // Checks if the browser is supported
@@ -576,7 +573,7 @@
                     var enc = new mxCodec(mxUtils.createXmlDocument());
                     /*var array=[],key;
                     for (key in diagRoot.model.cells) {
-                        
+
                         if(diagRoot.model.cells[key].connectable == false)
                         {
                             array.push(diagRoot.model.cells[key].inst);
@@ -590,7 +587,7 @@
                     textarea.value = str;
                     /*var j = 0;
                     for (key in diagRoot.model.cells) {
-                        
+
                         if(diagRoot.model.cells[key].connectable == false)
                         {
                             diagRoot.model.cells[key].inst=array[j++];
