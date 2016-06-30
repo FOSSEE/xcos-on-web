@@ -412,13 +412,13 @@
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 // https://jgraph.github.io/mxgraph/docs/js-api/files/model/mxCell-js.html
                 // Uncomment this block to see XML tags work
-                /*graph.convertValueToString = function(cell)
+                graph.convertValueToString = function(cell)
                 {
                   if (mxUtils.isNode(cell.value))
                   {
                     return cell.getAttribute('label', '');
                   }
-                };*/
+                };
 
                 var cellLabelChanged = graph.cellLabelChanged;
                 graph.cellLabelChanged = function(cell, newValue, autoSize) {
@@ -2163,10 +2163,10 @@
             function preload(sources) {
 
                 /*
-                 * sources will have the required filenames in the mentioned folder
+                 * @Parameter: sources will have the required filenames in the mentioned folder
                  * For each image url, make a new image to enable preloading
                  */
-                for (var i = 0, length = sources.length; i < length; ++i) {
+                for (i in sources) {
                     var image = new Image();
                     image.src = sources[i];
                 }

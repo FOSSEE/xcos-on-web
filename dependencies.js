@@ -16,10 +16,10 @@ $.ajax({
     success: function (data) {
 
       /*
-       * data will have the required filenames in the mentioned folder
+       * @Parameter: data will have the required filenames in the mentioned folder
        * For each url, add the script to the body div element with getScript function
        */
-      for (var i = 0, length = data.length; i < length; ++i) {
+      for (i in data) {
           $.getScript(data[i]);
       }
     }

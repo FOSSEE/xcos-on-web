@@ -2,7 +2,7 @@
 
 /*
  * @jiteshjha
- * filenames returns the names of all the files in a given folder
+ * filenames.php returns the names of all the files in a given folder
  */
 
 // Store the filenames
