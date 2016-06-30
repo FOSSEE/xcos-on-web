@@ -414,9 +414,22 @@
                 // Uncomment this block to see XML tags work
                 graph.convertValueToString = function(cell)
                 {
+
                   if (mxUtils.isNode(cell.value))
                   {
-                    return cell.getAttribute('label', '');
+                    var stylesheet = graph.getStylesheet();
+                    var style = stylesheet.styles[cell.style];
+                    var displayedLabel = style['displayedLabel'];
+                    if(displayedLabel != null) {
+                      var displayParameter = cell.blockInstance.instance.displayParameter;
+                      for(i in displayParameter) {
+                        displayedLabel = displayedLabel.replace("%s", displayParameter[i].toString());
+                      }
+                      return displayedLabel;
+                    }
+                    else {
+                      return cell.getAttribute('label', '');
+                    }
                   }
                 };
 

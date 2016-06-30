@@ -25,6 +25,7 @@ function CONST_m() {
         model.rpar = new ScilabDouble(this.c);
         model.opar = list();
         model.blocktype = new ScilabString(["d"]);
+        this.displayParameter = [1];
         model.dep_ut = new ScilabBoolean([false, false]);
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CONST_m\",sz(1),sz(2));"]);
