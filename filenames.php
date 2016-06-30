@@ -2,7 +2,7 @@
 
 /*
  * @jiteshjha
- * getFilename returns the names of all the files in a given folder
+ * filenames returns the names of all the files in a given folder
  */
 
 // Store the filenames
@@ -11,8 +11,8 @@ $filenameArray = [];
 // Get the folder to be operated
 $url = $_POST['url'];
 
-// Open the file directory and get the filehandle
 // Reference: http://php.net/manual/en/function.opendir.php
+// Open the file directory and get the filehandle
 $handle = opendir(dirname(realpath(__FILE__)).$url);
 
 // For each file in the folder, push the filename to filenameArray
