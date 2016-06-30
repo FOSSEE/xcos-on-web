@@ -3,14 +3,16 @@ $.getScript('math.js');
 $.ajax({
     type: "POST",
 
-    // Invoke getFilename.php
-    url: "getFilename.php",
+    // Invoke filenames.php
+    url: "filenames.php",
 
     // Receive the resultant filenames from the php script in JSON format
     dataType: "json",
 
-    // add url for the required folder
-    data:{ url: "/data_structures_correct/"},
+    // Add url for the required folder
+    data: {
+      url: "/data_structures_correct/"
+    },
     success: function (data) {
 
       /*

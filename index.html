@@ -2144,19 +2144,21 @@
 <script type="text/javascript">
 
     // Preload all images
-    var dir = ["/blocks/", "/images/", "/palettes/"];
-    for(addr in dir) {
+    var directory = ["/blocks/", "/images/", "/palettes/"];
+    for(folder in directory) {
       $.ajax({
           type: "POST",
 
-          // Invoke getFilename.php
-          url: "getFilename.php",
+          // Invoke filenames.php
+          url: "filenames.php",
 
           // Receive the resultant filenames from the php script in JSON format
           dataType: "json",
 
-          // add url for the required folder
-          data:{ url: dir[addr] },
+          // Add url for the required folder
+          data: {
+            url: directory[folder]
+          },
           success: function (data) {
             function preload(sources) {
 
