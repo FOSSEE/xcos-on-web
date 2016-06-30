@@ -4,7 +4,7 @@ function IdealTransformer() {
 
     {
         this.ModelName = "IdealTransformer";
-	    this.PrametersValue = [1];
+        this.PrametersValue = [1];
         this.ParametersName = ["N"];
 
         var model = scicos_model();
