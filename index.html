@@ -2142,32 +2142,38 @@
 </body>
 <!-- It's good if this part happens after the entire page has loaded-->
 <script type="text/javascript">
+
     // Preload all images
-    var dir = ["blocks", "images"];
-    var fileextension = ".";
-    var blockImages = [];
-    $.each(dir, function(index, value) {
-        $.ajax({ // http://stackoverflow.com/a/18480589
-            url: value,
-            success: function(data) {
-                $(data).find("a:contains(" + fileextension + ")").each(function() {
-                    var filename = this.href.replace(window.location.host, "");
-                    filename = filename.replace("https://", value);
-                    filename = filename.replace("http://", value);
-                    blockImages.push(filename);
-                });
-                // Prevent multi-threading and have function within call!
-                function preload(sources) {
-                    var images = [];
-                    for (var i = 0, length = sources.length; i < length; ++i) {
-                        images[i] = new Image();
-                        images[i].src = sources[i];
-                    }
+    var dir = ["/blocks/", "/images/", "/palettes/"];
+    for(addr in dir) {
+      $.ajax({
+          type: "POST",
+
+          // Invoke getFilename.php
+          url: "getFilename.php",
+
+          // Receive the resultant filenames from the php script in JSON format
+          dataType: "json",
+
+          // add url for the required folder
+          data:{ url: dir[addr] },
+          success: function (data) {
+            function preload(sources) {
+
+                /*
+                 * sources will have the required filenames in the mentioned folder
+                 * For each image url, make a new image to enable preloading
+                 */
+                for (var i = 0, length = sources.length; i < length; ++i) {
+                    var image = new Image();
+                    image.src = sources[i];
                 }
-                preload(blockImages);
             }
-        });
-    });
+            preload(data);
+          }
+      });
+    }
+
     //Find out more here: http://stackoverflow.com/questions/12843418/jquery-ui-accordion-expand-collapse-all
     $(window).load(function() {
         var headers = $('#sidebarContainer .accordion-header');
