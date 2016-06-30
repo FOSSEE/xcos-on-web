@@ -11,7 +11,7 @@ function INTRPLBLK_f() {
         model.out = new ScilabDouble(1);
         model.rpar = new ScilabDouble(...this.a, ...this.b);
         model.blocktype = new ScilabString(["c"]);
-        model.dep_ut = new ScilabBoolean([true, false]);
+        model.dep_ut = new ScilabBoolean([true,false]);
 
         var exprs = new ScilabString([sci2exp(this.a)], [sci2exp(this.b)]);
 
