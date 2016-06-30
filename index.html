@@ -412,13 +412,13 @@
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 // https://jgraph.github.io/mxgraph/docs/js-api/files/model/mxCell-js.html
                 // Uncomment this block to see XML tags work
-                /*graph.convertValueToString = function(cell)
+                graph.convertValueToString = function(cell)
                 {
                   if (mxUtils.isNode(cell.value))
                   {
                     return cell.getAttribute('label', '');
                   }
-                };*/
+                };
 
                 var cellLabelChanged = graph.cellLabelChanged;
                 graph.cellLabelChanged = function(cell, newValue, autoSize) {
@@ -2142,32 +2142,40 @@
 </body>
 <!-- It's good if this part happens after the entire page has loaded-->
 <script type="text/javascript">
+
     // Preload all images
-    var dir = ["blocks", "images"];
-    var fileextension = ".";
-    var blockImages = [];
-    $.each(dir, function(index, value) {
-        $.ajax({ // http://stackoverflow.com/a/18480589
-            url: value,
-            success: function(data) {
-                $(data).find("a:contains(" + fileextension + ")").each(function() {
-                    var filename = this.href.replace(window.location.host, "");
-                    filename = filename.replace("https://", value);
-                    filename = filename.replace("http://", value);
-                    blockImages.push(filename);
-                });
-                // Prevent multi-threading and have function within call!
-                function preload(sources) {
-                    var images = [];
-                    for (var i = 0, length = sources.length; i < length; ++i) {
-                        images[i] = new Image();
-                        images[i].src = sources[i];
-                    }
+    var directory = ["/blocks/", "/images/", "/palettes/"];
+    for(folder in directory) {
+      $.ajax({
+          type: "POST",
+
+          // Invoke filenames.php
+          url: "filenames.php",
+
+          // Receive the resultant filenames from the php script in JSON format
+          dataType: "json",
+
+          // Add url for the required folder
+          data: {
+            url: directory[folder]
+          },
+          success: function (data) {
+            function preload(sources) {
+
+                /*
+                 * @Parameter: sources will have the required filenames in the mentioned folder
+                 * For each image url, make a new image to enable preloading
+                 */
+                for (i in sources) {
+                    var image = new Image();
+                    image.src = sources[i];
                 }
-                preload(blockImages);
             }
-        });
-    });
+            preload(data);
+          }
+      });
+    }
+
     //Find out more here: http://stackoverflow.com/questions/12843418/jquery-ui-accordion-expand-collapse-all
     $(window).load(function() {
         var headers = $('#sidebarContainer .accordion-header');

@@ -1,23 +1,28 @@
-var dir = ["data_structures_correct"];
-var fileextension = ".";
+$.getScript('math.js');
 
-var script = document.createElement("script");
-                script.src = "math.js";
-                document.head.appendChild(script);
-$.each(dir, function(index, value) {
-    $.ajax({ // http://stackoverflow.com/a/18480589
-        url: value,
-        success: function(data) {
-            $(data).find("a:contains(" + fileextension + ")").each(function() {
-                var filename = this.href.replace(window.location.host, "");
-                filename = filename.replace("https://", value);
-                filename = filename.replace("http://", value);
-                var script = document.createElement("script");
-                script.src = filename;
-                document.head.appendChild(script);
-            });
-        }
-    });
+$.ajax({
+    type: "POST",
+
+    // Invoke filenames.php
+    url: "filenames.php",
+
+    // Receive the resultant filenames from the php script in JSON format
+    dataType: "json",
+
+    // Add url for the required folder
+    data: {
+      url: "/data_structures_correct/"
+    },
+    success: function (data) {
+
+      /*
+       * @Parameter: data will have the required filenames in the mentioned folder
+       * For each url, add the script to the body div element with getScript function
+       */
+      for (i in data) {
+          $.getScript(data[i]);
+      }
+    }
 });
 
 function AfficheBlock() {
