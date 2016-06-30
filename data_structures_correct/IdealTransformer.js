@@ -1,8 +1,6 @@
 function IdealTransformer() {
 
-    IdealTransformer.prototype.define = function IdealTransformer()
-
-    {
+    IdealTransformer.prototype.define = function IdealTransformer() {
         this.ModelName = "IdealTransformer";
         this.PrametersValue = [1];
         this.ParametersName = ["N"];
