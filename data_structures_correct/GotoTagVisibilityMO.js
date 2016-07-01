@@ -26,3 +26,4 @@ function GotoTagVisibilityMO() {
         return this.x;
     }
 }
+
