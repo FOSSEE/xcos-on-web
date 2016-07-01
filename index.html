@@ -16,6 +16,7 @@
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript">
+        var edgexyz = {};
         function main(container, outline, toolbar, sidebar, status) {
             // Checks if the browser is supported
             if (!mxClient.isBrowserSupported()) {
@@ -154,7 +155,7 @@
                         {
 
                             menu.addItem('Delete', 'images/delete2.png', function() {
-                                editor.execute('delete');
+                                editor.execute('deleteBlock');
                             });
                             var edgeformat = menu.addItem('Format', null, null);
 
@@ -252,44 +253,300 @@
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
                 editor.configure(config);
 
+                graph.isCellSelectable = function(cell)
+                {
+                  if(cell.isConnectable() == true && cell.isEdge() == false) {
+                    return false;
+                  }
+                  return true;
+                };
+
+                graph.resizeCell = function(cell, bounds, recurse) {
+                  if(cell.getStyle() == 'Split') {
+                    return null;
+                  }
+
+                  return mxGraph.prototype.resizeCell.apply(this, arguments);
+                }
 
                 /*
                   For a new edge on the graph, check if that edge satisfies one of the port constraints.
                 */
                 graph.addEdge = function(edge, parent, source, target, index) {
 
-                    var edgeSource = source;
 
-                    // If the source of the edge is also an edge, find the port.
-                    while (edgeSource.isEdge() == true) {
-                        edgeSource = edgeSource.source;
-                    }
-
-                    // If the edge violates any port constraints, return null.
-                    if (!((edgeSource.getEdgeCount() == 0 && edgeSource.isVertex() &&
-                                target.getEdgeCount() == 0 && target.isVertex()) ||
-                            (edgeSource.getEdgeCount() <= 1 && source.isEdge()))) {
-                        alert("Port is already connected, please select an please select an unconnected port or a valid link");
-                    } else if (edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
-                        alert("Explicit data output port must be connected to explicit data input port");
-                    } else if (edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
-                        alert("Explicit data input port must be connected to explicit data output port");
-                    } else if (edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
-                        alert("Implicit data output port must be connected to implicit data input port");
-                    } else if (edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
-                        alert("Implicit data input port must be connected to implicit data output port");
-                    } else if (edgeSource.value == "CommandPort" && target.value != "ControlPort") {
-                        alert("Command port must be connected to control port");
-                    } else if (edgeSource.value == "ControlPort" && target.value != "CommandPort") {
-                        alert("Control port must be connected to command port");
-                    } else {
-                        // If the edge is legit, return the edge.
-                        return mxGraph.prototype.addEdge.apply(this, arguments);
-                    }
-
+                  if(source.isEdge() == true && target.isEdge() == true) {
+                    alert("Illegal connection! - Link to link connection");
                     return null;
-                }
+                  }
 
+                  // If the edge is legit, return the edge.
+                  if(source.isEdge() == true) {
+                    graph.getModel().beginUpdate();
+                    try
+                    {
+                      var edgeSource = source;
+                      while (edgeSource.isEdge() == true) {
+                          edgeSource = edgeSource.source;
+                      }
+
+                      if(edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
+                        alert("Explicit data output port must be connected to explicit data input port");
+                        return null;
+                      }
+                      else if(edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
+                        alert("Explicit data input port must be connected to explicit data output port");
+                        return null;
+                      }
+                      else if(edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
+                        alert("Implicit data output port must be connected to implicit data input port");
+                        return null;
+                      }
+                      else if(edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
+                        alert("Implicit data input port must be connected to implicit data output port");
+                        return null;
+                      }
+                      else if(edgeSource.value == "CommandPort" && target.value != "ControlPort") {
+                        alert("Command port must be connected to control port");
+                        return null;
+                      }
+                      else if(edgeSource.value == "ControlPort" && target.value != "CommandPort") {
+                        alert("Control port must be connected to command port");
+                        return null;
+                      }
+
+                      var cell = graph.insertVertex(graph.getDefaultParent(), null, '', source.sourcePoint.x-5, source.sourcePoint.y-5.5, 10, 10,'Split', false);
+
+                      var sourceState = graph.view.getState(source);
+                      console.log(sourceState);
+                      var waypoints = source.waypoints;
+                      var waypoints1 = [];
+                      for(i in sourceState.absolutePoints) {
+                        waypoints1.push(sourceState.absolutePoints[i]);
+                      }
+                      waypoints1.shift();
+                      waypoints1.pop();
+                      console.log(waypoints1);
+                      waypoints = waypoints1;
+                      var seg = mxUtils.findNearestSegment(sourceState, source.sourcePoint.x, source.sourcePoint.y);
+                      var sourceTarget = source.target;
+
+                      if (edgeSource.value == 'ExplicitOutputPort') {
+                        createPorts(graph, cell, ['E'], [], ['E'], ['E']);
+                        cell.name = 'SPLIT_f';
+                        var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), sourceTarget);
+                        var thirdEdge = graph.insertEdge(parent, null, '', cell.getChildAt(2), target);
+                        var futureSource = graph.insertEdge(parent, null, '', source.source, cell.getChildAt(0));
+                        //edge.source = cell.getChildAt(2);
+                        //console.log(edge);
+                        //edge.setTerminal(cell.getChildAt(2), true);
+                        //console.log(graph.getModel().setTerminal(edge, cell.getChildAt(2), true));
+                      }
+                      else if (edgeSource.value == 'ImplicitOutputPort') {
+                        createPorts(graph, cell, ['I'], [], ['I', 'I'], []);
+                        cell.name = 'SPLIT_f';
+                        var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), sourceTarget);
+                        var thirdEdge = graph.insertEdge(parent, null, '', cell.getChildAt(2), target);
+                        var futureSource = graph.insertEdge(parent, null, '', source.source, cell.getChildAt(0));
+                      }
+                      else {
+                        createPorts(graph, cell, ['CONTROL'], [], ['COMMAND', 'COMMAND'], []);
+                        cell.name = 'SPLIT_f';
+                        var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), sourceTarget);
+                        var thirdEdge = graph.insertEdge(parent, null, '', cell.getChildAt(2), target);
+                        var futureSource = graph.insertEdge(parent, null, '', source.source, cell.getChildAt(0));
+                      }
+
+                      cell.getChildAt(0).setVisible(false);
+                      cell.getChildAt(1).setVisible(false);
+                      cell.getChildAt(2).setVisible(false);
+
+                      graph.removeCells([source], true);
+                      source = futureSource;
+                      if(waypoints != null)  {
+                        var waypoints1 = [];
+                        for(var i = 0; i < seg; i++) {
+                          waypoints1.push(waypoints[i]);
+                        }
+
+                        var waypoints2 = [];
+                        for(var i = seg; i < waypoints.length; i++) {
+                          waypoints2.push(waypoints[i]);
+                        }
+
+                        source.geometry.points = waypoints1;
+                        someEdge.geometry.points = waypoints2;
+                      }
+
+                      var waypoints3 = edgexyz.absolutePoints;
+                      if(waypoints3 != null && waypoints3.length > 1) {
+                        waypoints3.shift();
+                      }
+
+                      thirdEdge.geometry.points = waypoints3;
+                      cell.getChildAt(0).setConnectable(false);
+                      cell.getChildAt(1).setConnectable(false);
+                      cell.getChildAt(2).setConnectable(false);
+                      cell.setConnectable(false);
+                      graph.refresh();
+                    }
+                    finally
+                    {
+                      graph.getModel().endUpdate();
+                    }
+                    return null;
+                  }
+                  if(target.isEdge() == true) {
+                    graph.getModel().beginUpdate();
+                    try
+                    {
+                      var edgeSource = target;
+                      while (edgeSource.isEdge() == true) {
+                          edgeSource = edgeSource.source;
+                      }
+
+                      if(source.value == "ExplicitOutputPort" && edgeSource.value != "ExplicitInputPort") {
+                        alert("Explicit data output port must be connected to explicit data input port");
+                        return null;
+                      }
+                      else if(source.value == "ExplicitInputPort" && edgeSource.value != "ExplicitOutputPort") {
+                        alert("Explicit data input port must be connected to explicit data output port");
+                        return null;
+                      }
+                      else if(source.value == "ImplicitOutputPort" && edgeSource.value != "ImplicitInputPort") {
+                        alert("Implicit data output port must be connected to implicit data input port");
+                        return null;
+                      }
+                      else if(source.value == "ImplicitInputPort" && edgeSource.value != "ImplicitOutputPort") {
+                        alert("Implicit data input port must be connected to implicit data output port");
+                        return null;
+                      }
+                      else if(source.value == "CommandPort" && edgeSource.value != "ControlPort") {
+                        alert("Command port must be connected to control port");
+                        return null;
+                      }
+                      else if(source.value == "ControlPort" && edgeSource.value != "CommandPort") {
+                        alert("Control port must be connected to command port");
+                        return null;
+                      }
+
+                      var cell = graph.insertVertex(graph.getDefaultParent(), null, '', target.sourcePoint.x-5, target.sourcePoint.y-5, 10, 10,'Split', false);
+                      var sourceState = graph.view.getState(target);
+                      console.log(sourceState);
+                      var waypoints = target.waypoints;
+                      var waypoints1 = [];
+                      for(i in sourceState.absolutePoints) {
+                        waypoints1.push(sourceState.absolutePoints[i]);
+                      }
+                      waypoints1.shift();
+                      waypoints1.pop();
+                      console.log(waypoints1);
+                      waypoints = waypoints1;
+                      var seg = mxUtils.findNearestSegment(sourceState, target.sourcePoint.x, target.sourcePoint.y);
+                      var sourceTarget = target.target;
+
+
+                      if (edgeSource.value == 'ExplicitOutputPort') {
+                        createPorts(graph, cell, ['EXPLICIT'], [], ['EXPLICIT'], ['EXPLICIT']);
+                        cell.name = 'SPLIT_f';
+                        var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), sourceTarget);
+                        var thirdEdge = graph.insertEdge(parent, null, '', cell.getChildAt(2), source);
+                        var futureSource = graph.insertEdge(parent, null, '', target.source, cell.getChildAt(0));
+                      }
+                      else if (edgeSource.value == 'ImplicitOutputPort') {
+                        createPorts(graph, cell, ['IMPLICIT'], [], ['IMPLICIT', 'IMPLICIT'], []);
+                        cell.name = 'SPLIT_f';
+                        var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), sourceTarget);
+                        var thirdEdge = graph.insertEdge(parent, null, '', cell.getChildAt(2), source);
+                        var futureSource = graph.insertEdge(parent, null, '', target.source, cell.getChildAt(0));
+                      }
+                      else {
+                        createPorts(graph, cell, ['CONTROL'], [], ['COMMAND', 'COMMAND'], []);
+                        cell.name = 'SPLIT_f';
+                        var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), sourceTarget);
+                        var thirdEdge = graph.insertEdge(parent, null, '', cell.getChildAt(2), source);
+                        var futureSource = graph.insertEdge(parent, null, '', target.source, cell.getChildAt(0));
+                      }
+
+                      cell.getChildAt(0).setVisible(false);
+                      cell.getChildAt(1).setVisible(false);
+                      cell.getChildAt(2).setVisible(false);
+
+                      graph.removeCells([target], true);
+                      target = futureSource;
+
+                      if(waypoints != null)  {
+                        var waypoints1 = [];
+                        for(var i = 0; i < seg; i++) {
+                          waypoints1.push(waypoints[i]);
+                        }
+
+                        var waypoints2 = [];
+                        for(var i = seg; i < waypoints.length; i++) {
+                          waypoints2.push(waypoints[i]);
+                        }
+
+                        target.geometry.points = waypoints1;
+                        someEdge.geometry.points = waypoints2;
+                      }
+                      console.log(edgexyz);
+                      var waypoints3 = edgexyz.absolutePoints;
+                      if(waypoints3 != null && waypoints3.length > 1) {
+                        waypoints3.pop();
+                      }
+                        waypoints3.reverse();
+                      thirdEdge.geometry.points = waypoints3;
+                      cell.getChildAt(0).setConnectable(false);
+                      cell.getChildAt(1).setConnectable(false);
+                      cell.getChildAt(2).setConnectable(false);
+                      cell.setConnectable(false);
+                      graph.refresh();
+                    }
+                    finally
+                    {
+                      graph.getModel().endUpdate();
+                    }
+                    return null;
+                  }
+
+                  if(source.parent.name == 'SPLIT_f' || target.parent.name == 'SPLIT_f') {
+                    return mxGraph.prototype.addEdge.apply(this, arguments);
+                  }
+
+                  var edgeSource = source;
+
+                  // If the source of the edge is also an edge, find the port.
+                  while (edgeSource.isEdge() == true) {
+                      edgeSource = edgeSource.source;
+                  }
+
+                  if(source.getEdgeCount() > 0 || target.getEdgeCount() > 0) {
+                    alert("Port is already connected, please select an please select an unconnected port or a valid link");
+                  }
+                  else if(edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
+                    alert("Explicit data output port must be connected to explicit data input port");
+                  }
+                  else if(edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
+                    alert("Explicit data input port must be connected to explicit data output port");
+                  }
+                  else if(edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
+                    alert("Implicit data output port must be connected to implicit data input port");
+                  }
+                  else if(edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
+                    alert("Implicit data input port must be connected to implicit data output port");
+                  }
+                  else if(edgeSource.value == "CommandPort" && target.value != "ControlPort") {
+                    alert("Command port must be connected to control port");
+                  }
+                  else if(edgeSource.value == "ControlPort" && target.value != "CommandPort") {
+                    alert("Control port must be connected to command port");
+                  }
+                  else {
+                    // If the edge is legit, return the edge.
+                    return mxGraph.prototype.addEdge.apply(this, arguments);
+                  }
+                  return null;
+                }
                 // Shows a "modal" window when double clicking a vertex.
                 graph.dblClick = function(evt, cell) {
                     // Do not fire a DOUBLE_CLICK event here as mxEditor will
@@ -470,50 +727,89 @@
                    Used Preorder traversal for edges.
                 */
                 editor.addAction('deleteBlock', function(editor, cell) {
+                  graph.getModel().beginUpdate();
+                  try {
+
+                  function getEdgeId(edgeObject) {
+                    var cellStack = [];
+                    if(edgeObject != null && edgeObject.isEdge() == true) {
+                      cellStack.push(edgeObject);
+                      while(cellStack.length != 0) {
+                        var tempEdgeObject = cellStack.pop();
+                        if (tempEdgeObject.edge == true && (cells.indexOf(tempEdgeObject) == -1)) {
+                            cells.push(tempEdgeObject);
+                        }
+                        if(tempEdgeObject.source.parent.name == "SPLIT_f") {
+                            if(tempEdgeObject.source == tempEdgeObject.source.parent.getChildAt(1)) {
+                              var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
+                              var target = tempEdgeObject.source.parent.getChildAt(2).getEdgeAt(0).target;
+                              graph.getModel().setTerminal(sourceEdge, target, false);
+                              cells.push(tempEdgeObject.source.parent);
+                            }
+                            else {
+                              var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
+                              var target = tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0).target;
+                              console.log(graph.view.getState(sourceEdge));
+                              var waypoints1 = graph.view.getState(sourceEdge).absolutePoints;
+                              var waypoints2 = graph.view.getState(tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0)).absolutePoints;
+                              waypoints1.pop();
+                              waypoints2.shift();
+                              console.log(waypoints1);
+                              console.log(waypoints2);
+                              for(i in waypoints2) {
+                                waypoints1.push(waypoints2[i]);
+                              }
+                              graph.getModel().setTerminal(sourceEdge, target, false);
+                              sourceEdge.getGeometry().points = waypoints1;
+                              //console.log(graph.view.getState(sourceEdge).absolutePoints);
+                              //var state = graph.view.getState(sourceEdge);
+                              //state.absolutePoints = waypoints1;
+                              //console.log(graph.view.getState(sourceEdge).absolutePoints);
+                              cells.push(tempEdgeObject.source.parent);
+                            }
+
+                        }
+                        if(tempEdgeObject.target.parent.name == "SPLIT_f") {
+                          if(cells.indexOf(tempEdgeObject.target.parent) == -1) {
+                            cells.push(tempEdgeObject.target.parent);
+                          }
+                          cellStack.push(tempEdgeObject.target.parent.getChildAt(1).getEdgeAt(0));
+                          cellStack.push(tempEdgeObject.target.parent.getChildAt(2).getEdgeAt(0));
+                        }
+                      }
+                    }
+                  }
+
                     var cells = [];
                     var selectionCells = graph.getSelectionCells();
                     for (var k = 0; k < selectionCells.length; k++) {
-                        var portCount = selectionCells[k].getChildCount();
-                        cells.push(selectionCells[k]);
-                        // Finds all the port with edges of the selected cell, and calls getEdgeId() for
-                        // each edge object of that port.
-                        for (var i = 0; i < portCount; i++) {
-                            var edgeCount = selectionCells[k].getChildAt(i).getEdgeCount();
-                            if (edgeCount != 0) {
-                                getEdgeId(selectionCells[k].getChildAt(i));
-
-                                for (var j = 0; j < edgeCount; j++) {
-                                    var edgeObject = selectionCells[k].getChildAt(i).getEdgeAt(j);
-                                    getEdgeId(edgeObject);
-                                }
-                            }
+                        if(selectionCells[k].isEdge() == true) {
+                          getEdgeId(selectionCells[k]);
                         }
+                        else {
+                          var portCount = selectionCells[k].getChildCount();
+                          cells.push(selectionCells[k]);
+                          for (var i = 0; i < portCount; i++) {
+                              var edgeCount = selectionCells[k].getChildAt(i).getEdgeCount();
+                              if (edgeCount != 0) {
+                                  for (var j = 0; j < edgeCount; j++) {
+                                      var edgeObject = selectionCells[k].getChildAt(i).getEdgeAt(j);
+                                      getEdgeId(edgeObject);
+                                  }
+                              }
+                          }
+                       }
                     }
 
 
-                    /* getEdgeId() find all the associated edges from an edge.
-                     Pushes the object of that edge into an array of mxCell objects.
-                     */
-                    function getEdgeId(edgeObject) {
-                        var cellStack = [];
-                        if (edgeObject != null && edgeObject.isEdge() == true) {
-                            cellStack.push(edgeObject);
-                            while (cellStack.length != 0) {
-                                var tempEdgeObject = cellStack.pop();
-                                if (tempEdgeObject.edge == true && (cells.indexOf(tempEdgeObject) == -1)) {
-                                    cells.push(tempEdgeObject);
-                                }
-                                for (var j = 0; j < tempEdgeObject.getEdgeCount(); j++) {
-                                    cellStack.push(tempEdgeObject.getEdgeAt(j));
-                                }
-                            }
-                        }
-                    }
+                    //graph.getSelectionModel().setCells(cells);
+                    //editor.execute('delete');
+                    graph.removeCells(cells, true);
+                  }
+                  finally {
+                    graph.getModel().endUpdate();
+                  }
 
-                    // The mxCells to be deleted are first highlighted,
-                    // and then the selection is deleted in a single go.
-                    graph.getSelectionModel().setCells(cells);
-                    editor.execute('delete');
                 });
 
                 addToolbarButton(editor, toolbar, 'toggle', 'Expand All', 'images/navigate_plus.png');
@@ -525,7 +821,7 @@
 
                 toolbar.appendChild(spacer.cloneNode(true));
 
-                addToolbarButton(editor, toolbar, 'delete', '', 'images/delete2.png');
+                addToolbarButton(editor, toolbar, 'deleteBlock', 'Delete', 'images/delete2.png');
                 addToolbarButton(editor, toolbar, 'undo', '', 'images/undo.png');
                 addToolbarButton(editor, toolbar, 'redo', '', 'images/redo.png');
                 toolbar.appendChild(spacer.cloneNode(true));
@@ -1809,6 +2105,7 @@
     <script type="text/javascript">
         // Computes the position of edge to edge connection points.
         mxGraphView.prototype.updateFixedTerminalPoint = function(edge, terminal, source, constraint) {
+            edgexyz = edge;
             var pt = null;
 
             if (constraint != null) {
@@ -2006,92 +2303,127 @@
 	   Implements a perpendicular wires connection edge style
     -->
     <script type="text/javascript">
-        mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
-            // Creates array of all way- and terminalpoints
-            var pts = state.absolutePoints;
-            var horizontal = true;
-            var hint = null;
+      mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
+          state.cell.waypoints = state.cell.geometry.points;
+          // Creates array of all way- and terminalpoints
+          var pts = state.absolutePoints;
+          var horizontal = true;
+          var hint = null;
 
-            // Gets the initial connection from the source terminal or edge
-            if (source != null && state.view.graph.model.isEdge(source.cell)) {
+          // Gets the initial connection from the source terminal or edge
+          if (source != null && state.view.graph.model.isEdge(source.cell)) {
                 horizontal = state.style['sourceConstraint'] == 'horizontal';
-            } else if (source != null) {
-                horizontal = source.style['portConstraint'] != 'vertical';
-
-                // Checks the direction of the shape and rotates
-                var direction = source.style[mxConstants.STYLE_DIRECTION];
-
-                if (direction == 'north' || direction == 'south') {
-                    horizontal = !horizontal;
-                }
+          }
+          // If the source terminal is a Split Block, set the horizontal false
+          else if(source != null && source.cell.name == 'SPLIT_f') {
+            if(state.cell.source != null) {
+              // If the port is the third child of splitBlock, only then set the horizontal as false
+              if(state.cell.source ==  state.cell.source.parent.getChildAt(2)) {
+                horizontal = state.style['sourceConstraint'] == 'horizontal';
+              }
             }
+          }
+          else if (source != null) {
+              horizontal = source.style['portConstraint'] != 'vertical';
 
-            // Adds the first point
-            var pt = pts[0];
+              // Checks the direction of the shape and rotates
+              var direction = source.style[mxConstants.STYLE_DIRECTION];
 
-            if (pt == null && source != null) {
-                pt = new mxPoint(state.view.getRoutingCenterX(source), state.view.getRoutingCenterY(source));
-            } else if (pt != null) {
-                pt = pt.clone();
+              if (direction == 'north' || direction == 'south') {
+                  horizontal = !horizontal;
+              }
+          }
+
+          // Adds the first point
+          var pt = pts[0];
+
+          /* @jiteshjha splitBlock
+          */
+          if(state.cell.getGeometry().getTerminalPoint(true) != null) {
+            source.cell['sourcePoint'] = state.cell.getGeometry().getTerminalPoint(true);
+          }
+
+
+          /*if(target.cell != null) {
+            target.cell['targetPoint'] = pt;
+          }*/
+
+          if (pt == null && source != null) {
+              pt = new mxPoint(state.view.getRoutingCenterX(source), state.view.getRoutingCenterY(source));
+          } else if (pt != null) {
+              pt = pt.clone();
+          }
+
+          var first = pt;
+          if(state.cell.getGeometry().getTerminalPoint(false) != null) {
+            target.cell['sourcePoint'] = state.cell.getGeometry().getTerminalPoint(false);
+          }
+
+          // Adds the waypoints
+          if (hints != null && hints.length > 0) {
+
+
+              for (var i = 0; i < hints.length; i++) {
+                  horizontal = !horizontal;
+                  hint = state.view.transformControlPoint(state, hints[i]);
+
+                  if (horizontal) {
+                      if (pt.y != hint.y) {
+                          pt.y = hint.y;
+                          result.push(pt.clone());
+                      }
+                  } else if (pt.x != hint.x) {
+                      pt.x = hint.x;
+                      result.push(pt.clone());
+                  }
+              }
+          } else {
+              hint = pt;
+          }
+
+          // Adds the last point
+          pt = pts[pts.length - 1];
+          if (pt == null && target != null) {
+              pt = new mxPoint(state.view.getRoutingCenterX(target), state.view.getRoutingCenterY(target));
+
+          }
+
+          if (horizontal) {
+              if (pt.y != hint.y && first.x != pt.x) {
+                  result.push(new mxPoint(pt.x, hint.y));
+              }
+          } else if (pt.x != hint.x && first.y != pt.y) {
+              result.push(new mxPoint(hint.x, pt.y));
+          }
+
+          // If the target of the edge is a splitBlock, push final coordinate as vertical.
+          if(state.cell.target != null) {
+            if(state.cell.target.parent.name == "SPLIT_f") {
+              result.pop();
+              result.push(new mxPoint(hint.x, pt.y));
             }
+          }
+      };
 
-            var first = pt;
+      mxStyleRegistry.putValue('wireEdgeStyle', mxEdgeStyle.WireConnector);
 
-            // Adds the waypoints
-            if (hints != null && hints.length > 0) {
-                for (var i = 0; i < hints.length; i++) {
-                    horizontal = !horizontal;
-                    hint = state.view.transformControlPoint(state, hints[i]);
+      // This connector needs an mxEdgeSegmentHandler
+      mxGraphCreateHandler = mxGraph.prototype.createHandler;
+      mxGraph.prototype.createHandler = function(state) {
+          var result = null;
 
-                    if (horizontal) {
-                        if (pt.y != hint.y) {
-                            pt.y = hint.y;
-                            result.push(pt.clone());
-                        }
-                    } else if (pt.x != hint.x) {
-                        pt.x = hint.x;
-                        result.push(pt.clone());
-                    }
-                }
-            } else {
-                hint = pt;
-            }
+          if (state != null) {
+              if (this.model.isEdge(state.cell)) {
+                  var style = this.view.getEdgeStyle(state);
 
-            // Adds the last point
-            pt = pts[pts.length - 1];
+                  if (style == mxEdgeStyle.WireConnector) {
+                      return new mxEdgeSegmentHandler(state);
+                  }
+              }
+          }
 
-            if (pt == null && target != null) {
-                pt = new mxPoint(state.view.getRoutingCenterX(target), state.view.getRoutingCenterY(target));
-            }
-
-            if (horizontal) {
-                if (pt.y != hint.y && first.x != pt.x) {
-                    result.push(new mxPoint(pt.x, hint.y));
-                }
-            } else if (pt.x != hint.x && first.y != pt.y) {
-                result.push(new mxPoint(hint.x, pt.y));
-            }
-        };
-
-        mxStyleRegistry.putValue('wireEdgeStyle', mxEdgeStyle.WireConnector);
-
-        // This connector needs an mxEdgeSegmentHandler
-        mxGraphCreateHandler = mxGraph.prototype.createHandler;
-        mxGraph.prototype.createHandler = function(state) {
-            var result = null;
-
-            if (state != null) {
-                if (this.model.isEdge(state.cell)) {
-                    var style = this.view.getEdgeStyle(state);
-
-                    if (style == mxEdgeStyle.WireConnector) {
-                        return new mxEdgeSegmentHandler(state);
-                    }
-                }
-            }
-
-            return mxGraphCreateHandler.apply(this, arguments);
-        };
+          return mxGraphCreateHandler.apply(this, arguments);
+      };
     </script>
 
 </head>
