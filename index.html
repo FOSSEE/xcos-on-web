@@ -288,11 +288,13 @@
                     try
                     {
                       var edgeSource = source;
+
+                      // While the source of the edge is an edge, find the final port
                       while (edgeSource.isEdge() == true) {
                           edgeSource = edgeSource.source;
                       }
 
-                      // If the edge violates any of the port constraints, 
+                      // If the edge violates any of the port constraints, don't create the edge
                       if(edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
                         alert("Explicit data output port must be connected to explicit data input port");
                         return null;
@@ -321,16 +323,19 @@
                       // Create the splitBlock
                       var cell = graph.insertVertex(graph.getDefaultParent(), null, '', source.sourcePoint.x-5, source.sourcePoint.y-5.5, 10, 10,'Split', false);
 
-                      // get the source state
+                      // Get the source state
                       var sourceState = graph.view.getState(source);
                       var waypoints = source.waypoints;
                       var waypoints1 = [];
+
                       for(i in sourceState.absolutePoints) {
                         waypoints1.push(sourceState.absolutePoints[i]);
                       }
                       waypoints1.shift();
                       waypoints1.pop();
                       waypoints = waypoints1;
+
+                      // Find the index in the waypoints nearest to the split-block
                       var seg = mxUtils.findNearestSegment(sourceState, source.sourcePoint.x, source.sourcePoint.y);
                       var sourceTarget = source.target;
 
@@ -356,6 +361,7 @@
                         var futureSource = graph.insertEdge(parent, null, '', source.source, cell.getChildAt(0));
                       }
 
+                      // Hide all the ports of a split-block
                       cell.getChildAt(0).setVisible(false);
                       cell.getChildAt(1).setVisible(false);
                       cell.getChildAt(2).setVisible(false);
@@ -407,10 +413,13 @@
                     try
                     {
                       var edgeSource = target;
+
+                      // While the source of the edge is an edge, find the final port
                       while (edgeSource.isEdge() == true) {
                           edgeSource = edgeSource.source;
                       }
 
+                      // If the edge violates any of the port constraints, don't create the edge
                       if(source.value == "ExplicitOutputPort" && edgeSource.value != "ExplicitInputPort") {
                         alert("Explicit data output port must be connected to explicit data input port");
                         return null;
@@ -436,7 +445,10 @@
                         return null;
                       }
 
+                      // Create the splitBlock
                       var cell = graph.insertVertex(graph.getDefaultParent(), null, '', target.sourcePoint.x-5, target.sourcePoint.y-5, 10, 10,'Split', false);
+
+                      // Get the source state
                       var sourceState = graph.view.getState(target);
                       var waypoints = target.waypoints;
                       var waypoints1 = [];
@@ -446,6 +458,8 @@
                       waypoints1.shift();
                       waypoints1.pop();
                       waypoints = waypoints1;
+
+                      // Find the index in the waypoints nearest to the split-block
                       var seg = mxUtils.findNearestSegment(sourceState, target.sourcePoint.x, target.sourcePoint.y);
                       var sourceTarget = target.target;
 
@@ -472,6 +486,7 @@
                         var futureSource = graph.insertEdge(parent, null, '', target.source, cell.getChildAt(0));
                       }
 
+                      // Hide all the ports of a split-block
                       cell.getChildAt(0).setVisible(false);
                       cell.getChildAt(1).setVisible(false);
                       cell.getChildAt(2).setVisible(false);
@@ -479,6 +494,10 @@
                       graph.removeCells([target], true);
                       target = futureSource;
 
+                      /*
+                       * If there are any waypoints, divide them for the two newly created edges.
+                       * The two newly created edges are inherited from the source edge
+                       */
                       if(waypoints != null)  {
                         var waypoints1 = [];
                         for(var i = 0; i < seg; i++) {
@@ -512,6 +531,7 @@
                     return null;
                   }
 
+                  // If the newly created edge is related to a splitBlock, make the edge.
                   if(source.parent.name == 'SPLIT_f' || target.parent.name == 'SPLIT_f') {
                     return mxGraph.prototype.addEdge.apply(this, arguments);
                   }
@@ -523,6 +543,7 @@
                       edgeSource = edgeSource.source;
                   }
 
+                  // For port-to-port edges with port constraint violations, don't create that edge
                   if(source.getEdgeCount() > 0 || target.getEdgeCount() > 0) {
                     alert("Port is already connected, please select an please select an unconnected port or a valid link");
                   }
@@ -550,6 +571,7 @@
                   }
                   return null;
                 }
+
                 // Shows a "modal" window when double clicking a vertex.
                 graph.dblClick = function(evt, cell) {
                     // Do not fire a DOUBLE_CLICK event here as mxEditor will
@@ -733,7 +755,9 @@
                   graph.getModel().beginUpdate();
                   try {
 
+                  // getEdgeId(@edgeObject) finds all the associated edges and split-block, and deletes them
                   function getEdgeId(edgeObject) {
+
                     var cellStack = [];
                     if(edgeObject != null && edgeObject.isEdge() == true) {
                       cellStack.push(edgeObject);
@@ -742,13 +766,21 @@
                         if (tempEdgeObject.edge == true && (cells.indexOf(tempEdgeObject) == -1)) {
                             cells.push(tempEdgeObject);
                         }
+
+                        // If the edge is associated with a split-block(source is a split-block)
                         if(tempEdgeObject.source.parent.name == "SPLIT_f") {
                             if(tempEdgeObject.source == tempEdgeObject.source.parent.getChildAt(1)) {
 
                               var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
                               var target = tempEdgeObject.source.parent.getChildAt(2).getEdgeAt(0).target;
+
+                              // If the state of the edge is not null
                               if(graph.view.getState(sourceEdge) != null) {
+
+                                // Find waypoints for the first edge related to split-block
                                 var waypoints1 = graph.view.getState(sourceEdge).absolutePoints;
+
+                                // Find the waypoints for the second edge related to split-block
                                 var waypoints2 = graph.view.getState(tempEdgeObject.source.parent.getChildAt(2).getEdgeAt(0)).absolutePoints;
                                 waypoints2.shift();
                                 for(i in waypoints2) {
@@ -760,6 +792,8 @@
                                 cloneGeometry.points = waypoints1;
                                 graph.getModel().setGeometry(sourceEdge, cloneGeometry);
                                 graph.refresh();
+
+                                // Shift the target for the first edge related to splitBlock
                                 graph.getModel().setTerminal(sourceEdge, target, false);
                               }
                               cells.push(tempEdgeObject.source.parent);
@@ -767,8 +801,14 @@
                             else {
                               var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
                               var target = tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0).target;
+
+                              // If the state of the edge is not null
                               if(graph.view.getState(sourceEdge) != null) {
+
+                                // Find waypoints for the first edge related to split-block
                                 var waypoints1 = graph.view.getState(sourceEdge).absolutePoints;
+
+                                // Find the waypoints for the second edge related to split-block
                                 var waypoints2 = graph.view.getState(tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0)).absolutePoints;
                                 waypoints1.pop();
                                 waypoints2.shift();
@@ -781,12 +821,16 @@
                                 cloneGeometry.points = waypoints1;
                                 graph.getModel().setGeometry(sourceEdge, cloneGeometry);
                                 graph.refresh();
+
+                                // Shift the target for the first edge related to splitBlock
                                 graph.getModel().setTerminal(sourceEdge, target, false);
                               }
                               cells.push(tempEdgeObject.source.parent);
                             }
 
                         }
+
+                        // If the edge is associated with a split-block(target is a split-block)
                         if(tempEdgeObject.target.parent.name == "SPLIT_f") {
                           if(cells.indexOf(tempEdgeObject.target.parent) == -1) {
                             cells.push(tempEdgeObject.target.parent);
@@ -819,9 +863,6 @@
                        }
                     }
 
-
-                    //graph.getSelectionModel().setCells(cells);
-                    //editor.execute('delete');
                     graph.removeCells(cells, true);
                   }
                   finally {
@@ -854,7 +895,7 @@
                     Maverick
                     This method is used for loading the stylesheet from the file.
                     Reference: http://www.w3schools.com/xsl/xsl_client.asp
-	        */
+	              */
 
                 function loadXMLDoc(filename) {
                     if (window.ActiveXObject) {
@@ -2123,6 +2164,8 @@
     <script type="text/javascript">
         // Computes the position of edge to edge connection points.
         mxGraphView.prototype.updateFixedTerminalPoint = function(edge, terminal, source, constraint) {
+
+            // Store the edge state for every newly created edge in edgeState variable
             edgeState = edge;
             var pt = null;
 
@@ -2360,11 +2403,6 @@
           if(state.cell.getGeometry().getTerminalPoint(true) != null) {
             source.cell['sourcePoint'] = state.cell.getGeometry().getTerminalPoint(true);
           }
-
-
-          /*if(target.cell != null) {
-            target.cell['targetPoint'] = pt;
-          }*/
 
           if (pt == null && source != null) {
               pt = new mxPoint(state.view.getRoutingCenterX(source), state.view.getRoutingCenterY(source));
