@@ -192,7 +192,7 @@
         <add as="image" value="blocks/CLOCK_f.svg"/>
     </add>
     <add as="Modulo_Count" extend="blockWithLabel">
-        <add as="displayedLabel" value="Counter&lt;BR&gt;Modulo %2$s"/>
+        <add as="displayedLabel" value="Counter&lt;BR&gt;Modulo %s"/>
     </add>
     <add as="Sigbuilder" extend="blockWithLabel">
         <add as="displayedLabel" value="Signal&lt;BR&gt;Builder"/>
@@ -218,7 +218,7 @@
     </add>
     <add as="CLSS_f" extend="CLSS"/>
     <add as="CLR" extend="blockWithLabel">
-        <add as="displayedLabel" value="$\frac{%s}{%s}$"/>
+        <add as="displayedLabel" value="%s&lt;BR&gt;&lt;HR&gt;%s + &lt;i&gt;s&lt;/i&gt;"/>
     </add>
     <add as="CLR_f" extend="CLR"/>
     <add as="TIME_DELAY" extend="blockWithLabel">
@@ -407,23 +407,23 @@
     </add>
     <!-- INTEGER -->
     <add as="BITCLEAR" extend="blockWithLabel">
-        <add as="displayedLabel" value="Clear bit %2$s"/>
+        <add as="displayedLabel" value="Clear bit %s"/>
     </add>
     <add as="BITSET" extend="blockWithLabel">
-        <add as="displayedLabel" value="Set bit %2$s"/>
+        <add as="displayedLabel" value="Set bit %s"/>
     </add>
     <add as="CONVERT" extend="blockWithLabel">
         <!-- FIXME: update label from parameters -->
         <add as="displayedLabel" value="Convert to"/>
     </add>
     <add as="EXTRACTBITS" extend="blockWithLabel">
-        <add as="displayedLabel" value="Extract Bits %2$s"/>
+        <add as="displayedLabel" value="Extract Bits %s"/>
     </add>
     <add as="INTMUL" extend="blockWithLabel">
         <add as="displayedLabel" value="INTMUL"/>
     </add>
     <add as="SHIFT" extend="blockWithLabel">
-        <add as="displayedLabel" value="Arithmetic&lt;BR&gt;         shift %2$s"/>
+        <add as="displayedLabel" value="Arithmetic&lt;BR&gt;         shift %s"/>
     </add>
     <add as="LOGIC" extend="blockWithLabel">
         <add as="displayedLabel" value="LOGIC"/>
@@ -511,7 +511,7 @@
     <add as="CSCOPXY" extend="Icon">
     </add>
     <add as="TOWS_c" extend="blockWithLabel">
-        <add as="displayedLabel" value="To workspace&lt;BR&gt;%2$s [%1$s]"/>
+        <add as="displayedLabel" value="To workspace&lt;BR&gt;%s [%s]"/>
     </add>
     <add as="CMAT3D" extend="blockWithLabel">
         <add as="image" value="blocks/ASCOPE.svg"/>
@@ -558,7 +558,7 @@
         <add as="displayedLabel" value="N(z,p)&lt;BR&gt;&lt;HR&gt;D(z,p)"/>
     </add>
     <add as="DLR" extend="blockWithLabel">
-        <add as="displayedLabel" value="$\frac{%s}{%s}$"/>
+        <add as="displayedLabel" value="%s&lt;BR&gt;&lt;HR&gt;%s + &lt;i&gt;z&lt;/i&gt;"/>
     </add>
     <add as="DLR_f" extend="DLR"/>
     <add as="DLSS" extend="blockWithLabel">
@@ -669,7 +669,7 @@
         <add as="verticalAlign" value="top"/>
         <add as="spacing" value="2"/>
         <add as="noLabel" value="0"/>
-        <add as="displayedLabel" value="Static: %2$s"/>
+        <add as="displayedLabel" value="Static: %s"/>
         <add as="image" value="blocks/SWITCH.svg"/>
     </add>
     <add as="SWITCH2_m" extend="Icon">
@@ -732,29 +732,29 @@
     <!-- USER-DEFINED FUNCTIONS -->
     <add as="PDE" extend="blockWithLabel"/>
     <add as="fortran_block" extend="blockWithLabel">
-        <add as="displayedLabel" value="Fortran block:&lt;BR&gt;%4$s"/>
+        <add as="displayedLabel" value="Fortran block:&lt;BR&gt;%s"/>
     </add>
     <add as="DEBUG" extend="blockWithLabel">
-        <add as="displayedLabel" value="Debug:&lt;BR&gt;%2$s"/>
+        <add as="displayedLabel" value="Debug:&lt;BR&gt;%s"/>
     </add>
     <add as="EXPRESSION" extend="blockWithLabel">
-        <add as="displayedLabel" value="Expression:&lt;BR&gt;%2$s"/>
+        <add as="displayedLabel" value="Expression:&lt;BR&gt;%s"/>
     </add>
     <add as="scifunc_block_m" extend="blockWithLabel">
-        <add as="displayedLabel" value="Function:&lt;BR&gt;%10$s"/>
+        <add as="displayedLabel" value="Function:&lt;BR&gt;%s"/>
     </add>
     <add as="scifunc_block" extend="scifunc_block_m"/>
     <add as="CBLOCK" extend="blockWithLabel">
-        <add as="displayedLabel" value="C block 2:&lt;BR&gt;%1$s"/>
+        <add as="displayedLabel" value="C block 2:&lt;BR&gt;%s"/>
     </add>
     <add as="CBLOCK4" extend="blockWithLabel">
-        <add as="displayedLabel" value="C block 4:&lt;BR&gt;%1$s"/>
+        <add as="displayedLabel" value="C block 4:&lt;BR&gt;%s"/>
     </add>
     <add as="generic_block3" extend="blockWithLabel">
-        <add as="displayedLabel" value="native block:&lt;BR&gt;%1$s"/>
+        <add as="displayedLabel" value="native block:&lt;BR&gt;%s"/>
     </add>
     <add as="c_block" extend="blockWithLabel">
-        <add as="displayedLabel" value="C block:&lt;BR&gt;%4$s"/>
+        <add as="displayedLabel" value="C block:&lt;BR&gt;%s"/>
     </add>
     <add as="SUPER_f" extend="Icon">
         <add as="image" value="blocks/SUPER.svg"/>
