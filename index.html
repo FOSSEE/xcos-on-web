@@ -318,7 +318,6 @@
                       var cell = graph.insertVertex(graph.getDefaultParent(), null, '', source.sourcePoint.x-5, source.sourcePoint.y-5.5, 10, 10,'Split', false);
 
                       var sourceState = graph.view.getState(source);
-                      console.log(sourceState);
                       var waypoints = source.waypoints;
                       var waypoints1 = [];
                       for(i in sourceState.absolutePoints) {
@@ -326,7 +325,6 @@
                       }
                       waypoints1.shift();
                       waypoints1.pop();
-                      console.log(waypoints1);
                       waypoints = waypoints1;
                       var seg = mxUtils.findNearestSegment(sourceState, source.sourcePoint.x, source.sourcePoint.y);
                       var sourceTarget = source.target;
@@ -337,10 +335,6 @@
                         var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), sourceTarget);
                         var thirdEdge = graph.insertEdge(parent, null, '', cell.getChildAt(2), target);
                         var futureSource = graph.insertEdge(parent, null, '', source.source, cell.getChildAt(0));
-                        //edge.source = cell.getChildAt(2);
-                        //console.log(edge);
-                        //edge.setTerminal(cell.getChildAt(2), true);
-                        //console.log(graph.getModel().setTerminal(edge, cell.getChildAt(2), true));
                       }
                       else if (edgeSource.value == 'ImplicitOutputPort') {
                         createPorts(graph, cell, ['I'], [], ['I', 'I'], []);
@@ -432,7 +426,6 @@
 
                       var cell = graph.insertVertex(graph.getDefaultParent(), null, '', target.sourcePoint.x-5, target.sourcePoint.y-5, 10, 10,'Split', false);
                       var sourceState = graph.view.getState(target);
-                      console.log(sourceState);
                       var waypoints = target.waypoints;
                       var waypoints1 = [];
                       for(i in sourceState.absolutePoints) {
@@ -440,21 +433,20 @@
                       }
                       waypoints1.shift();
                       waypoints1.pop();
-                      console.log(waypoints1);
                       waypoints = waypoints1;
                       var seg = mxUtils.findNearestSegment(sourceState, target.sourcePoint.x, target.sourcePoint.y);
                       var sourceTarget = target.target;
 
 
                       if (edgeSource.value == 'ExplicitOutputPort') {
-                        createPorts(graph, cell, ['EXPLICIT'], [], ['EXPLICIT'], ['EXPLICIT']);
+                        createPorts(graph, cell, ['E'], [], ['E'], ['E']);
                         cell.name = 'SPLIT_f';
                         var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), sourceTarget);
                         var thirdEdge = graph.insertEdge(parent, null, '', cell.getChildAt(2), source);
                         var futureSource = graph.insertEdge(parent, null, '', target.source, cell.getChildAt(0));
                       }
                       else if (edgeSource.value == 'ImplicitOutputPort') {
-                        createPorts(graph, cell, ['IMPLICIT'], [], ['IMPLICIT', 'IMPLICIT'], []);
+                        createPorts(graph, cell, ['I'], [], ['I', 'I'], []);
                         cell.name = 'SPLIT_f';
                         var someEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), sourceTarget);
                         var thirdEdge = graph.insertEdge(parent, null, '', cell.getChildAt(2), source);
@@ -489,7 +481,6 @@
                         target.geometry.points = waypoints1;
                         someEdge.geometry.points = waypoints2;
                       }
-                      console.log(edgexyz);
                       var waypoints3 = edgexyz.absolutePoints;
                       if(waypoints3 != null && waypoints3.length > 1) {
                         waypoints3.pop();
@@ -749,22 +740,15 @@
                             else {
                               var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
                               var target = tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0).target;
-                              console.log(graph.view.getState(sourceEdge));
                               var waypoints1 = graph.view.getState(sourceEdge).absolutePoints;
                               var waypoints2 = graph.view.getState(tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0)).absolutePoints;
                               waypoints1.pop();
-                              waypoints2.shift();
-                              console.log(waypoints1);
-                              console.log(waypoints2);
+                              waypoints2.shift()
                               for(i in waypoints2) {
                                 waypoints1.push(waypoints2[i]);
                               }
                               graph.getModel().setTerminal(sourceEdge, target, false);
                               sourceEdge.getGeometry().points = waypoints1;
-                              //console.log(graph.view.getState(sourceEdge).absolutePoints);
-                              //var state = graph.view.getState(sourceEdge);
-                              //state.absolutePoints = waypoints1;
-                              //console.log(graph.view.getState(sourceEdge).absolutePoints);
                               cells.push(tempEdgeObject.source.parent);
                             }
 
