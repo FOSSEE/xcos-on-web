@@ -16,7 +16,9 @@
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript">
-        var edgexyz = {};
+
+        // Stores edgeState for every recently created edge in updateFixedTerminalPoint() function
+        var edgeState = {};
         function main(container, outline, toolbar, sidebar, status) {
             // Checks if the browser is supported
             if (!mxClient.isBrowserSupported()) {
@@ -290,6 +292,7 @@
                           edgeSource = edgeSource.source;
                       }
 
+                      // If the edge violates any of the port constraints, 
                       if(edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
                         alert("Explicit data output port must be connected to explicit data input port");
                         return null;
@@ -315,8 +318,10 @@
                         return null;
                       }
 
+                      // Create the splitBlock
                       var cell = graph.insertVertex(graph.getDefaultParent(), null, '', source.sourcePoint.x-5, source.sourcePoint.y-5.5, 10, 10,'Split', false);
 
+                      // get the source state
                       var sourceState = graph.view.getState(source);
                       var waypoints = source.waypoints;
                       var waypoints1 = [];
@@ -357,6 +362,11 @@
 
                       graph.removeCells([source], true);
                       source = futureSource;
+
+                      /*
+                       * If there are any waypoints, divide them for the two newly created edges.
+                       * The two newly created edges are inherited from the source edge
+                       */
                       if(waypoints != null)  {
                         var waypoints1 = [];
                         for(var i = 0; i < seg; i++) {
@@ -372,7 +382,7 @@
                         someEdge.geometry.points = waypoints2;
                       }
 
-                      var waypoints3 = edgexyz.absolutePoints;
+                      var waypoints3 = edgeState.absolutePoints;
                       if(waypoints3 != null && waypoints3.length > 1) {
                         waypoints3.shift();
                       }
@@ -390,6 +400,8 @@
                     }
                     return null;
                   }
+
+                  // If the edge is legit, return the edge.
                   if(target.isEdge() == true) {
                     graph.getModel().beginUpdate();
                     try
@@ -481,7 +493,7 @@
                         target.geometry.points = waypoints1;
                         someEdge.geometry.points = waypoints2;
                       }
-                      var waypoints3 = edgexyz.absolutePoints;
+                      var waypoints3 = edgeState.absolutePoints;
                       if(waypoints3 != null && waypoints3.length > 1) {
                         waypoints3.pop();
                       }
@@ -2111,7 +2123,7 @@
     <script type="text/javascript">
         // Computes the position of edge to edge connection points.
         mxGraphView.prototype.updateFixedTerminalPoint = function(edge, terminal, source, constraint) {
-            edgexyz = edge;
+            edgeState = edge;
             var pt = null;
 
             if (constraint != null) {
