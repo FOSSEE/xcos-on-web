@@ -732,23 +732,45 @@
                         }
                         if(tempEdgeObject.source.parent.name == "SPLIT_f") {
                             if(tempEdgeObject.source == tempEdgeObject.source.parent.getChildAt(1)) {
+
                               var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
                               var target = tempEdgeObject.source.parent.getChildAt(2).getEdgeAt(0).target;
-                              graph.getModel().setTerminal(sourceEdge, target, false);
+                              if(graph.view.getState(sourceEdge) != null) {
+                                var waypoints1 = graph.view.getState(sourceEdge).absolutePoints;
+                                var waypoints2 = graph.view.getState(tempEdgeObject.source.parent.getChildAt(2).getEdgeAt(0)).absolutePoints;
+                                waypoints2.shift();
+                                for(i in waypoints2) {
+                                  waypoints1.push(waypoints2[i]);
+                                }
+                                var geometry = graph.getModel().getGeometry(sourceEdge);
+                                var cloneGeometry = geometry.clone();
+
+                                cloneGeometry.points = waypoints1;
+                                graph.getModel().setGeometry(sourceEdge, cloneGeometry);
+                                graph.refresh();
+                                graph.getModel().setTerminal(sourceEdge, target, false);
+                              }
                               cells.push(tempEdgeObject.source.parent);
                             }
                             else {
                               var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
                               var target = tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0).target;
-                              var waypoints1 = graph.view.getState(sourceEdge).absolutePoints;
-                              var waypoints2 = graph.view.getState(tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0)).absolutePoints;
-                              waypoints1.pop();
-                              waypoints2.shift()
-                              for(i in waypoints2) {
-                                waypoints1.push(waypoints2[i]);
+                              if(graph.view.getState(sourceEdge) != null) {
+                                var waypoints1 = graph.view.getState(sourceEdge).absolutePoints;
+                                var waypoints2 = graph.view.getState(tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0)).absolutePoints;
+                                waypoints1.pop();
+                                waypoints2.shift();
+                                for(i in waypoints2) {
+                                  waypoints1.push(waypoints2[i]);
+                                }
+                                var geometry = graph.getModel().getGeometry(sourceEdge);
+                                var cloneGeometry = geometry.clone();
+
+                                cloneGeometry.points = waypoints1;
+                                graph.getModel().setGeometry(sourceEdge, cloneGeometry);
+                                graph.refresh();
+                                graph.getModel().setTerminal(sourceEdge, target, false);
                               }
-                              graph.getModel().setTerminal(sourceEdge, target, false);
-                              sourceEdge.getGeometry().points = waypoints1;
                               cells.push(tempEdgeObject.source.parent);
                             }
 
