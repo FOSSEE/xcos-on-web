@@ -7,7 +7,8 @@ function CONST_m() {
         return options;
     }
     CONST_m.prototype.set = function CONST_m() {
-        this.c = [arguments[0]["vec"]];
+        this.c = [parseInt(arguments[0]["vec"])];
+        this.displayParameter = this.c;
         this.x.model.sim = list(new ScilabString(["cstblk4_m"]), new ScilabDouble([4]));
         this.x.model.opar = list(new ScilabDouble(this.c));
         this.x.model.rpar = new ScilabDouble();

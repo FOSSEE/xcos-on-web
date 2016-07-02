@@ -38,7 +38,6 @@ function IdealTransformer() {
         mo.inputs = new ScilabString(...this.MI);
         mo.outputs = new ScilabString(...this.MO);
         model.rpar = new ScilabDouble(this.PrametersValue);
-        console.log(zeros(getData(this.ParametersName)));
         mo.parameters = list(new ScilabString(this.ParametersName), new ScilabDouble(this.PrametersValue), new ScilabDouble(zeros(getData(this.ParametersName))));
         var exprs = new ScilabString(["1"]);
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"IdealTransformer\",sz(1),sz(2));"]);

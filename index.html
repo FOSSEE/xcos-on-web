@@ -1456,7 +1456,8 @@
                 var details = cell.blockInstance.instance.set(propertiesObject); //window[name]("set",cell.value,propertiesObject);
                 var enc = new mxCodec();
                 var node = enc.encode(details);
-                node.setAttribute('label', getData(details.exprs)[0]);
+                var label = getImgHTML(name);
+                node.setAttribute('label', label);
                 cell.value = node;
                 /*
                     Maverick

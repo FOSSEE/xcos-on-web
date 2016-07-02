@@ -1306,7 +1306,8 @@ function CONST_m() {
         return options;
     }
     CONST_m.prototype.set = function CONST_m() {
-        this.c = [arguments[0]["vec"]];
+        this.c = [parseInt(arguments[0]["vec"])];
+        this.displayParameter = this.c;
         this.x.model.sim = list(new ScilabString(["cstblk4_m"]), new ScilabDouble([4]));
         this.x.model.opar = list(new ScilabDouble(this.c));
         this.x.model.rpar = new ScilabDouble();
@@ -4521,7 +4522,6 @@ function IdealTransformer() {
         mo.inputs = new ScilabString(...this.MI);
         mo.outputs = new ScilabString(...this.MO);
         model.rpar = new ScilabDouble(this.PrametersValue);
-        console.log(zeros(getData(this.ParametersName)));
         mo.parameters = list(new ScilabString(this.ParametersName), new ScilabDouble(this.PrametersValue), new ScilabDouble(zeros(getData(this.ParametersName))));
         var exprs = new ScilabString(["1"]);
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"IdealTransformer\",sz(1),sz(2));"]);
