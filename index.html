@@ -963,92 +963,122 @@
                 }
 
 
-                /*
-				Maverick
-                The Export buttons in toolbar call this function with varying
-                arguments.
-                The third argument is used to decide which button is being
-                pressed.
-				exportXML : 2 arguments
-				exportXcos: 3 arguments
-                */
-                function displayXMLorXcos() {
-                    var textarea = document.createElement('textarea');
-                    textarea.style.width = '400px';
-                    textarea.style.height = '400px';
-                    var enc = new mxCodec(mxUtils.createXmlDocument());
-                    /*var array=[],key;
-                    for (key in diagRoot.model.cells) {
+				/*
+				 Maverick
+				 The Export buttons in toolbar call this function with varying
+				 arguments.
+				 The third argument is used to deciFde which button is being
+				 pressed.
+				 exportXML : 2 arguments
+				 exportXcos: 3 arguments
+				 */
+				function displayXMLorXcos() {
+					var textarea = document.createElement('textarea');
+					textarea.style.width = '400px';
+					textarea.style.height = '400px';
 
-                        if(diagRoot.model.cells[key].connectable == false)
-                        {
-                            array.push(diagRoot.model.cells[key].inst);
-                            diagRoot.model.cells[key].inst=null;
-                        }
-                    }*/
-                    var node = enc.encode(diagRoot);
+					var enc = new mxCodec(mxUtils.createXmlDocument());
+					var node = enc.encode(diagRoot);
 
-                    var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + mxUtils.getPrettyXml(node);
+					var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + mxUtils.getPrettyXml(node);
 
-                    textarea.value = str;
-                    /*var j = 0;
-                    for (key in diagRoot.model.cells) {
+					textarea.value = str;
 
-                        if(diagRoot.model.cells[key].connectable == false)
-                        {
-                            diagRoot.model.cells[key].inst=array[j++];
-                        }
-                    }*/
-                    if (arguments[2] == null) {
-                        showModalWindow(graph, 'XML', textarea, 410, 440);
-                    } else {
+					if (arguments[2] == null) {
+						showModalWindow(graph, 'XML', textarea, 410, 440);
+					} else {
 
-                        return mxUtils.getPrettyXml(node);
-                    }
-                }
+						return mxUtils.getPrettyXml(node);
+					}
+				}
 
-                // Defines a new export action
-                editor.addAction('exportXML', function(editor, cell) {
-                    //Only two parameters passed here.
-                    displayXMLorXcos(editor, cell);
-                });
+				function getXcosDiagram(editor, cell) {
+					//Mind the 3 parameters.
+					var xmlFromExportXML = displayXMLorXcos(editor, cell, true);
+					if (xmlFromExportXML === null)
+						alert('First create the XML file.');
+					else {
 
-                /* Maverick
-                 Reference: http://www.w3schools.com/xsl/xsl_client.asp
-                */
+						var xml = mxUtils.parseXml(xmlFromExportXML);
 
-                editor.addAction('exportXcos', function(editor, cell) {
-                    //Mind the 3 parameters.
-                    var xmlFromExportXML = displayXMLorXcos(editor, cell, true);
-                    if (xmlFromExportXML == null) alert('First create the XML file.');
-                    else {
+						var xsl = loadXMLDoc("finalmodsheet.xsl");
 
-                        var xml = mxUtils.parseXml(xmlFromExportXML);
+						xsltProcessor = new XSLTProcessor();
+						xsltProcessor.importStylesheet(xsl);
+						resultDocument = xsltProcessor.transformToDocument(xml);
+						/*
+						 Maverick
+						 Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
+						 */
+						var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocument.documentElement);
 
-                        var xsl = loadXMLDoc("finalmodsheet.xsl");
+						str = str.replace(/\n\n/g, "\n");
+						return str;
+					}
+				}
 
-                        xsltProcessor = new XSLTProcessor();
-                        xsltProcessor.importStylesheet(xsl);
-                        resultDocument = xsltProcessor.transformToDocument(xml);
+				// Defines a new export action
+				editor.addAction('exportXML', function (editor, cell) {
+					//Only two parameters passed here.
+					displayXMLorXcos(editor, cell);
+				});
 
+				/* Maverick
+				 Reference: http://www.w3schools.com/xsl/xsl_client.asp
+				 */
 
-                        var textarea = document.createElement('textarea');
-                        textarea.style.width = '400px';
-                        textarea.style.height = '400px';
-                        /*
-                            Maverick
-                            Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
-                        */
-                        var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocument.documentElement);
+				editor.addAction('exportXcos', function (editor, cell) {
+					var textarea = document.createElement('textarea');
+					textarea.style.width = '400px';
+					textarea.style.height = '400px';
+					textarea.value = getXcosDiagram(editor, cell);
+					showModalWindow(graph, 'Xcos', textarea, 410, 440);
+				});
 
-                        textarea.value = str.replace(/\n\n/g, "\n");
-                        showModalWindow(graph, 'Xcos', textarea, 410, 440);
-                    }
-                });
+				addToolbarButton(editor, toolbar, 'exportXML', 'Export XML', 'images/export1.png');
+				addToolbarButton(editor, toolbar, 'exportXcos', 'Export Xcos', 'images/export1.png');
 
-                addToolbarButton(editor, toolbar, 'exportXML', 'Export XML', 'images/export1.png');
+				toolbar.appendChild(spacer.cloneNode(true));
 
-                addToolbarButton(editor, toolbar, 'exportXcos', 'Export Xcos', 'images/export1.png');
+				addToolbarButton(editor, toolbar, 'simulate', 'Simulate', 'images/ScilabExecute.png');
+
+				editor.addAction('simulate', function (editor, cell) {
+					var diagram = getXcosDiagram(editor, cell);
+					
+					var blob = new Blob([diagram], {type: 'text/plain'});
+					var xhr = new XMLHttpRequest();
+					xhr.open('POST','ScilabServlet', true);
+					xhr.onload = function() {
+						// Create basic structure for the form
+						var content = document.createElement('div');
+						content.setAttribute("id", "contentProperties");
+
+						// Heading of content
+						var heading = document.createElement('h2');
+						heading.innerHTML = "Set Scope Parameters";
+						heading.id = "headingProperties";
+						content.appendChild(heading);
+
+						var paragraph = document.createElement("p");
+						paragraph.innerHTML = xhr.responseText;
+						content.appendChild(paragraph);
+
+						 
+						 //var img = document.createElement("img");
+						 //img.src = "data:image/;base64,"+xhr.responseText;
+						 //content.appendChild(img);
+						
+						var wind = showModalWindow(graph, 'Properties', content, 1000, 1000);
+					};
+					xhr.onreadystatechange = function(){
+						console.log("state: " + xhr.readyState);
+					};
+					xhr.upload.onprogress = function() {
+						console.log("uploading...");
+					};
+					xhr.setRequestHeader("Content-Type", "text/plain");
+					xhr.send(blob);
+				});
 
                 // Adds toolbar buttons into the status bar at the bottom
                 // of the window.
