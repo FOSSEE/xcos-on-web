@@ -1,6 +1,7 @@
 function MATMUL() {
 
     MATMUL.prototype.define = function MATMUL() {
+
         var model = scicos_model();
         model.sim = list(new ScilabString(["matmul_m"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([-1], [-2]);
