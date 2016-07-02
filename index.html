@@ -35,6 +35,9 @@
                 // Enables guides
                 mxGraphHandler.prototype.guidesEnabled = true;
 
+		// Display vertices over edges
+		mxGraph.prototype.ordered = false;
+		
                 // Alt disables guides
                 mxGuide.prototype.isEnabledForEvent = function(evt) {
                     return !mxEvent.isAltDown(evt);
