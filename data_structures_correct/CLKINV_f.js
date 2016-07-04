@@ -27,11 +27,13 @@ function CLKINV_f() {
         model.blocktype = new ScilabString(["d"]);
         model.firing = new ScilabDouble([-1]);
         model.dep_ut = new ScilabBoolean([false, false]);
+        model.outtyp = new ScilabDouble();
 
         var exprs = new ScilabString([this.prt]);
 
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CLKINV_f\",sz(1),sz(2));"]);
         var block = new standard_define(new ScilabDouble([1, 1]), model, exprs, gr_i);
+        block.graphics.style = new ScilabString(["CLKINV_f"]);
         return block;
     }
     CLKINV_f.prototype.details = function CLKINV_f() {
