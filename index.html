@@ -404,6 +404,7 @@
                       // Find the waypoints of the current edge, and set the waypoints for the new thirdEdge
                       var waypoints3 = edgeState.absolutePoints;
                       if(waypoints3 != null && waypoints3.length > 1) {
+                        // Remove last absolute point
                         waypoints3.pop();
                       }
 
