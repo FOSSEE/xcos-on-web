@@ -34,11 +34,11 @@
 
                 // Enables guides
                 mxGraphHandler.prototype.guidesEnabled = true;
-		
+
 		//Adhitya: @Jitesh: Please test this more!
 		// Display vertices over edges
 		//mxGraph.prototype.ordered = false;
-		
+
                 // Alt disables guides
                 mxGuide.prototype.isEnabledForEvent = function(evt) {
                     return !mxEvent.isAltDown(evt);
@@ -386,7 +386,7 @@
                        * If there are any waypoints, divide them for the two newly created edges.
                        * The two newly created edges are inherited from the source edge
                        */
-                      if(waypoints != null)  {
+                      if(waypoints != null) {
                         var waypoints1 = [];
                         for(var i = 0; i < seg; i++) {
                           waypoints1.push(waypoints[i]);
@@ -404,7 +404,7 @@
                       // Find the waypoints of the current edge, and set the waypoints for the new thirdEdge
                       var waypoints3 = edgeState.absolutePoints;
                       if(waypoints3 != null && waypoints3.length > 1) {
-                        waypoints3.shift();
+                        waypoints3.pop();
                       }
 
                       thirdEdge.geometry.points = waypoints3;
@@ -1048,7 +1048,7 @@
 
 				editor.addAction('simulate', function (editor, cell) {
 					var diagram = getXcosDiagram(editor, cell);
-					
+
 					var blob = new Blob([diagram], {type: 'text/plain'});
 					var xhr = new XMLHttpRequest();
 					xhr.open('POST','ScilabServlet', true);
@@ -1067,11 +1067,11 @@
 						paragraph.innerHTML = xhr.responseText;
 						content.appendChild(paragraph);
 
-						 
+
 						 //var img = document.createElement("img");
 						 //img.src = "data:image/;base64,"+xhr.responseText;
 						 //content.appendChild(img);
-						
+
 						var wind = showModalWindow(graph, 'Properties', content, 1000, 1000);
 					};
 					xhr.onreadystatechange = function(){
