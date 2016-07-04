@@ -1,6 +1,7 @@
 function MATTRAN() {
 
     MATTRAN.prototype.define = function MATTRAN() {
+
         var model = scicos_model();
         model.sim = list(new ScilabString(["mattran_m"]), new ScilabDouble([4]));
         model.in = new ScilabDouble([-1]);
