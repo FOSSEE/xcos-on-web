@@ -329,6 +329,8 @@
                       // (x-5, y-5.5) is the offset to correct the position of split-block
                       var cell = graph.insertVertex(graph.getDefaultParent(), null, '', source.sourcePoint.x-5, source.sourcePoint.y-5.5, 10, 10,'Split', false);
 
+
+
                       // Get the source state
                       var sourceState = graph.view.getState(source);
                       var waypoints = source.waypoints;
@@ -411,6 +413,22 @@
                       cell.getChildAt(1).setConnectable(false);
                       cell.getChildAt(2).setConnectable(false);
                       cell.setConnectable(false);
+
+                      // Get the parent of the splitBlock
+                      var parent = graph.model.getParent(cell);
+
+                      graph.model.beginUpdate();
+                      try {
+                        /*
+                         * Adds the split-block to the parent at the last index
+                         * Enables split-block to appear over it's associated edges
+                         */
+                        graph.model.add(parent, cell, graph.model.getChildCount(parent) - 1);
+                      }
+                      finally {
+                        graph.model.endUpdate();
+                      }
+
                       graph.refresh();
                     }
                     finally
