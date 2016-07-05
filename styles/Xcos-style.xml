@@ -176,6 +176,7 @@
         <add as="image" value="blocks/PULSE_SC.svg"/>
     </add>
     <add as="CLOCK_c" extend="Icon">
+      <add as="image" value="blocks/CLOCK_c.svg"/>
     </add>
     <add as="GENSIN_f" extend="Icon">
         <add as="image" value="blocks/SINUS_f.svg"/>
@@ -198,6 +199,7 @@
         <add as="displayedLabel" value="Signal&lt;BR&gt;Builder"/>
     </add>
     <add as="SampleCLK" extend="Icon">
+      <add as="image" value="blocks/SampleCLK.svg"/>
     </add>
     <add as="TKSCALE" extend="blockWithLabel">
         <add as="displayedLabel" value="TK Scale"/>
@@ -211,6 +213,7 @@
         <add as="displayedLabel" value="du / dt"/>
     </add>
     <add as="INTEGRAL_m" extend="Icon">
+      <add as="image" value="blocks/INTEGRAL.svg"/>
     </add>
     <add as="INTEGRAL" extend="INTEGRAL_m"/>
     <add as="CLSS" extend="blockWithLabel">
@@ -239,10 +242,13 @@
     </add>
     <!-- DISCONTINUOUS -->
     <add as="SATURATION" extend="Icon">
+      <add as="image" value="blocks/SATURATION.svg"/>
     </add>
     <add as="DEADBAND" extend="Icon">
+      <add as="image" value="blocks/DEADBAND.svg"/>
     </add>
     <add as="HYSTHERESIS" extend="Icon">
+      <add as="image" value="blocks/HYSTHERESIS.svg"/>
     </add>
     <add as="BACKLASH" extend="blockWithLabel">
         <add as="displayedLabel" value="Backlash"/>
@@ -258,6 +264,7 @@
     </add>
     <!-- LOOKUP TABLES -->
     <add as="LOOKUP_f" extend="Icon">
+      <add as="image" value="blocks/DSCOPE.svg"/>
     </add>
     <add as="INTRP2BLK_f" extend="blockWithLabel">
         <add as="displayedLabel" value="Interp 2"/>
@@ -270,6 +277,7 @@
         <add as="displayedLabel" value="2freq clock&lt;BR&gt;         f/n f"/>
     </add>
     <add as="QUANT_f" extend="Icon">
+      <add as="image" value="blocks/QUANT_f.svg"/>
     </add>
     <add as="MFCLCK_f" extend="blockWithLabel">
         <add as="displayedLabel" value="M. freq&lt;BR&gt;         clock"/>
@@ -302,6 +310,7 @@
         <add as="displayedLabel" value="MIN"/>
     </add>
     <add as="BIGSOM_f" extend="Icon">
+      <add as="image" value="blocks/SUM.svg"/>
     </add>
     <add as="POWBLK_f" extend="blockWithLabel">
         <add as="displayedLabel" value="u^a"/>
@@ -342,11 +351,13 @@
         <add as="displayedLabel" value="LOG"/>
     </add>
     <add as="SUMMATION" extend="Icon">
+      <add as="image" value="blocks/SUM.svg"/>
     </add>
     <add as="TrigFun" extend="blockWithLabel">
         <add as="displayedLabel" value="Trig function"/>
     </add>
     <add as="PRODUCT" extend="Icon">
+        <add as="image" value="blocks/PRODUCT.svg"/>
         <add as="noLabel" value="0"/>
         <!--
 			<add as="displayedLabel" value="&lt;TABLE&gt; &lt;TR&gt;
@@ -509,6 +520,7 @@
         <add as="image" value="blocks/ASCOPE.svg"/>
     </add>
     <add as="CSCOPXY" extend="Icon">
+      <add as="image" value="blocks/CSCOPXY.svg"/>
     </add>
     <add as="TOWS_c" extend="blockWithLabel">
         <add as="displayedLabel" value="To workspace&lt;BR&gt;%s [%s]"/>
@@ -534,6 +546,7 @@
         <add as="displayedLabel" value="Mat. View"/>
     </add>
     <add as="CMSCOPE" extend="Icon">
+      <add as="image" value="blocks/ASCOPE.svg"/>
     </add>
     <add as="AFFICH_m" extend="Affiche"/>
     <add as="AFFICH_f" extend="Affiche"/>
@@ -617,6 +630,7 @@
 
     </add>
     <add as="ANDBLK" extend="Icon">
+      <add as="image" value="blocks/ANDBLK.svg"/>
     </add>
     <add as="HALT_f" extend="blockWithLabel">
         <add as="displayedLabel" value="HALT"/>
@@ -673,6 +687,12 @@
         <add as="image" value="blocks/SWITCH.svg"/>
     </add>
     <add as="SWITCH2_m" extend="Icon">
+      <add as="verticalLabelPosition" value="bottom"/>
+      <add as="verticalAlign" value="top"/>
+      <add as="spacing" value="2"/>
+      <add as="noLabel" value="0"/>
+      <add as="displayedLabel" value="Dynamic"/>
+      <add as="image" value="blocks/SWITCH.svg"/>
     </add>
     <add as="NRMSOM_f" extend="blockWithLabel">
         <add as="verticalLabelPosition" value="bottom"/>
@@ -915,11 +935,13 @@
     </add>
     <add as="DEMUX_f" extend="DEMUX"/>
     <add as="DEADBAND" extend="Icon">
+      <add as="image" value="blocks/DEADBAND.svg"/>
     </add>
     <add as="Counter" extend="blockWithLabel">
         <add as="displayedLabel" value="Counter&lt;BR&gt;%s &amp;#8594; %s"/>
     </add>
     <add as="CLOCK_f" extend="Icon">
+      <add as="image" value="blocks/CLOCK_c.svg"/>
     </add>
     <add as="VirtualCLK0" extend="CLOCK_f"/>
     <add as="CLKSPLIT_f" extend="Split"/>

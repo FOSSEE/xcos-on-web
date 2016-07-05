@@ -1475,8 +1475,6 @@
                 var details = cell.blockInstance.instance.set(propertiesObject); //window[name]("set",cell.value,propertiesObject);
                 var enc = new mxCodec();
                 var node = enc.encode(details);
-                var label = getImgHTML(name);
-                node.setAttribute('label', label);
                 cell.value = node;
                 /*
                     Maverick
@@ -2026,10 +2024,6 @@
             }
         }
 
-        function getImgHTML(name) {
-            return '<img src="' + 'blocks/' + name + '.svg' + '" height="80" width="80">';
-        }
-
         function addToolbarButton(editor, toolbar, action, label, image, isTransparent) {
             var button = document.createElement('button');
             button.style.fontSize = '10';
@@ -2092,12 +2086,10 @@
                 var doc = mxUtils.createXmlDocument();
                 model.beginUpdate();
                 try {
-                    var label = getImgHTML(name); // Will not exist for all blocks
                     var details_instance = new window[name]();
                     var details = details_instance.define();
                     var enc = new mxCodec(mxUtils.createXmlDocument());
                     var node = enc.encode(details);
-                    node.setAttribute('label', label);
                     var temp = enc.encode(parent);
                     node.setAttribute('parent', temp.getAttribute('id'));
                     var i, arr = [];
@@ -2140,6 +2132,7 @@
                         }
                     }
                     v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
+
                     // @Chhavi: Additional attribute to store the block's instance
                     v1.blockInstance = createInstanceTag(details_instance);
                     createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
@@ -2268,6 +2261,13 @@
             var root = req.getDocumentElement();
             var dec = new mxCodec(root.ownerDocument);
             dec.decode(root, graph.stylesheet);
+
+            // Set the width and height of image for all blocks to 80 (height) x 80 (width)
+            var style = new Object();
+            style[mxConstants.STYLE_IMAGE_WIDTH] = '80';
+            style[mxConstants.STYLE_IMAGE_HEIGHT] = '80';
+            style['imageAlign'] = 'center';
+            graph.getStylesheet().putDefaultVertexStyle(style);
         };
     </script>
     <!--
