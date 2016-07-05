@@ -7,13 +7,10 @@ $.getScript('combined.js');
 /*
 $.ajax({
     type: "POST",
-
     // Invoke filenames.php
     url: "filenames.php",
-
     // Receive the resultant filenames from the php script in JSON format
     dataType: "json",
-
     // Add url for the required folder
     data: {
       url: "/data_structures_correct/"
@@ -416,6 +413,86 @@ function RoundBlock() {
         this.oDState = list();
         this.equations = list(); // Not Known
         this.blockName = "RoundBlock";
+        this.blockElementName = arguments.callee.caller.name;
+    }
+}
+
+function GroundBlock() {
+    
+    if (arguments.length > 0) {
+        var options = arguments[0];
+        this.angle = options.angle; // Not Known
+        this.blockType = getData(options.model.blocktype)[0];
+        var dep_ut = getData(options.model.dep_ut);
+        if (dep_ut[0] == "true")
+            this.dependsOnU = "1";
+        this.id = options.id;
+        this.interfaceFunctionName = arguments.callee.caller.name;
+        this.ordering = options.ordering;
+        this.parent = options.parent;
+        if (options.model.sim instanceof Array) {
+            this.simulationFunctionName = getData(options.model.sim[0])[0];
+            var func_type;
+            switch (getData(options.model.sim[1])[0].toString()) {
+                case "-2.0":
+                    func_type = "ESELECT";
+                    break;
+                case "-1.0":
+                    func_type = "IFTHENELSE";
+                    break;
+                case "1.0":
+                    func_type = "TYPE_1";
+                    break;
+                case "2.0":
+                    func_type = "TYPE_2";
+                    break;
+                case "3.0":
+                    func_type = "TYPE_3";
+                    break;
+                case "4.0":
+                    func_type = "C_OR_FORTRAN";
+                    break;
+                case "5.0":
+                    func_type = "SCILAB";
+                    break;
+                case "99.0":
+                    func_type = "DEBUG";
+                    break;
+                case "1001.0":
+                    func_type = "DYNAMIC_FORTRAN_1";
+                    break;
+                case "2001.0":
+                    func_type = "DYNAMIC_C_1";
+                    break;
+                case "2004.0":
+                    func_type = "DYNAMIC_EXPLICIT_4";
+                    break;
+                case "10001.0":
+                    func_type = "OLDBLOCKS";
+                    break;
+                case "10004.0":
+                    func_type = "IMPLICIT_C_OR_FORTRAN";
+                    break;
+                case "30004.0":
+                    func_type = "MODELICA";
+                    break;
+            }
+            this.simulationFunctionType = func_type;
+        } else {
+            this.simulationFunctionName = getData(options.model.sim)[0];
+            this.simulationFunctionType = "DEFAULT";
+        }
+        this.style = arguments.callee.caller.name;
+        this.value = options.value; // Not Known
+        this.exprs = options.graphics.exprs;
+        this.realParameters = options.model.rpar;
+        this.integerParameters = options.model.ipar;
+        this.objectsParameters = options.model.opar;
+        this.nbZerosCrossing = options.model.nzcross;
+        this.nmode = options.model.nmode;
+        this.oDState = list();
+        this.equations = options.model.equations; // Not Known
+        this.blockName = "GroundBlock";
         this.blockElementName = arguments.callee.caller.name;
     }
 }
