@@ -743,7 +743,7 @@
                   if (mxUtils.isNode(cell.value))
                   {
                     var stylesheet = graph.getStylesheet();
-                    var style = stylesheet.styles[cell.style];
+                    var style = stylesheet.styles[cell.value.getAttribute('style')];
                     var displayedLabel = style['displayedLabel'];
                     if(displayedLabel != null) {
                       var displayParameter = cell.blockInstance.instance.displayParameter;
@@ -1214,6 +1214,9 @@
         */
 
         function styleToObject(style) {
+            if(style.indexOf(';') == -1) {
+              style = style + ';';
+            }
 
             var defaultStyle = style.substring(0, style.indexOf(';'));
             var styleObject = {
@@ -1622,7 +1625,7 @@
                 var trigger = document.getElementById(button);
                 var styleObject = styleToObject(style);
                 var previousValue = 1;
-                if ('fontStyle' in styleObjesct) {
+                if ('fontStyle' in styleObject) {
                     previousValue = styleObject['fontStyle'];
 
                     // To get a bit mask:
@@ -1950,7 +1953,11 @@
             btn.onclick = function() {
                 var input = document.getElementById('color').value;
                 var style = graph.getModel().getStyle(cell);
-                var styleObject = styleToObject(style);
+
+                if(style != null) {
+                  var styleObject = styleToObject(style);
+                }
+
                 if (selectProperty == "edgeStrokeColor") {
                     styleObject['strokeColor'] = input;
                 } else if (selectProperty == "bgColor") {
@@ -1962,8 +1969,12 @@
                 } else if (selectProperty == "edgeTextColor") {
                     styleObject['fontColor'] = input;
                 }
-                style = objectToStyle(styleObject);
-                graph.getModel().setStyle(cell, style);
+
+                if(style != null) {
+                  style = objectToStyle(styleObject);
+                  graph.getModel().setStyle(cell, style);
+                }
+
                 wind.destroy();
             };
             myform.appendChild(btn);
