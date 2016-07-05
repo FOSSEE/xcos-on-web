@@ -2251,6 +2251,7 @@
             var dec = new mxCodec(root.ownerDocument);
             dec.decode(root, graph.stylesheet);
 
+            // Set the width and height of image for all blocks to 80 (height) x 80 (width)
             var style = new Object();
             style[mxConstants.STYLE_IMAGE_WIDTH] = '80';
             style[mxConstants.STYLE_IMAGE_HEIGHT] = '80';
