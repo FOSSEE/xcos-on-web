@@ -1472,8 +1472,6 @@
                 var details = cell.blockInstance.instance.set(propertiesObject); //window[name]("set",cell.value,propertiesObject);
                 var enc = new mxCodec();
                 var node = enc.encode(details);
-                var label = getImgHTML(name);
-                node.setAttribute('label', label);
                 cell.value = node;
                 /*
                     Maverick
@@ -2015,10 +2013,6 @@
             }
         }
 
-        function getImgHTML(name) {
-            return '<img src="' + 'blocks/' + name + '.svg' + '" height="80" width="80">';
-        }
-
         function addToolbarButton(editor, toolbar, action, label, image, isTransparent) {
             var button = document.createElement('button');
             button.style.fontSize = '10';
@@ -2127,7 +2121,7 @@
                         }
                     }
                     v1 = graph.insertVertex(parent, null, node, x, y, 80, 80, name);
-                    
+
                     // @Chhavi: Additional attribute to store the block's instance
                     v1.blockInstance = createInstanceTag(details_instance);
                     createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
