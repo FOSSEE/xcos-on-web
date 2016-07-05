@@ -827,3 +827,13 @@ function inverse() {
     var array = JSON.parse(str);
     return array;
 }
+
+function _str2code() {
+    var conversion = "0123456789abcdefghijklmnopqrstuvwxyz_#!$ ();:+-*/\\=.,'[]%|&<>~^";
+    var str = arguments[0];
+    var code = [];
+    for (var i = 0; i < str.length; i++) {
+        code[i] = [conversion.indexOf(str[i])];
+    }
+    return code;
+}
