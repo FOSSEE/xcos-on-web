@@ -830,10 +830,14 @@ function inverse() {
 
 function _str2code() {
     var conversion = "0123456789abcdefghijklmnopqrstuvwxyz_#!$ ();:+-*/\\=.,'[]%|&<>~^";
+    var conversion2 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ00?0	00000000$000\"{}000`0@0r";
     var str = arguments[0];
     var code = [];
     for (var i = 0; i < str.length; i++) {
         code[i] = [conversion.indexOf(str[i])];
+        if (code[i] == -1) {
+            code[i] = [conversion2.indexOf(str[i]) * -1];
+        }
     }
     return code;
 }
