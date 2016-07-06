@@ -549,31 +549,30 @@ function BasicBlock() {
 }
 
 function sci2exp(c) {
-    if(c.scilabClass == "ScilabList") {
+    if (c.scilabClass == "ScilabList") {
         c = Object.create(c);
         c.scilabClass = "";
-        if(c.length) {
+        if (c.length) {
             return "list(" + sci2exp(c) + ")";
-        }
-        else {
+        } else {
             return "list()";
         }
-    }
-    else if(typeof c.length === "undefined") {
+    } else if (typeof c.length === "undefined") {
         return c.toString();
-    }
-    else if (c.length == 0) {
+    } else if (c.length == 0) {
         return "[]";
-    }
-    else if (c.length == 1)
+    } else if (c.length == 1)
         return c.toString();
     else {
         var result = "[";
         for (var i = 0; i < c.length; i++) {
             if (typeof c[i].length === 'undefined') {
-                result += c[i] + ",";
+                result += _check(c[i]) + ",";
             } else {
-                result += c[i][0] + ";";
+                for (var j = 0; j < c[i].length - 1; j++) {
+                    result += _check(c[i][j]) + ",";
+                }
+                result += _check(c[i][c[i].length - 1]) + ";";
             }
         }
         result = result.substring(0, result.length - 1);
