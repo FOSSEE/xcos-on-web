@@ -609,6 +609,24 @@
                     alert("Control port must be connected to command port");
                   }
                   else {
+
+                    if((source.value.indexOf('Input') != -1 && target.value.indexOf('Output') != -1)
+                    || (target.value == 'CommandPort' && source.value == 'ControlPort')) {
+                      console.log('sdsd');
+                      graph.getModel().beginUpdate();
+                      try {
+                        var newEdge = graph.insertEdge(parent, null, '', target, source);
+                        var waypoints = edgeState.absolutePoints;
+                        waypoints.reverse();
+                        newEdge.geometry.points = waypoints;
+                      }
+                      finally {
+                        graph.getModel().endUpdate();
+                      }
+
+                      return null;
+                      console.log('dsd');
+                    }
                     // If the edge is legit, return the edge.
                     return mxGraph.prototype.addEdge.apply(this, arguments);
                   }
