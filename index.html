@@ -560,6 +560,22 @@
                       cell.getChildAt(1).setConnectable(false);
                       cell.getChildAt(2).setConnectable(false);
                       cell.setConnectable(false);
+
+                      // Get the parent of the splitBlock
+                      var parent = graph.model.getParent(cell);
+
+                      graph.model.beginUpdate();
+                      try {
+                        /*
+                         * Adds the split-block to the parent at the last index
+                         * Enables split-block to appear over it's associated edges
+                         */
+                        graph.model.add(parent, cell, graph.model.getChildCount(parent) - 1);
+                      }
+                      finally {
+                        graph.model.endUpdate();
+                      }
+
                       graph.refresh();
                     }
                     finally
