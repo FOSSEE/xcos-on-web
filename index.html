@@ -609,6 +609,50 @@
                     alert("Control port must be connected to command port");
                   }
                   else {
+
+                    /*
+                     * For reverse edges, (that is, edges from input port to outport) :
+                     * If the source is input port, and target is an output port
+                     * NOTE: Manipulation of source object and target object
+                     *       with respect to current edge is not possible,
+                     *       as mxGraph.prototype.addEdge(@parameters) function is
+                     *       called just before the creation of the edge.
+                     *       Hence, the following code creates a identical new edge
+                     *       to replace the current edge.
+                     */
+
+                    if((source.value.indexOf('Input') != -1 && target.value.indexOf('Output') != -1)
+                    || (target.value == 'CommandPort' && source.value == 'ControlPort')) {
+
+                      // Begin graph DOM update
+                      graph.getModel().beginUpdate();
+
+                      try {
+
+                        // Insert new edge in place of current edge
+                        var newEdge = graph.insertEdge(parent, null, '', target, source);
+
+                        // Get points for the current edge from the global edgeState object
+                        var waypoints = edgeState.absolutePoints;
+
+                        // Reverse waypoint array
+                        waypoints.reverse();
+
+                        // Set the points for the new edge
+                        newEdge.geometry.points = waypoints;
+                      }
+                      finally {
+                        graph.getModel().endUpdate();
+                      }
+
+                      // Return null for the current edge,
+
+                      /*
+                       * Return null for the current edge,
+                       * since we have created a new edge above to replace it
+                       */
+                      return null;
+                    }
                     // If the edge is legit, return the edge.
                     return mxGraph.prototype.addEdge.apply(this, arguments);
                   }
