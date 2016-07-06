@@ -841,3 +841,27 @@ function _str2code() {
     }
     return code;
 }
+
+function real() {
+    var matrix = arguments[0];
+    var sz = math.size(matrix);
+    var res = [];
+    for (var i = 0; i < sz[0]; i++) {
+        for (var j = 0; j < sz[1]; j++) {
+            res.push([math.re(matrix[i][j])]);
+        }
+    }
+    return res;
+}
+
+function imag() {
+    var matrix = arguments[0];
+    var sz = math.size(matrix);
+    var res = [];
+    for (var i = 0; i < sz[0]; i++) {
+        for (var j = 0; j < sz[1]; j++) {
+            res.push([math.im(matrix[i][j])]);
+        }
+    }
+    return res;
+}
