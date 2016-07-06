@@ -865,3 +865,23 @@ function imag() {
     }
     return res;
 }
+
+function _check() {
+    var param = arguments[0];
+    if(typeof param == "object") {
+        var str = param.toString();
+        str = str.substring(1, str.length - 1);
+        str = str.replace(/\B\+/,"+%i*");
+        str = str.replace(/\B-/,"-%i*");
+        str = param.toString().substring(0,1) + str;
+        str = str.replace(/ /g,'');
+        return str;
+    }
+    else if(typeof param == "string") {
+        // needs to be changed later
+        return param;
+    }
+    else {
+        return param;
+    }
+}
