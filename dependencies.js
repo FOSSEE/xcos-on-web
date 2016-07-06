@@ -841,3 +841,47 @@ function _str2code() {
     }
     return code;
 }
+
+function real() {
+    var matrix = arguments[0];
+    var sz = math.size(matrix);
+    var res = [];
+    for (var i = 0; i < sz[0]; i++) {
+        for (var j = 0; j < sz[1]; j++) {
+            res.push([math.re(matrix[i][j])]);
+        }
+    }
+    return res;
+}
+
+function imag() {
+    var matrix = arguments[0];
+    var sz = math.size(matrix);
+    var res = [];
+    for (var i = 0; i < sz[0]; i++) {
+        for (var j = 0; j < sz[1]; j++) {
+            res.push([math.im(matrix[i][j])]);
+        }
+    }
+    return res;
+}
+
+function _check() {
+    var param = arguments[0];
+    if(typeof param == "object") {
+        var str = param.toString();
+        str = str.substring(1, str.length - 1);
+        str = str.replace(/\B\+/,"+%i*");
+        str = str.replace(/\B-/,"-%i*");
+        str = param.toString().substring(0,1) + str;
+        str = str.replace(/ /g,'');
+        return str;
+    }
+    else if(typeof param == "string") {
+        // needs to be changed later
+        return param;
+    }
+    else {
+        return param;
+    }
+}
