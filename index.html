@@ -2156,8 +2156,12 @@
                     var style = stylesheet.styles[name];
                     if(style != null && style['image'] != null) {
                       var label = '<img src="' + style['image'] + '" height="80" width="80">';
+                      style['label'] = label;
                       style['image'] = null;
                       node.setAttribute('label', label);
+                    }
+                    if(style!= null && style['label'] != null) {
+                      node.setAttribute('label', style['label']);
                     }
 
                     node.setAttribute('parent', temp.getAttribute('id'));
