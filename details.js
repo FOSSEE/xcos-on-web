@@ -305,37 +305,43 @@ function ScilabInteger() {
 }
 
 function int32() {
-    var int = new ScilabInteger(arguments[0]);
+    var args = Array.prototype.slice.call(arguments);
+    var int = new ScilabInteger(...args);
     int.intPrecision = "sci_int32";
     return int;
 }
 
 function int16() {
-    var int = new ScilabInteger(arguments[0]);
+    var args = Array.prototype.slice.call(arguments);
+    var int = new ScilabInteger(...args);
     int.intPrecision = "sci_int16";
     return int;
 }
 
 function int8() {
-    var int = new ScilabInteger(arguments[0]);
+    var args = Array.prototype.slice.call(arguments);
+    var int = new ScilabInteger(...args);
     int.intPrecision = "sci_int8";
     return int;
 }
 
 function uint32() {
-    var int = new ScilabInteger(arguments[0]);
+    var args = Array.prototype.slice.call(arguments);
+    var int = new ScilabInteger(...args);
     int.intPrecision = "sci_uint32";
     return int;
 }
 
 function uint16() {
-    var int = new ScilabInteger(arguments[0]);
+    var args = Array.prototype.slice.call(arguments);
+    var int = new ScilabInteger(...args);
     int.intPrecision = "sci_uint16";
     return int;
 }
 
 function uint8() {
-    var int = new ScilabInteger(arguments[0]);
+    var args = Array.prototype.slice.call(arguments);
+    var int = new ScilabInteger(...args);
     int.intPrecision = "sci_uint8";
     return int;
 }
@@ -558,12 +564,12 @@ function sci2exp(c) {
             return "list()";
         }
     } else if (typeof c.length === "undefined") {
-        return c.toString();
+        return _check(c);
     } else if (c.length == 0) {
         return "[]";
-    } else if (c.length == 1)
-        return c.toString();
-    else {
+    } else if (c.length == 1) {
+        return _check(c[0]);
+    } else {
         var result = "[";
         for (var i = 0; i < c.length; i++) {
             if (typeof c[i].length === 'undefined') {
