@@ -305,37 +305,43 @@ function ScilabInteger() {
 }
 
 function int32() {
-    var int = new ScilabInteger(arguments[0]);
+    var args = Array.prototype.slice.call(arguments);
+    var int = new ScilabInteger(...args);
     int.intPrecision = "sci_int32";
     return int;
 }
 
 function int16() {
-    var int = new ScilabInteger(arguments[0]);
+    var args = Array.prototype.slice.call(arguments);
+    var int = new ScilabInteger(...args);
     int.intPrecision = "sci_int16";
     return int;
 }
 
 function int8() {
-    var int = new ScilabInteger(arguments[0]);
+    var args = Array.prototype.slice.call(arguments);
+    var int = new ScilabInteger(...args);
     int.intPrecision = "sci_int8";
     return int;
 }
 
 function uint32() {
-    var int = new ScilabInteger(arguments[0]);
+    var args = Array.prototype.slice.call(arguments);
+    var int = new ScilabInteger(...args);
     int.intPrecision = "sci_uint32";
     return int;
 }
 
 function uint16() {
-    var int = new ScilabInteger(arguments[0]);
+    var args = Array.prototype.slice.call(arguments);
+    var int = new ScilabInteger(...args);
     int.intPrecision = "sci_uint16";
     return int;
 }
 
 function uint8() {
-    var int = new ScilabInteger(arguments[0]);
+    var args = Array.prototype.slice.call(arguments);
+    var int = new ScilabInteger(...args);
     int.intPrecision = "sci_uint8";
     return int;
 }
