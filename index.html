@@ -365,9 +365,6 @@
 
                       // Source edge is replaced with first edge and futureSource edges
                       cell.name = 'SPLIT_f';
-                      var firstEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), sourceTarget);
-                      var thirdEdge = graph.insertEdge(parent, null, '', cell.getChildAt(2), target);
-                      var futureSource = graph.insertEdge(parent, null, '', source.source, cell.getChildAt(0));
 
                       // Hide all the ports of a split-block
                       cell.getChildAt(0).setVisible(false);
@@ -376,9 +373,6 @@
 
                       // Remove the current source
                       graph.removeCells([source], true);
-
-                      // Set the newly made futureSource as the source
-                      source = futureSource;
 
                       /*
                        * If there are any waypoints, divide them for the two newly created edges.
@@ -394,9 +388,6 @@
                         for(var i = seg; i < waypoints.length; i++) {
                           waypoints2.push(waypoints[i]);
                         }
-
-                        source.geometry.points = waypoints1;
-                        firstEdge.geometry.points = waypoints2;
                       }
 
                       // Find the waypoints of the current edge, and set the waypoints for the new thirdEdge
@@ -406,7 +397,13 @@
                         waypoints3.pop();
                       }
 
-                      thirdEdge.geometry.points = waypoints3;
+                      // Create three edges associated with the split-block
+                      var firstEdge = createEdgeObject(graph, cell.getChildAt(1), sourceTarget, waypoints2);
+                      var thirdEdge = createEdgeObject(graph, cell.getChildAt(2), target, waypoints3);
+                      var futureSource = createEdgeObject(graph, source.source, cell.getChildAt(0), waypoints1);
+
+                      // Set the newly made futureSource as the source
+                      source = futureSource;
 
                       // Connectable for the ports and the split-block should be false
                       cell.getChildAt(0).setConnectable(false);
@@ -515,9 +512,6 @@
 
                       // Source edge is replaced with first edge and futureSource edges
                       cell.name = 'SPLIT_f';
-                      var firstEdge = graph.insertEdge(parent, null, '', cell.getChildAt(1), sourceTarget);
-                      var thirdEdge = graph.insertEdge(parent, null, '', cell.getChildAt(2), source);
-                      var futureSource = graph.insertEdge(parent, null, '', target.source, cell.getChildAt(0));
 
                       // Hide all the ports of a split-block
                       cell.getChildAt(0).setVisible(false);
@@ -526,7 +520,6 @@
 
                       // Remove the current source
                       graph.removeCells([target], true);
-                      target = futureSource;
 
                       /*
                        * If there are any waypoints, divide them for the two newly created edges.
@@ -542,9 +535,6 @@
                         for(var i = seg; i < waypoints.length; i++) {
                           waypoints2.push(waypoints[i]);
                         }
-
-                        target.geometry.points = waypoints1;
-                        firstEdge.geometry.points = waypoints2;
                       }
 
                       // Find the waypoints of the current edge, and set the waypoints for the new thirdEdge
@@ -552,8 +542,15 @@
                       if(waypoints3 != null && waypoints3.length > 1) {
                         waypoints3.pop();
                       }
-                        waypoints3.reverse();
-                      thirdEdge.geometry.points = waypoints3;
+                      waypoints3.reverse();
+
+                      // Create three edges associated with the split-block
+                      var firstEdge = createEdgeObject(graph, cell.getChildAt(1), sourceTarget, waypoints2);
+                      var thirdEdge = createEdgeObject(graph, cell.getChildAt(2), source, waypoints3);
+                      var futureSource = createEdgeObject(graph, target.source, cell.getChildAt(0), waypoints1);
+
+                      // Set the newly made futureSource as the source
+                      target = futureSource;
 
                       // Connectable for the ports and the split-block should be false
                       cell.getChildAt(0).setConnectable(false);
@@ -640,26 +637,14 @@
                     if((source.value.indexOf('Input') != -1 && target.value.indexOf('Output') != -1)
                     || (target.value == 'CommandPort' && source.value == 'ControlPort')) {
 
-                      // Begin graph DOM update
-                      graph.getModel().beginUpdate();
+                      // Get points for the current edge from the global edgeState object
+                      var waypoints = edgeState.absolutePoints;
 
-                      try {
+                      // Reverse waypoint array
+                      waypoints.reverse();
 
-                        // Insert new edge in place of current edge
-                        var newEdge = graph.insertEdge(parent, null, '', target, source);
-
-                        // Get points for the current edge from the global edgeState object
-                        var waypoints = edgeState.absolutePoints;
-
-                        // Reverse waypoint array
-                        waypoints.reverse();
-
-                        // Set the points for the new edge
-                        newEdge.geometry.points = waypoints;
-                      }
-                      finally {
-                        graph.getModel().endUpdate();
-                      }
+                      // Create a new edge
+                      var newEdge = createEdgeObject(graph, target, source, waypoints);
 
                       // Return null for the current edge,
 
@@ -1569,6 +1554,53 @@
             content.appendChild(myform);
             var wind = showModalWindow(graph, 'Properties', content, 450, height);
         };
+
+        /*
+         * @jiteshjha
+         * createEdgeObject(@parameters) creates an edge on the graph DOM
+         * @Parameters :
+         *              source -> source object for the edge
+         *              target -> destination object for the edge
+         *              points -> waypoints to be inserted in the geometry
+         */
+        function createEdgeObject(graph, source, target, points) {
+
+          // Start the update on the graph
+          graph.getModel().beginUpdate();
+
+          try {
+
+            // Create an edge from the given source object and target object
+            var edge = graph.insertEdge(graph.getDefaultParent(), null, '', source, target);
+
+            // Get geometry of the edge
+            var geometry = graph.getModel().getGeometry(edge);
+
+            /*
+             * Clone the geometry object
+             * NOTE: Direct manipulation of the geometry object may not be
+             *       registered as an action for some cases, hence we clone the
+             *       geometry, manipulate it and set the geometry.
+             */
+            var cloneGeometry = geometry.clone();
+
+            // Add points in the cloned geometry
+            cloneGeometry.points = points;
+
+            // Set the changed geometry for the edge
+            graph.getModel().setGeometry(edge, cloneGeometry);
+
+            // Refresh to reflect changes made
+            graph.refresh();
+          }
+          finally {
+
+            // End the update
+            graph.getModel().endUpdate();
+          }
+
+          return edge;
+        }
 
         /*
           @jiteshjha
