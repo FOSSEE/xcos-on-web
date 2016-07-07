@@ -1,5 +1,4 @@
 $.getScript('math.js');
-$.getScript('combined.js');
 
 // @Adhitya: 02-07-2016: Commented Jitesh's work to call Data Structures individually, 
 // and combined all of them into combined.js using combine_script.bat
