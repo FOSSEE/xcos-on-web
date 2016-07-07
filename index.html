@@ -2151,6 +2151,15 @@
                     var enc = new mxCodec(mxUtils.createXmlDocument());
                     var node = enc.encode(details);
                     var temp = enc.encode(parent);
+
+                    var stylesheet = graph.getStylesheet();
+                    var style = stylesheet.styles[name];
+                    if(style != null && style['image'] != null) {
+                      var label = '<img src="' + style['image'] + '" height="80" width="80">';
+                      style['image'] = null;
+                      node.setAttribute('label', label);
+                    }
+
                     node.setAttribute('parent', temp.getAttribute('id'));
                     var i, arr = [];
                     var blockModel = details_instance.x.model;
@@ -2321,13 +2330,6 @@
             var root = req.getDocumentElement();
             var dec = new mxCodec(root.ownerDocument);
             dec.decode(root, graph.stylesheet);
-
-            // Set the width and height of image for all blocks to 80 (height) x 80 (width)
-            var style = new Object();
-            style[mxConstants.STYLE_IMAGE_WIDTH] = '80';
-            style[mxConstants.STYLE_IMAGE_HEIGHT] = '80';
-            style['imageAlign'] = 'center';
-            graph.getStylesheet().putDefaultVertexStyle(style);
         };
     </script>
     <!--
