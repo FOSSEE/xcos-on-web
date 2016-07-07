@@ -1555,6 +1555,51 @@
         };
 
         /*
+         * @jiteshjha
+         * createEdgeObject(@parameters) creates an edge on the graph DOM
+         * @Parameters :
+         *              source -> source object for the edge
+         *              target -> destination object for the edge
+         *              points -> waypoints to be inserted in the geometry
+         */
+        function createEdgeObject(source, target, points) {
+
+          // Start the update on the graph
+          graph.getModel().beginUpdate();
+
+          try {
+
+            // Create an edge from the given source object and target object
+            var edge = graph.insertEdge(parent, null, '', source, target);
+
+            // Get geometry of the edge
+            var geometry = graph.getModel().getGeometry(edge);
+
+            /*
+             * Clone the geometry object
+             * NOTE: Direct manipulation of the geometry object may not be
+             *       registered as an action for some cases, hence we clone the
+             *       geometry, manipulate it and set the geometry.
+             */
+            var cloneGeometry = geometry.clone();
+
+            // Add points in the cloned geometry
+            cloneGeometry.points = points;
+
+            // Set the changed geometry for the edge
+            graph.getModel().setGeometry(edge, cloneGeometry);
+
+            // Refresh to reflect changes made
+            graph.refresh();
+          }
+          finally {
+
+            // End the update
+            graph.getModel().endUpdate();
+          }
+        }
+
+        /*
           @jiteshjha
           Creates a dialog box related to the edge label properties.
           The properties implemented are : edge label, label fontStyle,
