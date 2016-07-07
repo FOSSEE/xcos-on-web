@@ -564,12 +564,12 @@ function sci2exp(c) {
             return "list()";
         }
     } else if (typeof c.length === "undefined") {
-        return c.toString();
+        return _check(c);
     } else if (c.length == 0) {
         return "[]";
-    } else if (c.length == 1)
-        return c.toString();
-    else {
+    } else if (c.length == 1) {
+        return _check(c[0]);
+    } else {
         var result = "[";
         for (var i = 0; i < c.length; i++) {
             if (typeof c[i].length === 'undefined') {

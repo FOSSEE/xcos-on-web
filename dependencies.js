@@ -878,8 +878,7 @@ function _check() {
         return str;
     }
     else if(typeof param == "string") {
-        // needs to be changed later
-        return param;
+        return '&quot;'+param+'&quot;';
     }
     else {
         return param;
