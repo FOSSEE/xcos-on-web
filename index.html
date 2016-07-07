@@ -2151,6 +2151,55 @@
                     var enc = new mxCodec(mxUtils.createXmlDocument());
                     var node = enc.encode(details);
                     var temp = enc.encode(parent);
+
+                    /*
+                     * @jiteshjha
+                     */
+
+                    // Get the stylesheet for the graph
+                    var stylesheet = graph.getStylesheet();
+
+                    // From the stylesheet, get the style of the particular block
+                    var style = stylesheet.styles[name];
+
+                    /*
+                     * When a particular block is loaded for the first time,
+                     * the image in the style of the block will be a path to the image.
+                     * Set the label in the style property of the block has a html image,
+                     * and set the image in the style property as null
+                     *
+                     * NOTE: Since the image of any block need not be changed for
+                     *       for every movement of that block, the image must be
+                     *       set only once.
+                     */
+                    if(style != null && style['image'] != null) {
+
+                      // Make label as a image html element
+                      var label = '<img src="' + style['image'] + '" height="80" width="80">';
+
+                      // Set label
+                      style['label'] = label;
+
+                      // Set image as null
+                      style['image'] = null;
+
+                      // Add the label as a part of node
+                      node.setAttribute('label', label);
+                    }
+
+                    /*
+                     * If a particular block with image tag in it's style property
+                     * has been invoked already, the image tag would be null for any
+                     * successive instances of the same block. Hence, set the label
+                     * from the label tag in style which was set when that blockModel
+                     * was invoked on the first time.
+                     */
+                    if(style!= null && style['label'] != null) {
+
+                      // Set label from the label field in the style property
+                      node.setAttribute('label', style['label']);
+                    }
+
                     node.setAttribute('parent', temp.getAttribute('id'));
                     var i, arr = [];
                     var blockModel = details_instance.x.model;
@@ -2321,13 +2370,6 @@
             var root = req.getDocumentElement();
             var dec = new mxCodec(root.ownerDocument);
             dec.decode(root, graph.stylesheet);
-
-            // Set the width and height of image for all blocks to 80 (height) x 80 (width)
-            var style = new Object();
-            style[mxConstants.STYLE_IMAGE_WIDTH] = '80';
-            style[mxConstants.STYLE_IMAGE_HEIGHT] = '80';
-            style['imageAlign'] = 'center';
-            graph.getStylesheet().putDefaultVertexStyle(style);
         };
     </script>
     <!--
