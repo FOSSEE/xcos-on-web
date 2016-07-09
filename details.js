@@ -374,7 +374,7 @@ function isEmpty() {
     return !getData(arguments[0]).length;
 }
 
-function modelica() {
+function modelica_function() {
     var modelica_type = ["modelica", "model", "inputs", "outputs", "parameters"];
     this.modelica = new ScilabString(modelica_type);
     this.model = [];

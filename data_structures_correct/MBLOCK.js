@@ -22,7 +22,7 @@ function MBLOCK() {
         }
 
         model.rpar = new ScilabDouble(...model.rpar);
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString([this.nameF]);
         mo.parameters = list(new ScilabString(...this.param), this.paramv);
         model.sim = list(mo.model, new ScilabDouble([30004]));

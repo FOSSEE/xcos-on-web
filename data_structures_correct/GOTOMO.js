@@ -15,7 +15,7 @@ function GOTOMO() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["gotomo"]);
         mo.inputs = new ScilabString(["p"]);
 

@@ -16,7 +16,7 @@ function NMOS() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["NMOS"]);
         mo.outputs = new ScilabString(["D"], ["B"], ["S"]);
         mo.inputs = new ScilabString(["G"]);
