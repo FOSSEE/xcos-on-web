@@ -303,7 +303,7 @@ function Bache() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["Bache"]);
         mo.inputs = new ScilabString(["Ce1", "Ce2"]);
         mo.outputs = new ScilabString(["Cs1", "Cs2", "yNiveau"]);
@@ -668,7 +668,7 @@ function Capacitor() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["Capacitor"]);
         mo.inputs = new ScilabString(["p"]);
         mo.outputs = new ScilabString(["n"]);
@@ -1288,7 +1288,7 @@ function ConstantVoltage() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["ConstantVoltage"]);
         mo.inputs = new ScilabString(["p"]);
         mo.outputs = new ScilabString(["n"]);
@@ -1655,7 +1655,7 @@ function CurrentSensor() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["CurrentSensor"]);
         mo.inputs = new ScilabString(["p"]);
         mo.outputs = new ScilabString(["n"], ["i"]);
@@ -1735,7 +1735,7 @@ function CVS() {
             }
         }
 
-        var mo = modelica();
+        var mo = new modelica_function();
         model.sim = new ScilabString([this.ModelName]);
         mo.inputs = new ScilabString(...this.MI);
         mo.outputs = new ScilabString(...this.MO);
@@ -4117,7 +4117,7 @@ function Diode() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["Diode"]);
         mo.inputs = new ScilabString(["p"]);
         mo.outputs = new ScilabString(["n"]);
@@ -5041,7 +5041,7 @@ function Flowmeter() {
             }
         }
 
-        var mo = modelica();
+        var mo = new modelica_function();
         model.sim = new ScilabString([this.ModelName]);
         mo.inputs = new ScilabString(...this.MI);
         mo.outputs = new ScilabString(...this.MO);
@@ -5286,7 +5286,7 @@ function FROMMO() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["frommo"]);
         mo.outputs = new ScilabString(["n"]);
 
@@ -5698,7 +5698,7 @@ function GOTOMO() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["gotomo"]);
         mo.inputs = new ScilabString(["p"]);
 
@@ -5784,7 +5784,7 @@ function Ground() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["Ground"]);
         mo.inputs = new ScilabString(["p"]);
         mo.outputs = new ScilabDouble();
@@ -5836,7 +5836,7 @@ function Gyrator() {
             }
         }
         var model = scicos_model();
-        var mo = modelica();
+        var mo = new modelica_function();
         model.sim = new ScilabString([this.ModelName]);
         mo.inputs = new ScilabString(...this.MI);
         mo.outputs = new ScilabString(...this.MO);
@@ -5948,7 +5948,7 @@ function IdealTransformer() {
                 this.MO.push(this.PortName[i]);
             }
         }
-        var mo = modelica();
+        var mo = new modelica_function();
         model.sim = new ScilabString([this.ModelName]);
         mo.inputs = new ScilabString(...this.MI);
         mo.outputs = new ScilabString(...this.MO);
@@ -6047,7 +6047,7 @@ function Inductor() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["Inductor"]);
         mo.inputs = new ScilabString(["p"]);
         mo.outputs = new ScilabString(["n"]);
@@ -6078,7 +6078,7 @@ function INIMPL_f() {
         model.dep_ut = new ScilabBoolean([false, false]);
         model.blocktype = new ScilabString(["c"]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["PORT"]);
         mo.outputs = new ScilabString(["n"]);
         mo.inputs = new ScilabDouble();
@@ -7128,7 +7128,7 @@ function MBLOCK() {
         }
 
         model.rpar = new ScilabDouble(...model.rpar);
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString([this.nameF]);
         mo.parameters = list(new ScilabString(...this.param), this.paramv);
         model.sim = list(mo.model, new ScilabDouble([30004]));
@@ -7550,7 +7550,7 @@ function NMOS() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["NMOS"]);
         mo.outputs = new ScilabString(["D"], ["B"], ["S"]);
         mo.inputs = new ScilabString(["G"]);
@@ -7605,7 +7605,7 @@ function NPN() {
             }
         }
         var model = scicos_model();
-        var mo = modelica();
+        var mo = new modelica_function();
         model.sim = new ScilabString([this.ModelName]);
         mo.inputs = new ScilabString(...this.MI);
         mo.outputs = new ScilabString(...this.MO);
@@ -7663,7 +7663,7 @@ function OpAmp() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = model.sim;
         mo.inputs = new ScilabString(["in_p"], ["in_n"]);
         mo.outputs = new ScilabString(["out"]);
@@ -7699,7 +7699,7 @@ function OUTIMPL_f() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["PORT"]);
         mo.inputs = new ScilabString(["n"]);
         mo.outputs = new ScilabDouble();
@@ -7808,7 +7808,7 @@ function PerteDP() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["PerteDP"]);
         mo.inputs = new ScilabString(["C1"]);
         mo.outputs = new ScilabString(["C2"]);
@@ -8492,7 +8492,7 @@ function PNP() {
             }
         }
 
-        var mo = modelica();
+        var mo = new modelica_function();
         model.sim = new ScilabString([this.ModelName]);
         mo.inputs = new ScilabString(...this.MI);
         mo.outputs = new ScilabString(...this.MO);
@@ -8556,7 +8556,7 @@ function PotentialSensor() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["PotentialSensor"]);
         mo.inputs = new ScilabString(["p"]);
         mo.outputs = new ScilabString(["v"]);
@@ -8631,7 +8631,7 @@ function PuitsP() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["Puits"]);
         mo.inputs = new ScilabString(["C"]);
         mo.outputs = new ScilabDouble();
@@ -8962,7 +8962,7 @@ function Resistor() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["Resistor"]);
         mo.inputs = new ScilabString(["p"]);
         mo.outputs = new ScilabString(["n"]);
@@ -9658,7 +9658,7 @@ function SineVoltage() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["SineVoltage"]);
         mo.inputs = new ScilabString(["p"]);
         mo.outputs = new ScilabString(["n"]);
@@ -9717,7 +9717,7 @@ function SourceP() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["Source"]);
         mo.inputs = new ScilabDouble();
         mo.outputs = new ScilabString(["C"]);
