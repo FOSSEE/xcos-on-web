@@ -15,7 +15,7 @@ function BARXY() {
         model.intyp = new ScilabDouble([1]);
         model.out = new ScilabDouble();
         model.evtin = new ScilabDouble([1]);
-        model.rpar = new ScilabDouble([xmin], [xmax], [ymin], [ymax]);
+        model.rpar = new ScilabDouble([this.xmin], [this.xmax], [this.ymin], [this.ymax]);
         model.ipar = new ScilabDouble([1]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, [], []);
         this.x.graphics.in_implicit = new ScilabString(["E", , "E"]);
