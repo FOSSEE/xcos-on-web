@@ -49,7 +49,7 @@ function IFTHEL_f() {
         this.x.graphics.in_implicit = new ScilabString(["E"]);
         // changed
         this.x.graphics.in_label = new ScilabString([""]);
-        this, x.graphics.in_style = new ScilabString(["ExplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0"]);
+        this.x.graphics.in_style = new ScilabString(["ExplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0"]);
         this.x.graphics.style = new ScilabString(["IFTHEL_f"]);
         return new BasicBlock(this.x);
     }
