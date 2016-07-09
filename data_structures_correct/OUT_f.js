@@ -29,7 +29,7 @@ function OUT_f () {
 	
 		var model = scicos_model();
 		model.sim = new ScilabString(["output"]);
-		model.in1 = new ScilabDouble([-1]);
+		model.in = new ScilabDouble([-1]);
 		model.in2 = new ScilabDouble([-2]);
 		model.intyp = new ScilabDouble([-1]);
 		model.ipar=new ScilabDouble([this.prt]);
@@ -39,8 +39,8 @@ function OUT_f () {
 		var exprs = new ScilabString([sci2exp(this.prt)]);
 		
 		var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"OUT_f\",sz(1),sz(2));"]);
-		var block=new standard_define(new ScilabDouble([1,1]),model,exprs,gr_i);
-		block.graphics.style = new ScilabString(["OUT_f"]);
+		this.x = new standard_define(new ScilabDouble([1,1]),model,exprs,gr_i);
+		this.x.graphics.style = new ScilabString(["OUT_f"]);
 		return new ExplicitOutBlock(this.x);
 	}
 	
