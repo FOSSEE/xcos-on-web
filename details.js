@@ -461,7 +461,30 @@ function CLKSPLIT_f() {
     }
 }
 
+function STEP() {
 
+    STEP.prototype.internal = function STEP() {
+        this.rpar=[[0],[1]];
+        var model = scicos_model();
+        model.sim = list(new ScilabString(["step_func"]),new ScilabDouble([4]));
+        model.evtin = new ScilabDouble([1]);
+        model.evtout = new ScilabDouble([1]);
+        model.out = new ScilabDouble([1]);
+        model.out2 = new ScilabDouble([1]);
+        model.outtyp = new ScilabDouble([1]);
+        model.firing = new ScilabDouble([1]); 
+        model.rpar = new ScilabDouble(...this.rpar);
+        model.blocktype = new ScilabString(["c"]);
+        model.dep_ut = new ScilabBoolean([false, false]);
+        
+        var exprs = new ScilabString([1],...this.rpar);
+        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"STEP\",sz(1),sz(2));"]);
+
+        var block = new standard_define(new ScilabDouble([80, 80]), model,exprs, gr_i); // 1 -> 80
+        block.graphics.style = new ScilabString(["STEP"]);
+        return block;
+    }
+}
 
 
 function BasicBlock() {
