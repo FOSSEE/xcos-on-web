@@ -29,7 +29,7 @@ function OUT_f () {
 	
 		var model = scicos_model();
 		model.sim = new ScilabString(["output"]);
-		model.in1 = new ScilabDouble([-1]);
+		model.in = new ScilabDouble([-1]);
 		model.in2 = new ScilabDouble([-2]);
 		model.intyp = new ScilabDouble([-1]);
 		model.ipar=new ScilabDouble([this.prt]);
