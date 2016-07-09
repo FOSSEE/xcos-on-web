@@ -1,11 +1,8 @@
 function MATZREIM() {
     MATZREIM.prototype.define = function MATZREIM() {
-
-
         var model = scicos_model();
-
+        
         this.function_name = "matz_reim";
-
         this.funtyp = new ScilabDouble([4]);
         model.sim = list(this.function_name, this.funtyp);
         model.in = new ScilabDouble([-1]);
