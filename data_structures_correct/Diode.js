@@ -15,7 +15,7 @@ function Diode() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["Diode"]);
         mo.inputs = new ScilabString(["p"]);
         mo.outputs = new ScilabString(["n"]);

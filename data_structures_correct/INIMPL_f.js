@@ -9,7 +9,7 @@ function INIMPL_f() {
         model.dep_ut = new ScilabBoolean([false, false]);
         model.blocktype = new ScilabString(["c"]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["PORT"]);
         mo.outputs = new ScilabString(["n"]);
         mo.inputs = new ScilabDouble();

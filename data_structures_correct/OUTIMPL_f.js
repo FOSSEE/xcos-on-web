@@ -11,7 +11,7 @@ function OUTIMPL_f() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([false, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["PORT"]);
         mo.inputs = new ScilabString(["n"]);
         mo.outputs = new ScilabDouble();

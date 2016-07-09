@@ -32,7 +32,7 @@ function CVS() {
             }
         }
 
-        var mo = modelica();
+        var mo = new modelica_function();
         model.sim = new ScilabString([this.ModelName]);
         mo.inputs = new ScilabString(...this.MI);
         mo.outputs = new ScilabString(...this.MO);

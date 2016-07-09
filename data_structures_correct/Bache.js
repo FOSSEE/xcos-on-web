@@ -23,7 +23,7 @@ function Bache() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["Bache"]);
         mo.inputs = new ScilabString(["Ce1", "Ce2"]);
         mo.outputs = new ScilabString(["Cs1", "Cs2", "yNiveau"]);

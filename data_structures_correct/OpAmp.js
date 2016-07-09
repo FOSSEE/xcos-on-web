@@ -9,7 +9,7 @@ function OpAmp() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = model.sim;
         mo.inputs = new ScilabString(["in_p"], ["in_n"]);
         mo.outputs = new ScilabString(["out"]);

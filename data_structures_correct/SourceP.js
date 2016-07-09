@@ -13,7 +13,7 @@ function SourceP() {
         model.blocktype = new ScilabString(["c"]);
         model.dep_ut = new ScilabBoolean([true, false]);
 
-        var mo = modelica();
+        var mo = new modelica_function();
         mo.model = new ScilabString(["Source"]);
         mo.inputs = new ScilabDouble();
         mo.outputs = new ScilabString(["C"]);
