@@ -16,7 +16,7 @@
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="combined.js"></script>
-    
+
     <script type="text/javascript">
         // Stores edgeState for every recently created edge in updateFixedTerminalPoint() function
         var edgeState = {};
@@ -1095,13 +1095,12 @@
 
                     node.id = "tempform";
                     node.appendChild(fileNode);
-                    var ta = document.createElement('textarea');
-                    ta.setAttribute("rows", "15");
-                    ta.setAttribute("cols", "60");
-                    ta.setAttribute("name", "tarea");
-                    node.appendChild(ta);
+                    var textArea = document.createElement('textarea');
+                    textArea.setAttribute("rows", "15");
+                    textArea.setAttribute("cols", "60");
+                    textArea.setAttribute("name", "tarea");
+                    node.appendChild(textArea);
                     var btn = document.createElement('button');
-                    var btn = document.createElement("button");
                     btn.innerHTML = 'Submit';
                     btn.type = "button";
                     btn.name = "submit";
@@ -1120,10 +1119,13 @@
                                 according to the format that is recognized by the mxCodec decoder.
                             */
                             xml = contents;
+                            //RegEx to replace all the newline characters.
                             xml = xml.replace(/\n*/, '');
+                            //RegEx to replace all the space characters between any a closing and the next opening tag.
                             xml = xml.replace(/>\s*</g, '><');
+                            //RegEx to replace all the XML comments.
                             xml = xml.replace(/<!--[\s\S]*?-->/g, '');
-                            ta.value = xml;
+                            textArea.value = xml;
 
                         }
 
@@ -1146,10 +1148,7 @@
                             var parent = graph.getDefaultParent();
                             var doc = mxUtils.parseXml(xml);
                             var codec = new mxCodec(doc);
-                            //var elt = doc.documentElement.firstChild.firstChild.firstChild;
-
                             var rootNode = doc.documentElement;
-
                             /*
                                 Maverick
                                 Extracting 'Setup Window' values from Xcos diagram and setting the same 
@@ -1159,12 +1158,8 @@
                             var propertiesObject = {};
 
                             for (var key in defaultProperties) {
-
                                 if (defaultProperties.hasOwnProperty(key)) {
-
                                     propertiesObject[defaultProperties[key][1]] = rootNode.getAttribute(defaultProperties[key][1]);
-
-
                                     /*    
                                         Maverick
                                         Adding the corresponding attributes to the <XcosDiagram> tag.
@@ -1207,7 +1202,7 @@
                             }
 
                             var cells = [];
-                            elt = rootNode.firstChild;
+                            var elt = rootNode.firstChild;
                             while (elt != null) {
                                 var curNodeName = elt.nodeName;
 
@@ -1244,15 +1239,15 @@
                                         The following data structure is used to store the information required for each block
                                         to the subsequent mapping.
                                     */
-                                    var tempObj = new Object();
-                                    tempObj.inputArray = [];
-                                    tempObj.outputArray = [];
-                                    tempObj.controlArray = [];
-                                    tempObj.commandArray = [];
-                                    tempObj.inputIds = [];
-                                    tempObj.outputIds = [];
-                                    tempObj.controlIds = [];
-                                    tempObj.commandIds = [];
+                                    var temporaryMapObject = new Object();
+                                    temporaryMapObject.inputArray = [];
+                                    temporaryMapObject.outputArray = [];
+                                    temporaryMapObject.controlArray = [];
+                                    temporaryMapObject.commandArray = [];
+                                    temporaryMapObject.inputIds = [];
+                                    temporaryMapObject.outputIds = [];
+                                    temporaryMapObject.controlIds = [];
+                                    temporaryMapObject.commandIds = [];
 
 
                                     var details_instance = null;
@@ -1264,18 +1259,8 @@
                                         var details = details_instance.define();
                                         var enc = new mxCodec(mxUtils.createXmlDocument());
                                         var node = enc.encode(details);
-
-                                        //var label = getImgHTML(ifaceFuncName);
                                         var temp = enc.encode(parent);
-                                        /*node.setAttribute('label', label);*/
-                                        /*
-                                         * @jiteshjha
-                                         */
-
-                                        // Get the stylesheet for the graph
                                         var stylesheet = graph.getStylesheet();
-
-                                        // From the stylesheet, get the style of the particular block
                                         var styleName = elt.getAttribute('style');
                                         if (styleName.indexOf(';') != -1) {
                                             styleName = styleName.substring(0, styleName.indexOf(';'));
@@ -1300,7 +1285,7 @@
 
                                             // Set label
                                             style['label'] = label;
-
+                                            style['imagePath'] = style['image'];
                                             // Set image as null
                                             style['image'] = null;
 
@@ -1321,7 +1306,7 @@
                                             node.setAttribute('label', style['label']);
                                         }
                                         node.setAttribute('parent', temp.getAttribute('id'));
-                                        var i, arr = [];
+
                                         var blockModel = details_instance.x.model;
                                         var graphics = details_instance.x.graphics;
 
@@ -1329,9 +1314,9 @@
                                         var v1 = graph.insertVertex(graph.getDefaultParent(), null, node, geometryCell.x, geometryCell.y, 80, 80, ifaceFuncName);
                                         // @Chhavi: Additional attribute to store the block's instance
                                         v1.blockInstance = createInstanceTag(details_instance);
-                                        tempObj.newId = v1.id;
+                                        temporaryMapObject.newId = v1.id;
 
-                                        dict[curId] = tempObj;
+                                        dict[curId] = temporaryMapObject;
 
                                         //findAndCreatePorts(graph,v1,doc,curId,codec);
                                         //createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
@@ -1346,8 +1331,8 @@
                                     if (curNodeName == 'SplitBlock') {
                                         // (x-5, y-5.5) is the offset to correct the position of split-block
                                         var v1 = graph.insertVertex(graph.getDefaultParent(), null, '', geometryCell.x - 5, geometryCell.y - 5.5, 10, 10, 'Split', false);
-                                        tempObj.newId = v1.id;
-                                        dict[curId] = tempObj;
+                                        temporaryMapObject.newId = v1.id;
+                                        dict[curId] = temporaryMapObject;
                                         v1.setConnectable(false);
                                     }
                                 }
@@ -1393,7 +1378,6 @@
                                 Maverick
                                 Adding the ports.
                             */
-                            //elt=doc.documentElement.firstChild.firstChild.firstChild;
                             elt = rootNode.firstChild;
                             while (elt != null) {
                                 var curNodeName = elt.nodeName;
@@ -1440,10 +1424,10 @@
                                                     pointsArray.push(new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y')));
                                                 } else {
                                                     if (tempNode.nodeName == 'Array') {
-                                                        var pointNode = tempNode.firstChild;
-                                                        while (pointNode != null) {
-                                                            pointsArray.push(new mxPoint(pointNode.getAttribute('x'), pointNode.getAttribute('y')));
-                                                            pointNode = pointNode.nextSibling;
+                                                        var mxPointNode = tempNode.firstChild;
+                                                        while (mxPointNode != null) {
+                                                            pointsArray.push(new mxPoint(mxPointNode.getAttribute('x'), mxPointNode.getAttribute('y')));
+                                                            mxPointNode = mxPointNode.nextSibling;
                                                         }
                                                     }
                                                 }
@@ -1462,13 +1446,10 @@
 
                     }
 
-                    //node.appendChild('br');
-
                     div.appendChild(node);
-                    //div.appendChild('br');
 
                     node.style.visibility = "visible";
-                    var wind = showModalWindow(graph, 'Set Context', div, 450, 300);
+                    var wind = showModalWindow(graph, 'Set Context', div, 410, 440);
                 });
 
 
