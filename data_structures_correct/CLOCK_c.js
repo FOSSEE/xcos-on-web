@@ -1,4 +1,20 @@
 function CLOCK_c() {
+
+    CLOCK_c.prototype.get = function CLOCK_c() {
+        var options = {
+            dt: ["Period", getData(this.x.model.rpar.objs[1].model.rpar)[0]],
+            t0: ["Initialisation Time", getData(this.x.model.rpar.objs[1].model.firing)],
+        };
+        return options;
+    }
+
+    CLOCK_c.prototype.set = function CLOCK_c() {
+        this.x.model.rpar.objs[1].model.firing = new ScilabDouble([arguments[0]["t0"]]);
+        this.x.model.rpar.objs[1].model.rpar = new ScilabDouble([arguments[0]["dt"]], [arguments[0]["t0"]]);
+        this.x.model.rpar.objs[1].graphics.exprs = new ScilabString([arguments[0]["dt"]], [arguments[0]["t0"]])
+        return new BasicBlock(this.x);
+    }
+
     CLOCK_c.prototype.define = function CLOCK_c() {
         var evtdly = new EVTDLY_c().internal();
         evtdly.graphics.orig = new ScilabDouble([320, 232]);
