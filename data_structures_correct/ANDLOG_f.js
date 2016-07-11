@@ -22,7 +22,7 @@ function ANDLOG_f() {
         return block;
     }
 
-    ANDLOG_f.prototype.define = function ANDLOG() {
+    ANDLOG_f.prototype.define = function ANDLOG_f() {
         var model = scicos_model();
         model.sim = new ScilabString(["andlog"]);
         model.out = new ScilabDouble([1]);
