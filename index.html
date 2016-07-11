@@ -16,6 +16,7 @@
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="combined.js"></script>
+    <script type="text/javascript" src="rotate.js"></script>
     <script type="text/javascript">
 
         // Stores edgeState for every recently created edge in updateFixedTerminalPoint() function
@@ -189,12 +190,17 @@
                             });
 
                             menu.addItem('Selection to superblock', 'images/superblock.png', function() {
-                                // @ToDo: Pooja: Functionality to be put.
+                                // @ToDo: Functionality to be put.
                             });
                             var format = menu.addItem('Format', null, null);
-
                             menu.addItem('Rotate', 'images/rotate.png', function() {
                                 editor.execute('rotateCustom');
+                            }, format);
+                            menu.addItem('Flip', 'images/rotate.png', function() {
+                                editor.execute('flipCustom');
+                            }, format);
+                            menu.addItem('Mirror', 'images/rotate.png', function() {
+                                editor.execute('mirrorCustom');
                             }, format);
                             menu.addItem('Border Color', 'images/draw-brush.png', function() {
                                 showColorWheel(graph, cell, 'vertexStrokeColor');
@@ -204,7 +210,7 @@
                                 showColorWheel(graph, cell, 'vertexFillColor');
                             }, format);
                             menu.addItem('Details', null, function() {
-                                // @ToDo: Pooja: Functionality to be put.
+                                // @ToDo: Functionality to be put.
                             });
                         }
                     } else {
@@ -736,35 +742,69 @@
                                 var inputPort, outputPort, controlPort, commandPort;
                                 if (cellvar.model.in.height == null) {
                                     inputPort = 0;
-								}
+                                }
                                 else {
                                     inputPort = cellvar.model.in.height;
-								}
+                                }
                                 if (cellvar.model.out.height == null) {
                                     outputPort = 0;
                                 }
-								else {
+                                else {
                                     outputPort = cellvar.model.out.height;
-								}
+                                }
                                 if (cellvar.model.evtin.height == null) {
                                     controlPort = 0;
-								}
+                                }
                                 else {
                                     controlPort = cellvar.model.evtin.height;
-								}
+                                }
                                 if (cellvar.model.evtout.height == null) {
                                     commandPort = 0;
-								}
+                                }
                                 else {
                                     commandPort = cellvar.model.evtout.height;
-								}
+                                }
+                                var flip = 'false', mirror = 'false';
+                                function Styling(style)
+                                {
+                                    if(style.indexOf('stencilFlipV') == -1){
+                                        flip = 'false';
+                                    }
+                                    else
+                                    {
+                                        var x = style.indexOf('stencilFlipV');
+                                        if(style.charAt(x+13) == 0){
+                                            flip = 'false';
+                                        }
+                                        else{
+                                            flip = 'true';
+                                        }
+
+                                    }
+                                    if(style.indexOf('stencilFlipH') == -1){
+                                        mirror = 'false';
+                                    }
+                                    else
+                                    {
+                                        var x = style.indexOf('stencilFlipH');
+                                        if(style.charAt(x+13) == 0){
+                                            mirror = 'false';
+                                        }
+                                        else{
+                                            mirror = 'true';
+                                        }
+
+                                    }
+
+                                }
+                                Styling(cell.style);
                                 var geometry = cell.getGeometry();
                                 text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
                                     'Simulation : ' + cell.value.getAttribute('simulationFunctionName') + "\n" +
                                     'UID : ' + cell.id + "\n" +
                                     'Style : ' + cell.style + "\n" +
-                                    'Flip : ' + getData(cellvar.graphics.flip)[0] + "\n" +
-                                    'Mirror : false' + "\n" +
+                                    'Flip : ' + flip + "\n" +
+                                    'Mirror : ' + mirror + "\n" +
                                     'Input Ports : ' + inputPort + "\n" +
                                     'Output Ports : ' + outputPort + "\n" +
                                     'Control Ports : ' + controlPort + "\n" +
@@ -851,6 +891,29 @@
                     button.appendChild(titleName);
                 });
 
+                /*
+                 * @jiteshjha
+                 * rotateCustom(@parameters) is defined in 'rotate.js'
+                 */
+                editor.addAction('rotateCustom', function(editor, cell) {
+                    rotateCustom(editor, graph, cell);
+                }, null, null, 'Ctrl+R');
+
+                /*
+                 * @jiteshjha
+                 * flipCustom(@parameters) is defined in 'rotate.js'
+                 */
+                editor.addAction('flipCustom', function(editor, cell) {
+                    flipCustom(editor, graph, cell);
+                }, null, null, 'Ctrl+R');
+
+                /*
+                 * @jiteshjha
+                 * mirrorCustom(@parameters) is defined in 'rotate.js'
+                 */
+                 editor.addAction('mirrorCustom', function(editor, cell) {
+                    mirrorCustom(editor, graph, cell);
+                }, null, null, 'Ctrl+R');
 
                 // @jiteshjha, @pooja
                 /*
@@ -2218,6 +2281,8 @@
                       // Set label
                       style['label'] = label;
 
+                      style['imagePath'] = style['image'];
+
                       // Set image as null
                       style['image'] = null;
 
@@ -2282,6 +2347,9 @@
 
                     // @Chhavi: Additional attribute to store the block's instance
                     v1.blockInstance = createInstanceTag(details_instance);
+                    v1.currentAngle = 0;
+                    v1.flipX = 1;
+                    v1.flipY = 1;
                     createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
                     v1.setConnectable(false);
                 } finally {
