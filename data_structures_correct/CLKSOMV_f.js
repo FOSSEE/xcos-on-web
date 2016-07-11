@@ -1,5 +1,5 @@
 function CLKSOMV_f() {
-    
+
     CLKSOMV_f.prototype.internal = function CLKSOMV_f() {
         var model = scicos_model();
         model.sim = new ScilabString(["sum"]);
