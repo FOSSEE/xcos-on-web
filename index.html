@@ -753,10 +753,7 @@
                     if (mxUtils.isNode(cell.value)) {
                         var stylesheet = graph.getStylesheet();
                         var style = stylesheet.styles[cell.value.getAttribute('style')];
-                        var displayedLabel = null;
-                        if(style != null) {
-                          displayedLabel = style['displayedLabel'];
-                        }
+                        var displayedLabel = style['displayedLabel'];
                         if (displayedLabel != null) {
                             var displayParameter = cell.blockInstance.instance.displayParameter;
                             for (i in displayParameter) {
