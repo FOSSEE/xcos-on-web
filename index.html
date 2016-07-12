@@ -2466,28 +2466,38 @@
             btn.style.cssText = 'margin-left: 75px';
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
-                var input = document.getElementById('color').value;
-                var style = graph.getModel().getStyle(cell);
+                var selectedCells = graph.getSelectionCells();
+                graph.getModel().beginUpdate();
+                try {
+                    for ( var count = 0 ; count < selectedCells.length; count++){
+                        var selectedCell = selectedCells[count];
+                        var input = document.getElementById('color').value;
+                        var style = graph.getModel().getStyle(selectedCell);
 
-                if (style != null) {
-                    var styleObject = styleToObject(style);
+                        if (style != null) {
+                            var styleObject = styleToObject(style);
+                        }
+
+                        if (selectProperty == "edgeStrokeColor") {
+                            styleObject['strokeColor'] = input;
+                        } else if (selectProperty == "bgColor") {
+                            graph.container.style.backgroundColor = input;
+                        } else if (selectProperty == "vertexStrokeColor") {
+                            styleObject['strokeColor'] = input;
+                        } else if (selectProperty == "vertexFillColor") {
+                            styleObject['fillColor'] = input;
+                        } else if (selectProperty == "edgeTextColor") {
+                            styleObject['fontColor'] = input;
+                        }
+
+                        if (style != null) {
+                            style = objectToStyle(styleObject);
+                            graph.getModel().setStyle(selectedCell, style);
+                        }
+                    }
                 }
-
-                if (selectProperty == "edgeStrokeColor") {
-                    styleObject['strokeColor'] = input;
-                } else if (selectProperty == "bgColor") {
-                    graph.container.style.backgroundColor = input;
-                } else if (selectProperty == "vertexStrokeColor") {
-                    styleObject['strokeColor'] = input;
-                } else if (selectProperty == "vertexFillColor") {
-                    styleObject['fillColor'] = input;
-                } else if (selectProperty == "edgeTextColor") {
-                    styleObject['fontColor'] = input;
-                }
-
-                if (style != null) {
-                    style = objectToStyle(styleObject);
-                    graph.getModel().setStyle(cell, style);
+                finally {
+                    graph.getModel().endUpdate();
                 }
 
                 wind.destroy();
