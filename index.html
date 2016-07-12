@@ -1076,7 +1076,7 @@
                     Careful mapping needs to be done between these two ids.
                 */
                 editor.addAction('importXcos', function(editor, cell) {
-                    var xmlDoc = '';
+                    var xmlDocument = '';
                     var div = document.createElement('div');
                     var node = document.createElement('form');
                     div.setAttribute("id", "tempdiv");
@@ -1105,8 +1105,11 @@
                     button.type = "button";
                     button.name = "submit";
                     node.appendChild(button);
-
-
+                    
+                    /*
+                        Maverick
+                        Reference: www.htmlgoodies.com
+                    */
                     fileNode.addEventListener('change', function(evt) {
 
                         var f = evt.target.files[0];
@@ -1118,14 +1121,14 @@
                                 The following regular expressions are used to format the imported Xcos XML
                                 according to the format that is recognized by the mxCodec decoder.
                             */
-                            xmlDoc = contents;
+                            xmlDocument = contents;
                             //RegEx to replace all the newline characters.
-                            xmlDoc = xmlDoc.replace(/\n*/, '');
+                            xmlDocument = xmlDocument.replace(/\n*/, '');
                             //RegEx to replace all the space characters between any a closing and the next opening tag.
-                            xmlDoc = xmlDoc.replace(/>\s*</g, '><');
+                            xmlDocument = xmlDocument.replace(/>\s*</g, '><');
                             //RegEx to replace all the XML comments.
-                            xmlDoc = xmlDoc.replace(/<!--[\s\S]*?-->/g, '');
-                            textArea.value = xmlDoc;
+                            xmlDocument = xmlDocument.replace(/<!--[\s\S]*?-->/g, '');
+                            textArea.value = xmlDocument;
 
                         }
 
@@ -1137,7 +1140,7 @@
                         A dictionary is used to perform the mapping between the old ids and the new ids.
                         See explanation at the beginning of the function!!!
                     */
-                    var dictionary = {};
+                    var nodeDataObject = {};
 
                     button.onclick = function() {
 
@@ -1146,7 +1149,7 @@
                         graph.model.beginUpdate();
                         try {
                             var parent = graph.getDefaultParent();
-                            var doc = mxUtils.parseXml(xmlDoc);
+                            var doc = mxUtils.parseXml(xmlDocument);
                             var codec = new mxCodec(doc);
                             var rootNode = doc.documentElement;
                             /*
@@ -1316,7 +1319,7 @@
                                         v1.blockInstance = createInstanceTag(details_instance);
                                         temporaryMapObject.newId = v1.id;
 
-                                        dictionary[curId] = temporaryMapObject;
+                                        nodeDataObject[curId] = temporaryMapObject;
 
                                         //findAndCreatePorts(graph,v1,doc,curId,codec);
                                         //createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
@@ -1332,7 +1335,7 @@
                                         // (x-5, y-5.5) is the offset to correct the position of split-block
                                         var v1 = graph.insertVertex(graph.getDefaultParent(), null, '', geometryCell.x - 5, geometryCell.y - 5.5, 10, 10, 'Split', false);
                                         temporaryMapObject.newId = v1.id;
-                                        dictionary[curId] = temporaryMapObject;
+                                        nodeDataObject[curId] = temporaryMapObject;
                                         v1.setConnectable(false);
                                     }
                                 }
@@ -1340,7 +1343,7 @@
                                 if (curNodeName.endsWith('Port')) {
 
                                     var oldParentId = currentNode.getAttribute('parent');
-                                    var newParentObj = dictionary[oldParentId];
+                                    var newParentObj = nodeDataObject[oldParentId];
                                     var newParentId = newParentObj.newId;
 
                                     var newParentCell = graph.getModel().getCell(newParentId);
@@ -1387,12 +1390,12 @@
                                 */
                                 if (!(curNodeName.endsWith('Port') || curNodeName.endsWith('Link'))) {
                                     var curId = currentNode.getAttribute('id');
-                                    var newParentObj = dictionary[curId];
+                                    var newParentObj = nodeDataObject[curId];
                                     if (newParentObj != null) {
                                         var newParentId = newParentObj.newId;
 
                                         var newParentCell = graph.getModel().getCell(newParentId);
-                                        createPorts(graph, newParentCell, newParentObj.inputArray, newParentObj.controlArray, newParentObj.outputArray, newParentObj.commandArray, newParentObj, dictionary);
+                                        createPorts(graph, newParentCell, newParentObj.inputArray, newParentObj.controlArray, newParentObj.outputArray, newParentObj.commandArray, newParentObj, nodeDataObject);
                                     }
                                 }
                                 currentNode = currentNode.nextSibling;
@@ -1409,8 +1412,8 @@
                                 if (curNodeName.endsWith('Link')) {
 
                                     var pointsArray = [];
-                                    var newSourceObj = dictionary[currentNode.getAttribute('source')];
-                                    var newTargetObj = dictionary[currentNode.getAttribute('target')];
+                                    var newSourceObj = nodeDataObject[currentNode.getAttribute('source')];
+                                    var newTargetObj = nodeDataObject[currentNode.getAttribute('target')];
 
                                     var newSourceCell = graph.getModel().getCell(newSourceObj.newId);
                                     var newTargetCell = graph.getModel().getCell(newTargetObj.newId);
@@ -2670,14 +2673,14 @@
             New parameters are the parentObj where the port is supposed to be added and a dictionary
             object which contains the mapping between the newly assigned Ids and imported Ids.
         */
-        function createPorts(graph, block, left, top, right, bottom, parentObj, dictionary) {
+        function createPorts(graph, block, left, top, right, bottom, parentObj, nodeDataObject) {
 
-            createInputPorts(graph, block, left, top, parentObj, dictionary);
-            createOutputPorts(graph, block, right, bottom, parentObj, dictionary);
+            createInputPorts(graph, block, left, top, parentObj, nodeDataObject);
+            createOutputPorts(graph, block, right, bottom, parentObj, nodeDataObject);
 
         }
 
-        function createInputPorts(graph, block, leftArray, topArray, parentObj, dictionary) {
+        function createInputPorts(graph, block, leftArray, topArray, parentObj, nodeDataObject) {
 
             var topNumber = topArray.length;
             var leftNumber = leftArray.length;
@@ -2690,7 +2693,7 @@
                     var portType = leftArray[i - 1];
                     //console.log(parentObj.inputIds);
                     if (parentObj != null) {
-                        createInputPort(graph, block, x, y, portType, 'left', i, dictionary, parentObj.inputIds);
+                        createInputPort(graph, block, x, y, portType, 'left', i, nodeDataObject, parentObj.inputIds);
                     } else {
                         createInputPort(graph, block, x, y, portType, 'left', i);
                     }
@@ -2704,7 +2707,7 @@
                     var portType = topArray[i - 1];
                     //console.log(parentObj.controlIds);
                     if (parentObj != null) {
-                        createInputPort(graph, block, x, y, portType, 'top', i, dictionary, parentObj.controlIds);
+                        createInputPort(graph, block, x, y, portType, 'top', i, nodeDataObject, parentObj.controlIds);
                     } else {
                         createInputPort(graph, block, x, y, portType, 'top', i);
                     }
@@ -2713,7 +2716,7 @@
 
         };
 
-        function createOutputPorts(graph, block, rightArray, bottomArray, parentObj, dictionary) {
+        function createOutputPorts(graph, block, rightArray, bottomArray, parentObj, nodeDataObject) {
 
             var bottomNumber = bottomArray.length;
             var rightNumber = rightArray.length;
@@ -2724,7 +2727,7 @@
                     var portType = rightArray[i - 1];
                     //console.log(parentObj.outputIds);
                     if (parentObj != null) {
-                        createOutputPort(graph, block, x, y, portType, 'right', i, dictionary, parentObj.outputIds);
+                        createOutputPort(graph, block, x, y, portType, 'right', i, nodeDataObject, parentObj.outputIds);
                     } else {
                         createOutputPort(graph, block, x, y, portType, 'right', i);
                     }
@@ -2737,7 +2740,7 @@
                     var portType = bottomArray[i - 1];
                     //console.log(parentObj.commandIds);
                     if (parentObj != null) {
-                        createOutputPort(graph, block, x, y, portType, 'bottom', i, dictionary, parentObj.commandIds);
+                        createOutputPort(graph, block, x, y, portType, 'bottom', i, nodeDataObject, parentObj.commandIds);
                     } else {
                         createOutputPort(graph, block, x, y, portType, 'bottom', i);
                     }
@@ -2746,7 +2749,7 @@
 
         };
 
-        function createInputPort(graph, block, x, y, portType, position, ordering, dictionary, idArray) {
+        function createInputPort(graph, block, x, y, portType, position, ordering, nodeDataObject, idArray) {
 
             var port = null;
             if (portType == 'COMMAND') {
@@ -2766,12 +2769,12 @@
                 }
                 port.ordering = ordering;
 
-                if (dictionary != null) {
+                if (nodeDataObject != null) {
                     var obj = new Object();
                     obj.newId = port.id;
                     obj.oldId = idArray[ordering - 1];
                     //console.log(idArray[ordering-1]);
-                    dictionary[idArray[ordering - 1]] = obj;
+                    nodeDataObject[idArray[ordering - 1]] = obj;
                 }
 
                 if (block.style == 'Split') {
@@ -2781,7 +2784,7 @@
             }
         };
 
-        function createOutputPort(graph, block, x, y, portType, position, ordering, dictionary, idArray) {
+        function createOutputPort(graph, block, x, y, portType, position, ordering, nodeDataObject, idArray) {
             var port = null;
 
             if (portType == 'COMMAND') {
@@ -2802,12 +2805,12 @@
                 }
                 port.ordering = ordering;
 
-                if (dictionary != null) {
+                if (nodeDataObject != null) {
                     var obj = new Object();
                     obj.newId = port.id;
                     obj.oldId = idArray[ordering - 1];
                     //console.log(idArray[ordering-1]);
-                    dictionary[idArray[ordering - 1]] = obj;
+                    nodeDataObject[idArray[ordering - 1]] = obj;
                 }
 
                 if (block.style == 'Split') {
