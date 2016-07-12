@@ -247,6 +247,15 @@
                             showSetupWindow(graph, diagRoot);
                         });
 
+                        /*
+                         * @jiteshjha
+                         * Exit superblock
+                         */
+                         if(graph.getCurrentRoot() != null) {
+                           menu.addItem('Exit SuperBlock', '', function() {
+                               editor.execute('exitGroup');
+                           });
+                         }
 
                         menu.addItem('Zoom In', 'images/zoom_in.png', function() {
                             editor.execute('zoomIn');
@@ -984,12 +993,21 @@
                       }
 
                       var numberOfPorts = edgesNotInSuperBlock.length;
-                      var portsE = [];
+                      var portList = [];
                       for(var i = 0; i < numberOfPorts; i++) {
-                        portsE.push('E');
+                        var target = edgesNotInSuperBlock[i].name;
+                        if(target == 'ExplicitLink') {
+                          portList.push('E');
+                        }
+                        else if(target == 'ImplicitLink') {
+                          portList.push('I');
+                        }
+                        else if(target == 'CommandControlLink') {
+                          portList.push('CONTROL');
+                        }
                       }
 
-                      createPorts(editor.graph, group, portsE, [], [], []);
+                      createPorts(editor.graph, group, portList, [], [], []);
 
                       var groupPorts = [];
                       for(var i = 0; i < group.getChildCount(); i++) {
@@ -1007,10 +1025,31 @@
 
                         console.log(group);
                         for(var i = 0; i < edgesNotInSuperBlock.length; i++) {
-                          var ifaceFuncName = 'IN_f';
+                          var ifaceFuncName = null;
+                          var target = edgesNotInSuperBlock[i].name;
+                          var portType = [];
+                          if(target == 'ExplicitLink') {
+                            ifaceFuncName = 'IN_f';
+                            portType.push('E');
+                          }
+                          else if(target == 'ImplicitLink') {
+                            ifaceFuncName = 'CLKINV_f';
+                            portType.push('I');
+                          }
+                          else if(target == 'CommandControlLink') {
+                            ifaceFuncName = 'INIMPL_f';
+                            portType.push('COMMAND');
+                          }
                           connectingBlock = addConnectingBlock(graph, x, y, ifaceFuncName, 40, 40, false);
-                          y += 40;
-                          createPorts(graph, connectingBlock, [], [], ['E'], []);
+                          y += 60;
+
+                          if(target == 'CommandControlLink') {
+                            createPorts(graph, connectingBlock, [], [], [], portType);
+                          }
+                          else {
+                            createPorts(graph, connectingBlock, [], [], portType, []);
+                          }
+
                           graph.addCells([connectingBlock], group);
                           connectingBlocks.push(connectingBlock);
                         }
