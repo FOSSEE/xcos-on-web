@@ -20,7 +20,10 @@ function INIMPL_f() {
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),&quot;INIMPL_f&quot;,sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([1, 1]), model, exprs, gr_i);
         this.x.graphics.out_implicit = new ScilabString(["I"]);
-        return new ImplicitInBlock(this.x);
+
+        this.implicitInBlock = new ImplicitInBlock(this.x);
+        this.displayParameter = [this.implicitInBlock.ordering];
+        return this.implicitInBlock;
     }
     INIMPL_f.prototype.details = function INIMPL_f() {
         return this.x;

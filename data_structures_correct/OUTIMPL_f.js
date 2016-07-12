@@ -22,7 +22,10 @@ function OUTIMPL_f() {
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),&quot;OUTIMPL_f&quot;,sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([1, 1]), model, exprs, gr_i);
         this.x.graphics.in_implicit = new ScilabString(["I"]);
-        return new ImplicitOutBlock(this.x);
+        
+        this.implicitOutBlock = new ImplicitOutBlock(this.x);
+        this.displayParameter = [this.implicitOutBlock.ordering];
+        return this.implicitOutBlock;
     }
     OUTIMPL_f.prototype.details = function OUTIMPL_f() {
         return this.x;

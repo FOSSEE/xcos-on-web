@@ -15,7 +15,7 @@ $.ajax({
       url: "/data_structures_correct/"
     },
     success: function (data) {
-		
+        
        // @Parameter: data will have the required filenames in the mentioned folder
        // For each url, add the script to the body div element with getScript function
       for (i in data) {
@@ -24,6 +24,47 @@ $.ajax({
     }
 });
 */
+
+// Added to handle ordering for a few blocks.
+
+window.inBitMap='0';
+window.outBitMap='0';
+
+String.prototype.replaceAt=function(index, character) {
+    return this.substr(0, index) + character + this.substr(index+character.length);
+}
+
+/*
+    Maverick, Adhitya
+    ImplicitInBlock, ImplicitOutBlock, ExplicitInBlock, ExplicitOutBlock
+    These blocks need their orderings to be handled.
+    We are using a bitmap to do the same. 
+*/
+
+function handleOrdering(inOrOut){
+    var bitmap;
+    if(inOrOut=='in'){
+        bitmap=window.inBitMap;
+    }
+    else{
+        bitmap=window.outBitMap;
+    }
+    var index = bitmap.indexOf('0');
+    if(index == -1){
+        bitmap += '0';
+        index = bitmap.indexOf('0');
+    }
+    bitmap = bitmap.replaceAt(index,'1');
+    if(inOrOut=='in'){
+        window.inBitMap=bitmap;
+    }
+    else{
+        window.outBitMap=bitmap;
+    }
+    var position = 1+index;
+    
+    return position;
+}
 
 function AfficheBlock() {
     if (arguments.length > 0) {
@@ -682,7 +723,7 @@ function ImplicitOutBlock() {
             this.dependsOnT = "1";
         this.id = options.id;
         this.interfaceFunctionName = arguments.callee.caller.name;
-        this.ordering = options.ordering;
+        this.ordering = handleOrdering('out');
         this.parent = options.parent;
         if (options.model.sim instanceof Array) {
             this.simulationFunctionName = getData(options.model.sim[0])[0];
@@ -767,7 +808,7 @@ function ImplicitInBlock() {
             this.dependsOnT = "1";
         this.id = options.id;
         this.interfaceFunctionName = arguments.callee.caller.name;
-        this.ordering = options.ordering;
+        this.ordering = handleOrdering('in');
         this.parent = options.parent;
         if (options.model.sim instanceof Array) {
             this.simulationFunctionName = getData(options.model.sim[0])[0];
@@ -847,7 +888,7 @@ function ExplicitInBlock() {
         this.connectable = options.connectable; // Not Known
         this.id = options.id;
         this.interfaceFunctionName = arguments.callee.caller.name;
-        this.ordering = options.ordering;
+        this.ordering = handleOrdering('in');
         this.parent = options.parent;
         if (options.model.sim instanceof Array) {
             this.simulationFunctionName = getData(options.model.sim[0])[0];
@@ -919,6 +960,7 @@ function ExplicitInBlock() {
     }
 }
 
+
 function ExplicitOutBlock() {
     if (arguments.length > 0) {
         var options = arguments[0];
@@ -927,7 +969,7 @@ function ExplicitOutBlock() {
         this.connectable = options.connectable; // Not Known
         this.id = options.id;
         this.interfaceFunctionName = arguments.callee.caller.name;
-        this.ordering = options.ordering;
+        this.ordering = handleOrdering('out');
         this.parent = options.parent;
         if (options.model.sim instanceof Array) {
             this.simulationFunctionName = getData(options.model.sim[0])[0];
@@ -1147,7 +1189,7 @@ function inverse() {
 
 function _str2code() {
     var conversion = "0123456789abcdefghijklmnopqrstuvwxyz_#!$ ();:+-*/\\=.,'[]%|&<>~^";
-    var conversion2 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ00?0	00000000$000\"{}000`0@0r";
+    var conversion2 = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ00?0 00000000$000\"{}000`0@0r";
     var str = arguments[0];
     var code = [];
     for (var i = 0; i < str.length; i++) {
