@@ -1159,6 +1159,85 @@ function Summation() {
     }
 }
 
+function SuperBlock() {
+    if (arguments.length > 0) {
+        var options = arguments[0];
+        this.angle = options.angle; // Not Known
+        this.blockType = getData(options.model.blocktype)[0];
+        this.connectable = options.connectable; // Not Known
+        var dep_ut = getData(options.model.dep_ut);
+        if (dep_ut[0] == "true")
+            this.dependsOnU = "1";
+        if (dep_ut[1] == "true")
+            this.dependsOnT = "1";
+        this.id = options.id;
+        this.interfaceFunctionName = arguments.callee.caller.name;
+        this.ordering = options.ordering;
+        this.parent = options.parent;
+        if (options.model.sim instanceof Array) {
+            this.simulationFunctionName = getData(options.model.sim[0])[0];
+            var func_type;
+            switch (getData(options.model.sim[1])[0].toString()) {
+                case "-2.0":
+                    func_type = "ESELECT";
+                    break;
+                case "-1.0":
+                    func_type = "IFTHENELSE";
+                    break;
+                case "1.0":
+                    func_type = "TYPE_1";
+                    break;
+                case "2.0":
+                    func_type = "TYPE_2";
+                    break;
+                case "3.0":
+                    func_type = "TYPE_3";
+                    break;
+                case "4.0":
+                    func_type = "C_OR_FORTRAN";
+                    break;
+                case "5.0":
+                    func_type = "SCILAB";
+                    break;
+                case "99.0":
+                    func_type = "DEBUG";
+                    break;
+                case "1001.0":
+                    func_type = "DYNAMIC_FORTRAN_1";
+                    break;
+                case "2001.0":
+                    func_type = "DYNAMIC_C_1";
+                    break;
+                case "2004.0":
+                    func_type = "DYNAMIC_EXPLICIT_4";
+                    break;
+                case "10001.0":
+                    func_type = "OLDBLOCKS";
+                    break;
+                case "10004.0":
+                    func_type = "IMPLICIT_C_OR_FORTRAN";
+                    break;
+                case "30004.0":
+                    func_type = "MODELICA";
+                    break;
+            }
+            this.simulationFunctionType = func_type;
+        } else {
+            this.simulationFunctionName = getData(options.model.sim)[0];
+            this.simulationFunctionType = "DEFAULT";
+        }
+        this.style = arguments.callee.caller.name;
+        this.value = options.value; // Not Known
+        this.vertex = options.vertex; // Not Known
+        this.visible = options.visible; // Not Known
+        this.realParameters = options.model.rpar;
+        this.oDState = list();
+        this.equations = list(); // Not Known
+        this.blockName = "SuperBlock";
+        this.blockElementName = arguments.callee.caller.name;
+    }
+}
+
 function zeros() {
     if (arguments.length == 0) {
         return [0];
