@@ -188,9 +188,23 @@
                                 editor.execute('delete');
                             });
 
-                            menu.addItem('Selection to superblock', 'images/superblock.png', function() {
-                                // @ToDo: Pooja: Functionality to be put.
-                            });
+                            if(cell.value != 'Group') {
+                              menu.addItem('Selection to superblock', 'images/superblock.png', function() {
+                                  editor.execute('groupOrUngroup');
+                              });
+                            }
+                            else if(cell.value == 'Group') {
+                              if(graph.isCellCollapsed(cell) == true) {
+                                menu.addItem('Expand superblock', null, function() {
+                                    editor.execute('expand');
+                                });
+                              }
+                              else if(graph.isCellCollapsed(cell) == false) {
+                                menu.addItem('Collapse superblock', null, function() {
+                                    editor.execute('collapse');
+                                });
+                              }
+                            }
                             var format = menu.addItem('Format', null, null);
 
                             menu.addItem('Rotate', 'images/rotate.png', function() {
@@ -255,6 +269,18 @@
                 //var config = mxUtils.load('config/editor-commons.xml').getDocumentElement();
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
                 editor.configure(config);
+
+                // Defines the default group to be used for grouping. The
+        				// default group is a field in the mxEditor instance that
+        				// is supposed to be a cell which is cloned for new cells.
+        				// The groupBorderSize is used to define the spacing between
+        				// the children of a group and the group bounds.
+
+        				var group = new mxCell('Group', new mxGeometry(), 'SUPER_f');
+        				group.setVertex(true);
+        				group.setConnectable(false);
+        				editor.defaultGroup = group;
+        				editor.groupBorderSize = 100;
 
                 graph.isCellSelectable = function(cell) {
                     if (cell.isConnectable() == true && cell.isEdge() == false) {
@@ -666,10 +692,10 @@
                         // processing wrt the parent label)
                         return '';
                     } else if (this.isCellCollapsed(cell)) {
-                        var index = tmp.indexOf('</h1>');
+                        /*var index = tmp.indexOf('</h1>');
                         if (index > 0) {
                             tmp = tmp.substring(0, index + 5);
-                        }
+                        }*/
                     }
                     return tmp;
                 }
@@ -812,6 +838,94 @@
                     button.appendChild(titleName);
                 });
 
+                /*
+                 * @jiteshjha
+                 * Defines a new action for deleting or ungrouping
+                 * Implements SuperBlock
+                 */
+        				editor.addAction('groupOrUngroup', function(editor, cell)
+        				{
+        					cell = cell || editor.graph.getSelectionCell();
+        					if (cell != null && editor.graph.isSwimlane(cell))
+        					{
+        						editor.execute('ungroup', cell);
+        					}
+        					else
+        					{
+                    graph.getModel().beginUpdate();
+                    try {
+                      //console.log(graph.getSelectionCells());
+                      var selectedCells = graph.getSelectionCells();
+
+                      editor.execute('group');
+
+                      var group = cell.getParent();
+
+                      // Find all the edges among selectedCells
+                      var selectedEdges = [];
+                      for(index in selectedCells) {
+                        var cell = selectedCells[index];
+                        if(cell != null && cell.isEdge() == true) {
+                          selectedEdges.push(cell);
+                        }
+                      }
+
+                      var edgesNotInSuperBlock = [];
+                      for(index in selectedCells) {
+                        var cell = selectedCells[index];
+                        var childCount = cell.getChildCount();
+                        for(var i = 0; i < childCount; i++) {
+                          var port = cell.getChildAt(i);
+                          var edge = port.getEdgeAt(0);
+                          if(edge != null) {
+                            if($.inArray(edge, selectedEdges) == -1) {
+                              edgesNotInSuperBlock.push(edge);
+                            }
+                          }
+                        }
+                      }
+
+                      var numberOfPorts = edgesNotInSuperBlock.length;
+                      var portsE = [];
+                      for(var i = 0; i < numberOfPorts; i++) {
+                        portsE.push('E');
+                      }
+
+                      createPorts(editor.graph, group, portsE, [], [], []);
+
+                      var groupPorts = [];
+                      for(var i = 0; i < group.getChildCount(); i++) {
+                        var child = group.getChildAt(i);
+                        if(child.isVertex() == true && child.isConnectable() == true) {
+                          groupPorts.push(child);
+                        }
+                      }
+
+                      var connectingBlocks = [];
+                      if(edgesNotInSuperBlock.length != 0) {
+                        var connectingBlock = graph.insertVertex(graph.getDefaultParent(), null, '', 0, 0.45, 40, 40, 'IN_f', true);
+                        for(var i = 0; i < edgesNotInSuperBlock.length; i++) {
+                          createPorts(graph, connectingBlock, [], [], ['E'], []);
+                          graph.addCells([connectingBlock], group);
+                        }
+                      }
+
+                      for(index in edgesNotInSuperBlock) {
+                        var edge = edgesNotInSuperBlock[index];
+                        var previousTarget = edge.target;
+                        var targetPort = groupPorts[index];
+                        graph.getModel().setTerminal(edge, targetPort, false);
+                        var edge = graph.insertEdge(graph.getDefaultParent(), null, '', connectingBlock.getChildAt(index), previousTarget);
+                      }
+
+                      editor.graph.foldCells(true, false, [group]);
+                      //editor.graph.setCellsLocked([cell]);
+                    }
+                    finally {
+                      graph.getModel().endUpdate();
+                    }
+        					}
+        				});
 
                 // @jiteshjha, @pooja
                 /*
@@ -1080,17 +1194,17 @@
 
                 /*
                     Maverick
-                    Adding a new button to import an Xcos diagram to our GUI and perform the simulation 
+                    Adding a new button to import an Xcos diagram to our GUI and perform the simulation
                     on the remote server.
                     The flow of control is as follows:
                     The entire XML document is traversed, beginning from the root node.
-                    The document is traversed three times: 
-                    1. All the blocks are appended on the graph. 
+                    The document is traversed three times:
+                    1. All the blocks are appended on the graph.
                     2. All the ports are added to the blocks.
                     3. All the links are made.
 
-                    Old ids are the ones which can be found from the imported file but when the blocks are added 
-                    to the graph mxGraph assigns new ids to them. 
+                    Old ids are the ones which can be found from the imported file but when the blocks are added
+                    to the graph mxGraph assigns new ids to them.
                     Careful mapping needs to be done between these two ids.
                 */
                 editor.addAction('importXcos', function(editor, cell) {
@@ -1123,7 +1237,7 @@
                     button.type = "button";
                     button.name = "submit";
                     node.appendChild(button);
-                    
+
                     /*
                         Maverick
                         Reference: www.htmlgoodies.com
@@ -1172,7 +1286,7 @@
                             var rootNode = doc.documentElement;
                             /*
                                 Maverick
-                                Extracting 'Setup Window' values from Xcos diagram and setting the same 
+                                Extracting 'Setup Window' values from Xcos diagram and setting the same
                                 on the new diagram.
                             */
                             var defaultProperties = setup("get");
@@ -1181,7 +1295,7 @@
                             for (var key in defaultProperties) {
                                 if (defaultProperties.hasOwnProperty(key)) {
                                     propertiesObject[defaultProperties[key][1]] = rootNode.getAttribute(defaultProperties[key][1]);
-                                    /*    
+                                    /*
                                         Maverick
                                         Adding the corresponding attributes to the <XcosDiagram> tag.
                                     */
@@ -1197,7 +1311,7 @@
 
                                 /*
                                     Maverick
-                                    Extracting 'Set Context' values from Xcos diagram and setting the same 
+                                    Extracting 'Set Context' values from Xcos diagram and setting the same
                                     on the new diagram.
                                 */
                                 if (rootNode.nodeName == 'Array') {
@@ -1431,9 +1545,9 @@
 
                             /*
                                 Maverick
-                                Connecting the links. 
+                                Connecting the links.
                             */
-                            
+
                             currentNode = rootNode.firstChild;
                             while (currentNode != null) {
                                 var curNodeName = currentNode.nodeName;
@@ -2571,6 +2685,10 @@
                     var node = enc.encode(details);
                     var temp = enc.encode(parent);
 
+                    /*
+                     * @jiteshjha
+                     */
+                     
                     // Get the stylesheet for the graph
                     var stylesheet = graph.getStylesheet();
                     // From the stylesheet, get the style of the particular block
@@ -2691,8 +2809,8 @@
         // Create ports
         /*
             Maverick
-            Modified the createPorts funtion so that it can be used while creating ports from 
-            a given Xcos diagram. 
+            Modified the createPorts funtion so that it can be used while creating ports from
+            a given Xcos diagram.
             New parameters are the parentObj where the port is supposed to be added and a dictionary
             object which contains the mapping between the newly assigned Ids and imported Ids.
         */
