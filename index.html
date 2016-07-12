@@ -16,6 +16,7 @@
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="combined.js"></script>
+    <script type="text/javascript" src="orientation.js"></script>
 
     <script type="text/javascript">
         // Stores edgeState for every recently created edge in updateFixedTerminalPoint() function
@@ -189,22 +190,26 @@
                             });
 
                             menu.addItem('Selection to superblock', 'images/superblock.png', function() {
-                                // @ToDo: Pooja: Functionality to be put.
+                                // @ToDo: Functionality to be put.
                             });
-                            var format = menu.addItem('Format', null, null);
-
+                            var formatMenu = menu.addItem('Format', null, null);
                             menu.addItem('Rotate', 'images/rotate.png', function() {
                                 editor.execute('rotateCustom');
-                            }, format);
+                            }, formatMenu);
+                            menu.addItem('Flip', 'images/flip.png', function() {
+                                editor.execute('flipCustom');
+                            }, formatMenu);
+                            menu.addItem('Mirror', 'images/mirror.png', function() {
+                                editor.execute('mirrorCustom');
+                            }, formatMenu);
                             menu.addItem('Border Color', 'images/draw-brush.png', function() {
                                 showColorWheel(graph, cell, 'vertexStrokeColor');
-
-                            }, format);
+                            }, formatMenu);
                             menu.addItem('Fill Color', 'images/edit.png', function() {
                                 showColorWheel(graph, cell, 'vertexFillColor');
-                            }, format);
+                            }, formatMenu);
                             menu.addItem('Details', null, function() {
-                                // @ToDo: Pooja: Functionality to be put.
+                                // @ToDo: Functionality to be put.
                             });
                         }
                     } else {
@@ -723,13 +728,41 @@
                                 } else {
                                     commandPort = cellvar.model.evtout.height;
                                 }
+
+                                var flip = false,
+                                    mirror = false;
+                                var style = cell.style;
+                                var styleObject = styleToObject(style);
+                                if (styleObject['stencilFlipV'] == null) {
+                                    flip = false;
+                                } else {
+
+                                    if (styleObject['stencilFlipV'] == 0) {
+                                        flip = false;
+                                    } else {
+                                        flip = true;
+                                    }
+
+                                }
+                                if (styleObject['stencilFlipH'] == null) {
+                                    mirror = false;
+                                } else {
+
+                                    if (styleObject['stencilFlipH'] == 0) {
+                                        mirror = false;
+                                    } else {
+                                        mirror = true;
+                                    }
+
+                                }
+                                style = objectToStyle(styleObject);
                                 var geometry = cell.getGeometry();
                                 text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
                                     'Simulation : ' + cell.value.getAttribute('simulationFunctionName') + "\n" +
                                     'UID : ' + cell.id + "\n" +
                                     'Style : ' + cell.style + "\n" +
-                                    'Flip : ' + getData(cellvar.graphics.flip)[0] + "\n" +
-                                    'Mirror : false' + "\n" +
+                                    'Flip : ' + flip + "\n" +
+                                    'Mirror : ' + mirror + "\n" +
                                     'Input Ports : ' + inputPort + "\n" +
                                     'Output Ports : ' + outputPort + "\n" +
                                     'Control Ports : ' + controlPort + "\n" +
@@ -752,12 +785,12 @@
 
                     if (mxUtils.isNode(cell.value)) {
                         var stylesheet = graph.getStylesheet();
-						var attribute = cell.value.getAttribute('style');
-                        if(attribute == null){
+                        var attribute = cell.value.getAttribute('style');
+                        if (attribute == null) {
                             attribute = cell.value.getAttribute('interfaceFunctionName');
                         }
                         var style = stylesheet.styles[attribute];
-						var displayedLabel = style['displayedLabel'];
+                        var displayedLabel = style['displayedLabel'];
                         if (displayedLabel != null) {
                             var displayParameter = cell.blockInstance.instance.displayParameter;
                             for (i in displayParameter) {
@@ -812,6 +845,29 @@
                     button.appendChild(titleName);
                 });
 
+                /*
+                 * @jiteshjha, @pooja
+                 * rotateCustom(@parameters) is defined in 'orientation.js'
+                 */
+                editor.addAction('rotateCustom', function(editor, cell) {
+                    rotateCustom(editor, graph, cell);
+                });
+
+                /*
+                 * @jiteshjha, @pooja
+                 * flipCustom(@parameters) is defined in 'orientation.js'
+                 */
+                editor.addAction('flipCustom', function(editor, cell) {
+                    flipCustom(editor, graph, cell);
+                });
+
+                /*
+                 * @jiteshjha, @pooja
+                 * mirrorCustom(@parameters) is defined in 'orientation.js'
+                 */
+                editor.addAction('mirrorCustom', function(editor, cell) {
+                    mirrorCustom(editor, graph, cell);
+                });
 
                 // @jiteshjha, @pooja
                 /*
@@ -1123,7 +1179,7 @@
                     button.type = "button";
                     button.name = "submit";
                     node.appendChild(button);
-                    
+
                     /*
                         Maverick
                         Reference: www.htmlgoodies.com
@@ -1433,7 +1489,7 @@
                                 Maverick
                                 Connecting the links. 
                             */
-                            
+
                             currentNode = rootNode.firstChild;
                             while (currentNode != null) {
                                 var curNodeName = currentNode.nodeName;
@@ -1647,10 +1703,10 @@
         */
 
         function styleToObject(style) {
-            if (style.indexOf(';') == -1) {
+            //To add semicolon at the end if it isn't already present.
+            if (style[style.length - 1] != ';') {
                 style = style + ';';
             }
-
             var defaultStyle = style.substring(0, style.indexOf(';'));
             var styleObject = {
                 "default": defaultStyle
@@ -2428,28 +2484,37 @@
             btn.style.cssText = 'margin-left: 75px';
             // Executes when button 'btn' is clicked
             btn.onclick = function() {
-                var input = document.getElementById('color').value;
-                var style = graph.getModel().getStyle(cell);
+                var selectedCells = graph.getSelectionCells();
+                graph.getModel().beginUpdate();
+                try {
+                    for (var count = 0; count < selectedCells.length; count++) {
+                        var selectedCell = selectedCells[count];
+                        var input = document.getElementById('color').value;
+                        var style = graph.getModel().getStyle(selectedCell);
 
-                if (style != null) {
-                    var styleObject = styleToObject(style);
-                }
+                        if (style != null) {
+                            var styleObject = styleToObject(style);
+                        }
 
-                if (selectProperty == "edgeStrokeColor") {
-                    styleObject['strokeColor'] = input;
-                } else if (selectProperty == "bgColor") {
-                    graph.container.style.backgroundColor = input;
-                } else if (selectProperty == "vertexStrokeColor") {
-                    styleObject['strokeColor'] = input;
-                } else if (selectProperty == "vertexFillColor") {
-                    styleObject['fillColor'] = input;
-                } else if (selectProperty == "edgeTextColor") {
-                    styleObject['fontColor'] = input;
-                }
+                        if (selectProperty == "edgeStrokeColor") {
+                            styleObject['strokeColor'] = input;
+                        } else if (selectProperty == "bgColor") {
+                            graph.container.style.backgroundColor = input;
+                        } else if (selectProperty == "vertexStrokeColor") {
+                            styleObject['strokeColor'] = input;
+                        } else if (selectProperty == "vertexFillColor") {
+                            styleObject['fillColor'] = input;
+                        } else if (selectProperty == "edgeTextColor") {
+                            styleObject['fontColor'] = input;
+                        }
 
-                if (style != null) {
-                    style = objectToStyle(styleObject);
-                    graph.getModel().setStyle(cell, style);
+                        if (style != null) {
+                            style = objectToStyle(styleObject);
+                            graph.getModel().setStyle(selectedCell, style);
+                        }
+                    }
+                } finally {
+                    graph.getModel().endUpdate();
                 }
 
                 wind.destroy();
@@ -2594,6 +2659,8 @@
                         // Set label
                         style['label'] = label;
 
+                        style['imagePath'] = style['image'];
+
                         // Set image as null
                         style['image'] = null;
 
@@ -2658,6 +2725,9 @@
 
                     // @Chhavi: Additional attribute to store the block's instance
                     v1.blockInstance = createInstanceTag(details_instance);
+                    v1.currentAngle = 0;
+                    v1.flipX = 1;
+                    v1.flipY = 1;
                     createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
                     v1.setConnectable(false);
                 } finally {
