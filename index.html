@@ -16,7 +16,7 @@
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="combined.js"></script>
-    <script type="text/javascript" src="rotate.js"></script>
+    <script type="text/javascript" src="orientation.js"></script>
     <script type="text/javascript">
 
         // Stores edgeState for every recently created edge in updateFixedTerminalPoint() function
@@ -764,40 +764,36 @@
                                 else {
                                     commandPort = cellvar.model.evtout.height;
                                 }
-                                var flip = 'false', mirror = 'false';
-                                function Styling(style)
+
+                                var flip = false, mirror = false;
+                                if(cell.style.indexOf('stencilFlipV') == -1){
+                                    flip = false;
+                                }
+                                else
                                 {
-                                    if(style.indexOf('stencilFlipV') == -1){
-                                        flip = 'false';
+                                    var x = cell.style.indexOf('stencilFlipV');
+                                    if(cell.style.charAt(x+13) == 0){
+                                        flip = false;
                                     }
-                                    else
-                                    {
-                                        var x = style.indexOf('stencilFlipV');
-                                        if(style.charAt(x+13) == 0){
-                                            flip = 'false';
-                                        }
-                                        else{
-                                            flip = 'true';
-                                        }
-
-                                    }
-                                    if(style.indexOf('stencilFlipH') == -1){
-                                        mirror = 'false';
-                                    }
-                                    else
-                                    {
-                                        var x = style.indexOf('stencilFlipH');
-                                        if(style.charAt(x+13) == 0){
-                                            mirror = 'false';
-                                        }
-                                        else{
-                                            mirror = 'true';
-                                        }
-
+                                    else{
+                                        flip = true;
                                     }
 
                                 }
-                                Styling(cell.style);
+                                if(cell.style.indexOf('stencilFlipH') == -1){
+                                    mirror = false;
+                                }
+                                else
+                                {
+                                    var x = cell.style.indexOf('stencilFlipH');
+                                    if(cell.style.charAt(x+13) == 0){
+                                        mirror = false;
+                                    }
+                                    else{
+                                        mirror = true;
+                                    }
+
+                                }
                                 var geometry = cell.getGeometry();
                                 text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
                                     'Simulation : ' + cell.value.getAttribute('simulationFunctionName') + "\n" +
@@ -888,7 +884,7 @@
 
                 /*
                  * @jiteshjha
-                 * rotateCustom(@parameters) is defined in 'rotate.js'
+                 * rotateCustom(@parameters) is defined in 'orientation.js'
                  */
                 editor.addAction('rotateCustom', function(editor, cell) {
                     rotateCustom(editor, graph, cell);
@@ -896,7 +892,7 @@
 
                 /*
                  * @jiteshjha
-                 * flipCustom(@parameters) is defined in 'rotate.js'
+                 * flipCustom(@parameters) is defined in 'orientation.js'
                  */
                 editor.addAction('flipCustom', function(editor, cell) {
                     flipCustom(editor, graph, cell);
@@ -904,7 +900,7 @@
 
                 /*
                  * @jiteshjha
-                 * mirrorCustom(@parameters) is defined in 'rotate.js'
+                 * mirrorCustom(@parameters) is defined in 'orientation.js'
                  */
                  editor.addAction('mirrorCustom', function(editor, cell) {
                     mirrorCustom(editor, graph, cell);

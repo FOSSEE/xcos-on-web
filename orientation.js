@@ -1,7 +1,7 @@
 /*
     @pooja,
-    rotate.js contains the implementation of
-    Image tranformation functions (rotation, flip and mirror)
+    orientation.js contains the implementation of
+    block tranformation functions (rotation, flip and mirror)
 */
 
 function transformBlockImage(graph, cell) {
