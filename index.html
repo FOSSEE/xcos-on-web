@@ -188,12 +188,30 @@
                                 editor.execute('delete');
                             });
 
+                            /*
+                             * @jiteshjha
+                             * To make a selection of mxCells a superblock,
+                             * call groupOrUngroup action defined
+                             * NOTE: Change if condition after data structures
+                             *       for SUPER_f is implemented
+                             */
                             if(cell.value != 'Group') {
                               menu.addItem('Selection to superblock', 'images/superblock.png', function() {
                                   editor.execute('groupOrUngroup');
                               });
                             }
+
+                            /*
+                             * @jiteshjha
+                             * If the selected block is a super block
+                             */
                             else if(cell.value == 'Group') {
+
+                              /*
+                               * @jiteshjha
+                               * If the selected super block is selected,
+                               * enter the super block as a new graph
+                               */
                               if(graph.isCellCollapsed(cell) == true) {
                                 menu.addItem('Expand superblock', null, function() {
                                     editor.execute('enterGroup');
@@ -250,6 +268,10 @@
                         /*
                          * @jiteshjha
                          * Exit superblock
+                         * NOTE: getCurrentRoot() returns the root of the current
+                         * page. If the root of the current page is graph, it is
+                         * always null, else if the root is a super block, it is
+                         * the super block object.
                          */
                          if(graph.getCurrentRoot() != null) {
                            menu.addItem('Exit SuperBlock', '', function() {
@@ -297,6 +319,11 @@
                 var blockModel = details_instance.x.model;
                 var graphics = details_instance.x.graphics;*/
 
+                /*
+                 * @jiteshjha
+                 * NOTE: node = 'Group' will be eliminated once
+                 *       SUPER_f data structure is complete
+                 */
                 var node = 'Group';
         				var group = new mxCell(node, new mxGeometry(), 'SUPER_f');
 
@@ -310,9 +337,22 @@
                 group.blockInstance = createInstanceTag(details_instance);
                 */
 
+                // Set the super block as a vertex
         				group.setVertex(true);
+
+                // The super block shouldn't be connectable by the user
         				group.setConnectable(false);
+
+                /*
+                 * Default grouping for the web app is
+                 * our defined superblock 'group'
+                 */
         				editor.defaultGroup = group;
+
+                /*
+                 * For testing purposes, can be eliminated in production version
+                 * Sets the super border size under expanded version
+                 */
         				editor.groupBorderSize = 100;
 
                 graph.isCellSelectable = function(cell) {
@@ -715,24 +755,6 @@
                     mxEvent.consume(evt);
                 };
 
-                // Returns a shorter label if the cell is collapsed and no
-                // label for expanded groups
-                graph.getLabel = function(cell) {
-                    var tmp = mxGraph.prototype.getLabel.apply(this, arguments); // "supercall"
-                    if (this.isCellLocked(cell)) {
-                        // Returns an empty label but makes sure an HTML
-                        // element is created for the label (for event
-                        // processing wrt the parent label)
-                        return '';
-                    } else if (this.isCellCollapsed(cell)) {
-                        /*var index = tmp.indexOf('</h1>');
-                        if (index > 0) {
-                            tmp = tmp.substring(0, index + 5);
-                        }*/
-                    }
-                    return tmp;
-                }
-
                 // Disables HTML labels for swimlanes to avoid conflict
                 // for the event processing on the child cells. HTML
                 // labels consume events before underlying cells get the
@@ -873,7 +895,10 @@
 
                 /*
                  * @jiteshjha
-                 * Comment here
+                 * addConnectingBlock(@parameters) makes a new block
+                 * with it's related data structure
+                 * NOTE: This function does not create any ports
+                 * Courtesy: Thanks to Chhavi and Nimish for the code and logic
                  */
 
                 function addConnectingBlock(graph, x, y, ifaceFuncName, height, width, relative) {
@@ -889,9 +914,9 @@
                       var node = enc.encode(details);
                       var temp = enc.encode(graph.getDefaultParent());
                       var stylesheet = graph.getStylesheet();
+
                       // From the stylesheet, get the style of the particular block
                       var style = stylesheet.styles[ifaceFuncName];
-
 
                       /*
                        * When a particular block is loaded for the first time,
@@ -953,123 +978,162 @@
         				editor.addAction('groupOrUngroup', function(editor, cell)
         				{
         					cell = cell || editor.graph.getSelectionCell();
-        					if (cell != null && editor.graph.isSwimlane(cell))
-        					{
-        						editor.execute('ungroup', cell);
-        					}
-        					else
-        					{
-                    graph.getModel().beginUpdate();
-                    try {
-                      //console.log(graph.getSelectionCells());
-                      var selectedCells = graph.getSelectionCells();
+                  graph.getModel().beginUpdate();
+                  try {
 
-                      editor.execute('group');
+                    // get all selectedCells
+                    var selectedCells = graph.getSelectionCells();
 
-                      var group = cell.getParent();
+                    // create a super block
+                    editor.execute('group');
 
-                      // Find all the edges among selectedCells
-                      var selectedEdges = [];
-                      for(index in selectedCells) {
-                        var cell = selectedCells[index];
-                        if(cell != null && cell.isEdge() == true) {
-                          selectedEdges.push(cell);
-                        }
+                    // get the super block
+                    var group = cell.getParent();
+
+                    // Store all edges among selectedEdges here
+                    var selectedEdges = [];
+
+                    // Find all the edges among selectedCells
+                    for(index in selectedCells) {
+                      var cell = selectedCells[index];
+
+                      // If the cell is an edge, push it into selectedEdges
+                      if(cell != null && cell.isEdge() == true) {
+                        selectedEdges.push(cell);
                       }
+                    }
 
-                      var edgesNotInSuperBlock = [];
-                      for(index in selectedCells) {
-                        var cell = selectedCells[index];
-                        var childCount = cell.getChildCount();
-                        for(var i = 0; i < childCount; i++) {
-                          var port = cell.getChildAt(i);
-                          var edge = port.getEdgeAt(0);
-                          if(edge != null) {
-                            if($.inArray(edge, selectedEdges) == -1) {
-                              edgesNotInSuperBlock.push(edge);
-                            }
+                    /*
+                     * Find all edges which are not included
+                     * in the superblock
+                     */
+
+                    var edgesNotInSuperBlock = [];
+                    for(index in selectedCells) {
+
+                      // Get the cell
+                      var cell = selectedCells[index];
+
+                      // Get all port count of the cell
+                      var childCount = cell.getChildCount();
+
+                      for(var i = 0; i < childCount; i++) {
+
+                        // Get port
+                        var port = cell.getChildAt(i);
+
+                        // Get the edge associated with the port
+                        var edge = port.getEdgeAt(0);
+
+                        // If there exists an edge,
+                        if(edge != null) {
+
+                          // If thr edge is not in the selectedEdges
+                          // NOTE: Reference : https://api.jquery.com/jQuery.inArray/
+                          if($.inArray(edge, selectedEdges) == -1) {
+
+                            // Push it into edgesNotInSuperBlock
+                            edgesNotInSuperBlock.push(edge);
                           }
                         }
                       }
+                    }
 
-                      var numberOfPorts = edgesNotInSuperBlock.length;
-                      var portList = [];
-                      for(var i = 0; i < numberOfPorts; i++) {
+                    // Number of ports = edges not in the superblock
+                    var numberOfPorts = edgesNotInSuperBlock.length;
+
+                    // Store the ports to be added to the superblock in portList
+                    var portList = [];
+                    for(var i = 0; i < numberOfPorts; i++) {
+
+                      // Get the type of the link
+                      var target = edgesNotInSuperBlock[i].name;
+
+                      // Push into portList according to type of edge
+                      if(target == 'ExplicitLink') {
+                        portList.push('E');
+                      }
+                      else if(target == 'ImplicitLink') {
+                        portList.push('I');
+                      }
+                      else if(target == 'CommandControlLink') {
+                        portList.push('CONTROL');
+                      }
+                    }
+
+                    // Create all ports associated with the superblock
+                    createPorts(editor.graph, group, portList, [], [], []);
+
+                    // Get all the group ports as objects in groupPorts
+                    var groupPorts = [];
+                    for(var i = 0; i < group.getChildCount(); i++) {
+                      var child = group.getChildAt(i);
+
+                      // If the child is a vertex and the child is connectable
+                      if(child.isVertex() == true && child.isConnectable() == true) {
+
+                        // Add the group port
+                        groupPorts.push(child);
+                      }
+                    }
+
+                    // Add all the connectingBlocks
+                    // connectingBlocks are {IN_f, CLKINV_f, INIMPL_f}
+                    var connectingBlocks = [];
+
+                    // If there are edges not in superblock related to super block
+                    if(edgesNotInSuperBlock.length != 0) {
+                      var connectingBlock = null;
+                      var x = 0;
+                      var y = 0;
+
+                      for(var i = 0; i < edgesNotInSuperBlock.length; i++) {
+                        var ifaceFuncName = null;
                         var target = edgesNotInSuperBlock[i].name;
+                        var portType = [];
                         if(target == 'ExplicitLink') {
-                          portList.push('E');
+                          ifaceFuncName = 'IN_f';
+                          portType.push('E');
                         }
                         else if(target == 'ImplicitLink') {
-                          portList.push('I');
+                          ifaceFuncName = 'CLKINV_f';
+                          portType.push('I');
                         }
                         else if(target == 'CommandControlLink') {
-                          portList.push('CONTROL');
+                          ifaceFuncName = 'INIMPL_f';
+                          portType.push('COMMAND');
                         }
-                      }
 
-                      createPorts(editor.graph, group, portList, [], [], []);
+                        // Create the connectingBlock
+                        connectingBlock = addConnectingBlock(graph, x, y, ifaceFuncName, 40, 40, false);
+                        y += 60;
 
-                      var groupPorts = [];
-                      for(var i = 0; i < group.getChildCount(); i++) {
-                        var child = group.getChildAt(i);
-                        if(child.isVertex() == true && child.isConnectable() == true) {
-                          groupPorts.push(child);
+                        if(target == 'CommandControlLink') {
+                          createPorts(graph, connectingBlock, [], [], [], portType);
                         }
-                      }
-
-                      var connectingBlocks = [];
-                      if(edgesNotInSuperBlock.length != 0) {
-                        var connectingBlock = null;
-                        var x = 0;
-                        var y = 0;
-
-                        console.log(group);
-                        for(var i = 0; i < edgesNotInSuperBlock.length; i++) {
-                          var ifaceFuncName = null;
-                          var target = edgesNotInSuperBlock[i].name;
-                          var portType = [];
-                          if(target == 'ExplicitLink') {
-                            ifaceFuncName = 'IN_f';
-                            portType.push('E');
-                          }
-                          else if(target == 'ImplicitLink') {
-                            ifaceFuncName = 'CLKINV_f';
-                            portType.push('I');
-                          }
-                          else if(target == 'CommandControlLink') {
-                            ifaceFuncName = 'INIMPL_f';
-                            portType.push('COMMAND');
-                          }
-                          connectingBlock = addConnectingBlock(graph, x, y, ifaceFuncName, 40, 40, false);
-                          y += 60;
-
-                          if(target == 'CommandControlLink') {
-                            createPorts(graph, connectingBlock, [], [], [], portType);
-                          }
-                          else {
-                            createPorts(graph, connectingBlock, [], [], portType, []);
-                          }
-
-                          graph.addCells([connectingBlock], group);
-                          connectingBlocks.push(connectingBlock);
+                        else {
+                          createPorts(graph, connectingBlock, [], [], portType, []);
                         }
-                      }
 
-                      for(index in edgesNotInSuperBlock) {
-                        var edge = edgesNotInSuperBlock[index];
-                        var previousTarget = edge.target;
-                        var targetPort = groupPorts[index];
-                        graph.getModel().setTerminal(edge, targetPort, false);
-                        var edge = graph.insertEdge(graph.getDefaultParent(), null, '', connectingBlocks[index].getChildAt(0), previousTarget);
+                        graph.addCells([connectingBlock], group);
+                        connectingBlocks.push(connectingBlock);
                       }
-
-                      editor.graph.foldCells(true, true, [group]);
-                      //editor.graph.setCellsLocked([cell]);
                     }
-                    finally {
-                      graph.getModel().endUpdate();
+
+                    for(index in edgesNotInSuperBlock) {
+                      var edge = edgesNotInSuperBlock[index];
+                      var previousTarget = edge.target;
+                      var targetPort = groupPorts[index];
+                      graph.getModel().setTerminal(edge, targetPort, false);
+                      var edge = graph.insertEdge(graph.getDefaultParent(), null, '', connectingBlocks[index].getChildAt(0), previousTarget);
                     }
-        					}
+
+                    // Add the connecting block to the superblock
+                    editor.graph.foldCells(true, true, [group]);
+                  }
+                  finally {
+                    graph.getModel().endUpdate();
+                  }
         				});
 
                 // @jiteshjha, @pooja
