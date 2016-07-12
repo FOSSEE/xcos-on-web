@@ -196,12 +196,7 @@
                             else if(cell.value == 'Group') {
                               if(graph.isCellCollapsed(cell) == true) {
                                 menu.addItem('Expand superblock', null, function() {
-                                    editor.execute('expand');
-                                });
-                              }
-                              else if(graph.isCellCollapsed(cell) == false) {
-                                menu.addItem('Collapse superblock', null, function() {
-                                    editor.execute('collapse');
+                                    editor.execute('enterGroup');
                                 });
                               }
                             }
@@ -276,7 +271,36 @@
         				// The groupBorderSize is used to define the spacing between
         				// the children of a group and the group bounds.
 
-        				var group = new mxCell('Group', new mxGeometry(), 'SUPER_f');
+                /*
+                 * @jiteshjha
+                 * NOTE: Commented code can be uncommented,
+                 *       after SUPER_f data structure is complete
+                 */
+
+                /*
+                var details_instance = new window['SUPER_f']();
+                var details = details_instance.define();
+                var enc = new mxCodec(mxUtils.createXmlDocument());
+                var node = enc.encode(details);
+                var temp = enc.encode(graph.getDefaultParent());
+                node.setAttribute('parent', temp.getAttribute('id'));
+
+                var blockModel = details_instance.x.model;
+                var graphics = details_instance.x.graphics;*/
+
+                var node = 'Group';
+        				var group = new mxCell(node, new mxGeometry(), 'SUPER_f');
+
+                /*
+                 * @jiteshjha
+                 * NOTE: Commented code can be uncommented,
+                 *       after SUPER_f data structure is complete
+                 */
+
+                /*
+                group.blockInstance = createInstanceTag(details_instance);
+                */
+
         				group.setVertex(true);
         				group.setConnectable(false);
         				editor.defaultGroup = group;
@@ -840,6 +864,80 @@
 
                 /*
                  * @jiteshjha
+                 * Comment here
+                 */
+
+                function addConnectingBlock(graph, x, y, ifaceFuncName, height, width, relative) {
+                  var details_instance = null;
+                  var connectingBlock = null;
+                  if (ifaceFuncName != null) {
+
+                      details_instance = new window[ifaceFuncName]();
+                  }
+                  if (details_instance != null) {
+                      var details = details_instance.define();
+                      var enc = new mxCodec(mxUtils.createXmlDocument());
+                      var node = enc.encode(details);
+                      var temp = enc.encode(graph.getDefaultParent());
+                      var stylesheet = graph.getStylesheet();
+                      // From the stylesheet, get the style of the particular block
+                      var style = stylesheet.styles[ifaceFuncName];
+
+
+                      /*
+                       * When a particular block is loaded for the first time,
+                       * the image in the style of the block will be a path to the image.
+                       * Set the label in the style property of the block has a html image,
+                       * and set the image in the style property as null
+                       *
+                       * NOTE: Since the image of any block need not be changed for
+                       *       for every movement of that block, the image must be
+                       *       set only once.
+                       */
+                      if (style != null && style['image'] != null) {
+
+                          // Make label as a image html element
+                          var label = '<img src="' + style['image'] + '" height="80" width="80">';
+
+                          // Set label
+                          style['label'] = label;
+                          style['imagePath'] = style['image'];
+                          // Set image as null
+                          style['image'] = null;
+
+                          // Add the label as a part of node
+                          node.setAttribute('label', label);
+                      }
+
+                      /*
+                       * If a particular block with image tag in it's style property
+                       * has been invoked already, the image tag would be null for any
+                       * successive instances of the same block. Hence, set the label
+                       * from the label tag in style which was set when that blockModel
+                       * was invoked on the first time.
+                       */
+                      if (style != null && style['label'] != null) {
+
+                          // Set label from the label field in the style property
+                          node.setAttribute('label', style['label']);
+                      }
+                      node.setAttribute('parent', temp.getAttribute('id'));
+
+                      var blockModel = details_instance.x.model;
+                      var graphics = details_instance.x.graphics;
+
+
+                      connectingBlock = graph.insertVertex(graph.getDefaultParent(), null, node, x, y, height, width, ifaceFuncName, relative);
+                      // @Chhavi: Additional attribute to store the block's instance
+                      connectingBlock.blockInstance = createInstanceTag(details_instance);
+
+                      connectingBlock.setConnectable(false);
+                  }
+                  return connectingBlock;
+                }
+
+                /*
+                 * @jiteshjha
                  * Defines a new action for deleting or ungrouping
                  * Implements SuperBlock
                  */
@@ -903,10 +1001,18 @@
 
                       var connectingBlocks = [];
                       if(edgesNotInSuperBlock.length != 0) {
-                        var connectingBlock = graph.insertVertex(graph.getDefaultParent(), null, '', 0, 0.45, 40, 40, 'IN_f', true);
+                        var connectingBlock = null;
+                        var x = 0;
+                        var y = 0;
+
+                        console.log(group);
                         for(var i = 0; i < edgesNotInSuperBlock.length; i++) {
+                          var ifaceFuncName = 'IN_f';
+                          connectingBlock = addConnectingBlock(graph, x, y, ifaceFuncName, 40, 40, false);
+                          y += 40;
                           createPorts(graph, connectingBlock, [], [], ['E'], []);
                           graph.addCells([connectingBlock], group);
+                          connectingBlocks.push(connectingBlock);
                         }
                       }
 
@@ -915,10 +1021,10 @@
                         var previousTarget = edge.target;
                         var targetPort = groupPorts[index];
                         graph.getModel().setTerminal(edge, targetPort, false);
-                        var edge = graph.insertEdge(graph.getDefaultParent(), null, '', connectingBlock.getChildAt(index), previousTarget);
+                        var edge = graph.insertEdge(graph.getDefaultParent(), null, '', connectingBlocks[index].getChildAt(0), previousTarget);
                       }
 
-                      editor.graph.foldCells(true, false, [group]);
+                      editor.graph.foldCells(true, true, [group]);
                       //editor.graph.setCellsLocked([cell]);
                     }
                     finally {
@@ -2687,9 +2793,8 @@
 
                     /*
                      * @jiteshjha
+                     * Get the stylesheet for the graph
                      */
-                     
-                    // Get the stylesheet for the graph
                     var stylesheet = graph.getStylesheet();
                     // From the stylesheet, get the style of the particular block
                     var style = stylesheet.styles[name];
