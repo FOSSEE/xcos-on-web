@@ -822,7 +822,6 @@
                 editor.addAction('deleteBlock', function(editor, cell) {
                     graph.getModel().beginUpdate();
                     try {
-
                         // getEdgeId(@edgeObject) finds all the associated edges and split-block, and deletes them
                         function getEdgeId(edgeObject) {
 
@@ -925,6 +924,22 @@
                             // If the cell is a vertex, select the cell
                             else {
                                 var portCount = selectionCells[k].getChildCount();
+                                /*
+                                    Maverick, Adhitya
+                                    switch-case statements to handle the ordering of following blocks.
+                                    The variables window.inBitMap and window.outBitMap are defined in 
+                                    the file 'dependencies.js'.
+                                */
+                                switch(selectionCells[k].value.nodeName){
+                                    case 'ImplicitInBlock': 
+                                    case 'ExplicitInBlock': 
+                                        window.inBitMap = window.inBitMap.replaceAt(parseInt(selectionCells[k].value.getAttribute('ordering'))-1,'0') ; 
+                                        break;
+                                    case 'ImplicitOutBlock':
+                                    case 'ExplicitOutBlock': 
+                                        window.outBitMap = window.outBitMap.replaceAt(parseInt(selectionCells[k].value.getAttribute('ordering'))-1,'0') ; 
+                                        break;
+                                }
                                 cells.push(selectionCells[k]);
                                 for (var i = 0; i < portCount; i++) {
                                     var edgeCount = selectionCells[k].getChildAt(i).getEdgeCount();
@@ -943,7 +958,6 @@
                                 }
                             }
                         }
-
                         graph.removeCells(cells, true);
                     } finally {
                         graph.getModel().endUpdate();
@@ -1239,7 +1253,7 @@
                                     Ports will be automatically handled with the respective constructor calls.
                                 */
                                 if (!(curNodeName.endsWith('Link') || curNodeName.endsWith('Port'))) {
-                                    var ifaceFuncName = cell.interfaceFunctionName;
+                                    var ifaceFuncName = null;
 
                                     /*
                                         Maverick
@@ -1255,13 +1269,21 @@
                                     temporaryMapObject.outputIds = [];
                                     temporaryMapObject.controlIds = [];
                                     temporaryMapObject.commandIds = [];
+                                    
+                                    switch(curNodeName){
+                                        case 'ExplicitInBlock': ifaceFuncName='IN_f'; break;
+                                        case 'ExplicitOutBlock': ifaceFuncName='OUT_f'; break;
+                                        case 'ImplicitInBlock': ifaceFuncName='INIMPL_f'; break;
+                                        case 'ImplicitOutBlock': ifaceFuncName='OUTIMPL_f'; break;
+                                        default: ifaceFuncName=cell.interfaceFunctionName;
+                                    }
 
-
-                                    var details_instance = null;
+                                    var details_instance=null
                                     if (ifaceFuncName != null) {
-
                                         details_instance = new window[ifaceFuncName]();
                                     }
+
+                                    
                                     if (details_instance != null) {
                                         var details = details_instance.define();
                                         var enc = new mxCodec(mxUtils.createXmlDocument());
@@ -1269,8 +1291,10 @@
                                         var temp = enc.encode(parent);
                                         var stylesheet = graph.getStylesheet();
                                         var styleName = currentNode.getAttribute('style');
-                                        if (styleName.indexOf(';') != -1) {
-                                            styleName = styleName.substring(0, styleName.indexOf(';'));
+                                        if(styleName!=null){
+                                            if (styleName.indexOf(';') != -1) {
+                                                styleName = styleName.substring(0, styleName.indexOf(';'));
+                                            }
                                         }
                                         var style = stylesheet.styles[styleName];
 
@@ -2549,7 +2573,6 @@
 
                     // Get the stylesheet for the graph
                     var stylesheet = graph.getStylesheet();
-                    console.log(name);
                     // From the stylesheet, get the style of the particular block
                     var style = stylesheet.styles[name];
 

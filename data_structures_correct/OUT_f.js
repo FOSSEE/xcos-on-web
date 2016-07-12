@@ -41,7 +41,10 @@ function OUT_f () {
 		var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"OUT_f\",sz(1),sz(2));"]);
 		this.x = new standard_define(new ScilabDouble([1,1]),model,exprs,gr_i);
 		this.x.graphics.style = new ScilabString(["OUT_f"]);
-		return new ExplicitOutBlock(this.x);
+
+		this.explicitOutBlock = new ExplicitOutBlock(this.x);
+		this.displayParameter = [this.explicitOutBlock.ordering];
+		return this.explicitOutBlock;
 	}
 	
 	OUT_f.prototype.details = function OUT_f() {

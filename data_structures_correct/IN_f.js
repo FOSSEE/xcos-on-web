@@ -39,7 +39,11 @@ function IN_f () {
 	
 		var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"IN_f\",sz(1),sz(2));"]);
 		this.x = new standard_define(new ScilabDouble([1,1]),model,exprs,gr_i);
-		return new ExplicitInBlock(this.x);
+
+		this.explicitInBlock = new ExplicitInBlock(this.x);
+		this.displayParameter = [this.explicitInBlock.ordering];
+		return this.explicitInBlock;
+		
 	}
 	
 	IN_f.prototype.details = function IN_f() {
