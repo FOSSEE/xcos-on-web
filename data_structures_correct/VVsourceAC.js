@@ -31,11 +31,9 @@ function VVsourceAC() {
         this.x.graphics.out_implicit = new ScilabString(["I"]);
         
         return new BasicBlock(this.x);
-        
     }
 
     VVsourceAC.prototype.details = function VVsourceAC() {
         return this.x;
-
     }
 }
