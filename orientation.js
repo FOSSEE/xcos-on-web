@@ -33,16 +33,17 @@ function transformBlockImage(graph, cell) {
 }
 
 function rotateCustom(editor, graph, cell) {
-  var selectedCell = graph.getSelectionCell();
-  if (selectedCell != null) {
-      var cells = [];
-      cells.push(selectedCell);
+  var selectedCells = graph.getSelectionCells();
+  graph.getModel().beginUpdate();
+  try {
+    for ( var count = 0 ; count < selectedCells.length; count++){
+      var selectedCell = selectedCells[count];
+      if (selectedCell != null) {
+          var cells = [];
+          cells.push(selectedCell);
 
-      for (var i = 0; i < selectedCell.getChildCount(); i++)
-          cells.push(selectedCell.getChildAt(i));
-
-      graph.getModel().beginUpdate();
-      try {
+          for (var i = 0; i < selectedCell.getChildCount(); i++)
+              cells.push(selectedCell.getChildAt(i));
 
           for (var i = 0; i < cells.length; i++) {
               var cell = cells[i];
@@ -179,23 +180,25 @@ function rotateCustom(editor, graph, cell) {
                   }
               }
           }
-      } finally {
-          graph.getModel().endUpdate();
       }
+    }
+  }
+  finally {
+            graph.getModel().endUpdate();
   }
 }
 
 function flipCustom(editor, graph, cell) {
-  var selectedCell = graph.getSelectionCell();
-  if (selectedCell != null) {
-      var cells = [];
-      cells.push(selectedCell);
-
-      for (var i = 0; i < selectedCell.getChildCount(); i++)
-          cells.push(selectedCell.getChildAt(i));
-
-      graph.getModel().beginUpdate();
-      try {
+  var selectedCells = graph.getSelectionCells();
+  graph.getModel().beginUpdate();
+  try {
+    for ( var count = 0 ; count < selectedCells.length; count++){
+      var selectedCell = selectedCells[count];
+      if (selectedCell != null) {
+          var cells = [];
+          cells.push(selectedCell);
+          for (var i = 0; i < selectedCell.getChildCount(); i++)
+              cells.push(selectedCell.getChildAt(i));
           for (var i = 0; i < cells.length; i++) {
               var cell = cells[i];
               if (cell.isVertex() == true) {
@@ -336,25 +339,26 @@ function flipCustom(editor, graph, cell) {
                   }
               }
           }
-      } finally {
-          graph.getModel().endUpdate();
       }
+    }
+  } finally {
+          graph.getModel().endUpdate();
   }
 }
 
 function mirrorCustom(editor, graph, cell) {
-  var selectedCell = graph.getSelectionCell();
+  var selectedCells = graph.getSelectionCells();
+  graph.getModel().beginUpdate();
+  try {
+    for ( var count = 0 ; count < selectedCells.length; count++){
+      var selectedCell = selectedCells[count];
+      if (selectedCell != null) {
+          var cells = [];
 
-  if (selectedCell != null) {
-      var cells = [];
+          cells.push(selectedCell);
 
-      cells.push(selectedCell);
-
-      for (var i = 0; i < selectedCell.getChildCount(); i++)
-          cells.push(selectedCell.getChildAt(i));
-
-      graph.getModel().beginUpdate();
-      try {
+          for (var i = 0; i < selectedCell.getChildCount(); i++)
+              cells.push(selectedCell.getChildAt(i));
           for (var i = 0; i < cells.length; i++) {
               var cell = cells[i];
               if (cell.isVertex() == true) {
@@ -496,8 +500,9 @@ function mirrorCustom(editor, graph, cell) {
                   }
               }
           }
-      } finally {
-          graph.getModel().endUpdate();
       }
+    }
+  } finally {
+          graph.getModel().endUpdate();
   }
 }
