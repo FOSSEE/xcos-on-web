@@ -734,13 +734,15 @@
                                 }
 
                                 var flip = false, mirror = false;
-                                if(cell.style.indexOf('stencilFlipV') == -1){
+                                var style = cell.style;
+                                var styleObject = styleToObject(style);
+                                if(styleObject['stencilFlipV'] == null){
                                     flip = false;
                                 }
                                 else
                                 {
-                                    var x = cell.style.indexOf('stencilFlipV');
-                                    if(cell.style.charAt(x+13) == 0){
+                                    
+                                    if(styleObject['stencilFlipV'] == 0){
                                         flip = false;
                                     }
                                     else{
@@ -748,13 +750,13 @@
                                     }
 
                                 }
-                                if(cell.style.indexOf('stencilFlipH') == -1){
+                                if(styleObject['stencilFlipH'] == null){
                                     mirror = false;
                                 }
                                 else
                                 {
-                                    var x = cell.style.indexOf('stencilFlipH');
-                                    if(cell.style.charAt(x+13) == 0){
+                                   
+                                    if(styleObject['stencilFlipH'] == 0 ){
                                         mirror = false;
                                     }
                                     else{
@@ -762,6 +764,7 @@
                                     }
 
                                 }
+                                style = objectToStyle(styleObject);
                                 var geometry = cell.getGeometry();
                                 text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
                                     'Simulation : ' + cell.value.getAttribute('simulationFunctionName') + "\n" +
@@ -1688,7 +1691,9 @@
             if (style.indexOf(';') == -1) {
                 style = style + ';';
             }
-
+            else if ( style[style.length-1] != ';'){
+            	style = style + ';';
+        	}
             var defaultStyle = style.substring(0, style.indexOf(';'));
             var styleObject = {
                 "default": defaultStyle
