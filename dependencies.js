@@ -1202,7 +1202,7 @@ function _check() {
     }
 }
 
-//Converts string to array of ascii values of characters
+// Converts String to Array of ASCII values
 
 function ascii() {
 
