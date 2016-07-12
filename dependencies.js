@@ -1201,3 +1201,15 @@ function _check() {
         return param;
     }
 }
+
+function ascii() {
+
+    var convertAscii = [];
+
+    for (var i = 0; i < arguments[0].length; i++) {
+        convertAscii.push(arguments[0].charCodeAt(i));
+    }
+
+    return convertAscii;
+}
+
