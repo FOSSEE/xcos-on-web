@@ -1201,3 +1201,17 @@ function _check() {
         return param;
     }
 }
+
+// Converts String to Array of ASCII values
+
+function ascii() {
+
+    var convertAscii = [];
+
+    for (var i = 0; i < arguments[0].length; i++) {
+        convertAscii.push(arguments[0].charCodeAt(i));
+    }
+
+    return convertAscii;
+}
+
