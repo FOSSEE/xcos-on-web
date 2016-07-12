@@ -185,12 +185,39 @@
                                 editor.execute('copy');
                             });
                             menu.addItem('Delete', 'images/delete2.png', function() {
-                                editor.execute('delete');
+                                editor.execute('deleteBlock');
                             });
 
-                            menu.addItem('Selection to superblock', 'images/superblock.png', function() {
-                                // @ToDo: Pooja: Functionality to be put.
-                            });
+                            /*
+                             * @jiteshjha
+                             * To make a selection of mxCells a superblock,
+                             * call groupOrUngroup action defined
+                             * NOTE: Change if condition after data structures
+                             *       for SUPER_f is implemented
+                             */
+                            if(cell.value.getAttribute('style') != 'SUPER_f') {
+                              menu.addItem('Selection to superblock', 'images/superblock.png', function() {
+                                  editor.execute('groupOrUngroup');
+                              });
+                            }
+
+                            /*
+                             * @jiteshjha
+                             * If the selected block is a super block
+                             */
+                            else if(cell.value.getAttribute('style') == 'SUPER_f') {
+
+                              /*
+                               * @jiteshjha
+                               * If the selected super block is selected,
+                               * enter the super block as a new graph
+                               */
+                              if(graph.isCellCollapsed(cell) == true) {
+                                menu.addItem('Expand superblock', null, function() {
+                                    editor.execute('enterGroup');
+                                });
+                              }
+                            }
                             var format = menu.addItem('Format', null, null);
 
                             menu.addItem('Rotate', 'images/rotate.png', function() {
@@ -238,6 +265,19 @@
                             showSetupWindow(graph, diagRoot);
                         });
 
+                        /*
+                         * @jiteshjha
+                         * Exit superblock
+                         * NOTE: getCurrentRoot() returns the root of the current
+                         * page. If the root of the current page is graph, it is
+                         * always null, else if the root is a super block, it is
+                         * the super block object.
+                         */
+                         if(graph.getCurrentRoot() != null) {
+                           menu.addItem('Exit SuperBlock', '', function() {
+                               editor.execute('exitGroup');
+                           });
+                         }
 
                         menu.addItem('Zoom In', 'images/zoom_in.png', function() {
                             editor.execute('zoomIn');
@@ -255,6 +295,50 @@
                 //var config = mxUtils.load('config/editor-commons.xml').getDocumentElement();
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
                 editor.configure(config);
+
+                // Defines the default group to be used for grouping. The
+        				// default group is a field in the mxEditor instance that
+        				// is supposed to be a cell which is cloned for new cells.
+        				// The groupBorderSize is used to define the spacing between
+        				// the children of a group and the group bounds.
+
+                /*
+                 * @jiteshjha
+                 * Create and add data structure to superblock
+                 * Courtesy : Chhavi and Nimish for the code and logic
+                 */
+
+                var details_instance = new window['SUPER_f']();
+                var details = details_instance.define();
+                var enc = new mxCodec(mxUtils.createXmlDocument());
+                var node = enc.encode(details);
+                var temp = enc.encode(graph.getDefaultParent());
+                node.setAttribute('parent', temp.getAttribute('id'));
+
+                var blockModel = details_instance.x.model;
+                var graphics = details_instance.x.graphics;
+
+        				var group = new mxCell(node, new mxGeometry(), 'SUPER_f');
+
+                group.blockInstance = createInstanceTag(details_instance);
+
+                // Set the super block as a vertex
+        				group.setVertex(true);
+
+                // The super block shouldn't be connectable by the user
+        				group.setConnectable(false);
+
+                /*
+                 * Default grouping for the web app is
+                 * our defined superblock 'group'
+                 */
+        				editor.defaultGroup = group;
+
+                /*
+                 * For testing purposes, can be eliminated in production version
+                 * Sets the super border size under expanded version
+                 */
+        				editor.groupBorderSize = 100;
 
                 graph.isCellSelectable = function(cell) {
                     if (cell.isConnectable() == true && cell.isEdge() == false) {
@@ -656,24 +740,6 @@
                     mxEvent.consume(evt);
                 };
 
-                // Returns a shorter label if the cell is collapsed and no
-                // label for expanded groups
-                graph.getLabel = function(cell) {
-                    var tmp = mxGraph.prototype.getLabel.apply(this, arguments); // "supercall"
-                    if (this.isCellLocked(cell)) {
-                        // Returns an empty label but makes sure an HTML
-                        // element is created for the label (for event
-                        // processing wrt the parent label)
-                        return '';
-                    } else if (this.isCellCollapsed(cell)) {
-                        var index = tmp.indexOf('</h1>');
-                        if (index > 0) {
-                            tmp = tmp.substring(0, index + 5);
-                        }
-                    }
-                    return tmp;
-                }
-
                 // Disables HTML labels for swimlanes to avoid conflict
                 // for the event processing on the child cells. HTML
                 // labels consume events before underlying cells get the
@@ -812,6 +878,247 @@
                     button.appendChild(titleName);
                 });
 
+                /*
+                 * @jiteshjha
+                 * addConnectingBlock(@parameters) makes a new block
+                 * with it's related data structure
+                 * NOTE: This function does not create any ports
+                 * Courtesy: Thanks to Chhavi and Nimish for the code and logic
+                 */
+
+                function addConnectingBlock(graph, x, y, ifaceFuncName, height, width, relative) {
+                  var details_instance = null;
+                  var connectingBlock = null;
+                  if (ifaceFuncName != null) {
+                      details_instance = new window[ifaceFuncName]();
+                  }
+                  if (details_instance != null) {
+                      var details = details_instance.define();
+                      var enc = new mxCodec(mxUtils.createXmlDocument());
+                      var node = enc.encode(details);
+                      var temp = enc.encode(graph.getDefaultParent());
+                      var stylesheet = graph.getStylesheet();
+
+                      // From the stylesheet, get the style of the particular block
+                      var style = stylesheet.styles[ifaceFuncName];
+
+                      /*
+                       * When a particular block is loaded for the first time,
+                       * the image in the style of the block will be a path to the image.
+                       * Set the label in the style property of the block has a html image,
+                       * and set the image in the style property as null
+                       *
+                       * NOTE: Since the image of any block need not be changed for
+                       *       for every movement of that block, the image must be
+                       *       set only once.
+                       */
+                      if (style != null && style['image'] != null) {
+
+                          // Make label as a image html element
+                          var label = '<img src="' + style['image'] + '" height="80" width="80">';
+
+                          // Set label
+                          style['label'] = label;
+                          style['imagePath'] = style['image'];
+                          // Set image as null
+                          style['image'] = null;
+
+                          // Add the label as a part of node
+                          node.setAttribute('label', label);
+                      }
+
+                      /*
+                       * If a particular block with image tag in it's style property
+                       * has been invoked already, the image tag would be null for any
+                       * successive instances of the same block. Hence, set the label
+                       * from the label tag in style which was set when that blockModel
+                       * was invoked on the first time.
+                       */
+                      if (style != null && style['label'] != null) {
+
+                          // Set label from the label field in the style property
+                          node.setAttribute('label', style['label']);
+                      }
+                      node.setAttribute('parent', temp.getAttribute('id'));
+
+                      var blockModel = details_instance.x.model;
+                      var graphics = details_instance.x.graphics;
+
+
+                      connectingBlock = graph.insertVertex(graph.getDefaultParent(), null, node, x, y, height, width, ifaceFuncName, relative);
+                      // @Chhavi: Additional attribute to store the block's instance
+                      connectingBlock.blockInstance = createInstanceTag(details_instance);
+
+                      connectingBlock.setConnectable(false);
+                  }
+                  return connectingBlock;
+                }
+
+                /*
+                 * @jiteshjha
+                 * Defines a new action for deleting or ungrouping
+                 * Implements SuperBlock
+                 */
+        				editor.addAction('groupOrUngroup', function(editor, cell)
+        				{
+        					cell = cell || editor.graph.getSelectionCell();
+                  graph.getModel().beginUpdate();
+                  try {
+
+                    // get all selectedCells
+                    var selectedCells = graph.getSelectionCells();
+
+                    // create a super block
+                    editor.execute('group');
+
+                    // get the super block
+                    var group = cell.getParent();
+
+                    // Store all edges among selectedEdges here
+                    var selectedEdges = [];
+
+                    // Find all the edges among selectedCells
+                    for(index in selectedCells) {
+                      var cell = selectedCells[index];
+
+                      // If the cell is an edge, push it into selectedEdges
+                      if(cell != null && cell.isEdge() == true) {
+                        selectedEdges.push(cell);
+                      }
+                    }
+
+                    /*
+                     * Find all edges which are not included
+                     * in the superblock
+                     */
+
+                    var edgesNotInSuperBlock = [];
+                    for(index in selectedCells) {
+
+                      // Get the cell
+                      var cell = selectedCells[index];
+
+                      // Get all port count of the cell
+                      var childCount = cell.getChildCount();
+
+                      for(var i = 0; i < childCount; i++) {
+
+                        // Get port
+                        var port = cell.getChildAt(i);
+
+                        // Get the edge associated with the port
+                        var edge = port.getEdgeAt(0);
+
+                        // If there exists an edge,
+                        if(edge != null) {
+
+                          // If thr edge is not in the selectedEdges
+                          // NOTE: Reference : https://api.jquery.com/jQuery.inArray/
+                          if($.inArray(edge, selectedEdges) == -1) {
+
+                            // Push it into edgesNotInSuperBlock
+                            edgesNotInSuperBlock.push(edge);
+                          }
+                        }
+                      }
+                    }
+
+                    // Number of ports = edges not in the superblock
+                    var numberOfPorts = edgesNotInSuperBlock.length;
+
+                    // Store the ports to be added to the superblock in portList
+                    var portList = [];
+                    for(var i = 0; i < numberOfPorts; i++) {
+
+                      // Get the type of the link
+                      var target = edgesNotInSuperBlock[i].name;
+
+                      // Push into portList according to type of edge
+                      if(target == 'ExplicitLink') {
+                        portList.push('E');
+                      }
+                      else if(target == 'ImplicitLink') {
+                        portList.push('I');
+                      }
+                      else if(target == 'CommandControlLink') {
+                        portList.push('CONTROL');
+                      }
+                    }
+
+                    // Create all ports associated with the superblock
+                    createPorts(editor.graph, group, portList, [], [], []);
+
+                    // Get all the group ports as objects in groupPorts
+                    var groupPorts = [];
+                    for(var i = 0; i < group.getChildCount(); i++) {
+                      var child = group.getChildAt(i);
+
+                      // If the child is a vertex and the child is connectable
+                      if(child.isVertex() == true && child.isConnectable() == true) {
+
+                        // Add the group port
+                        groupPorts.push(child);
+                      }
+                    }
+
+                    // Add all the connectingBlocks
+                    // connectingBlocks are {IN_f, CLKINV_f, INIMPL_f}
+                    var connectingBlocks = [];
+
+                    // If there are edges not in superblock related to super block
+                    if(edgesNotInSuperBlock.length != 0) {
+                      var connectingBlock = null;
+                      var x = 0;
+                      var y = 0;
+
+                      for(var i = 0; i < edgesNotInSuperBlock.length; i++) {
+                        var ifaceFuncName = null;
+                        var target = edgesNotInSuperBlock[i].name;
+                        var portType = [];
+                        if(target == 'ExplicitLink') {
+                          ifaceFuncName = 'IN_f';
+                          portType.push('E');
+                        }
+                        else if(target == 'ImplicitLink') {
+                          ifaceFuncName = 'CLKINV_f';
+                          portType.push('I');
+                        }
+                        else if(target == 'CommandControlLink') {
+                          ifaceFuncName = 'INIMPL_f';
+                          portType.push('COMMAND');
+                        }
+
+                        // Create the connectingBlock
+                        connectingBlock = addConnectingBlock(graph, x, y, ifaceFuncName, 40, 40, false);
+                        y += 60;
+
+                        if(target == 'CommandControlLink') {
+                          createPorts(graph, connectingBlock, [], [], [], portType);
+                        }
+                        else {
+                          createPorts(graph, connectingBlock, [], [], portType, []);
+                        }
+
+                        graph.addCells([connectingBlock], group);
+                        connectingBlocks.push(connectingBlock);
+                      }
+                    }
+
+                    for(index in edgesNotInSuperBlock) {
+                      var edge = edgesNotInSuperBlock[index];
+                      var previousTarget = edge.target;
+                      var targetPort = groupPorts[index];
+                      graph.getModel().setTerminal(edge, targetPort, false);
+                      var edge = graph.insertEdge(graph.getDefaultParent(), null, '', connectingBlocks[index].getChildAt(0), previousTarget);
+                    }
+
+                    // Add the connecting block to the superblock
+                    editor.graph.foldCells(true, true, [group]);
+                  }
+                  finally {
+                    graph.getModel().endUpdate();
+                  }
+        				});
 
                 // @jiteshjha, @pooja
                 /*
@@ -923,38 +1230,62 @@
 
                             // If the cell is a vertex, select the cell
                             else {
-                                var portCount = selectionCells[k].getChildCount();
-                                /*
-                                    Maverick, Adhitya
-                                    switch-case statements to handle the ordering of following blocks.
-                                    The variables window.inBitMap and window.outBitMap are defined in 
-                                    the file 'dependencies.js'.
-                                */
-                                switch(selectionCells[k].value.nodeName){
-                                    case 'ImplicitInBlock': 
-                                    case 'ExplicitInBlock': 
-                                        window.inBitMap = window.inBitMap.replaceAt(parseInt(selectionCells[k].value.getAttribute('ordering'))-1,'0') ; 
-                                        break;
-                                    case 'ImplicitOutBlock':
-                                    case 'ExplicitOutBlock': 
-                                        window.outBitMap = window.outBitMap.replaceAt(parseInt(selectionCells[k].value.getAttribute('ordering'))-1,'0') ; 
-                                        break;
-                                }
-                                cells.push(selectionCells[k]);
-                                for (var i = 0; i < portCount; i++) {
-                                    var edgeCount = selectionCells[k].getChildAt(i).getEdgeCount();
-                                    if (edgeCount != 0) {
+                                // If the cell is a superblock
+                                if(selectionCells[k].value.getAttribute('style') == 'SUPER_f') {
+                                  var childCount = selectionCells[k].getChildCount();
 
-                                        /*
-                                         * For every edge associated with the current selected cell,
-                                         * call the getEdgeId(@parameter), parameter is an edgeObject for deletion
-                                         */
-
-                                        for (var j = 0; j < edgeCount; j++) {
-                                            var edgeObject = selectionCells[k].getChildAt(i).getEdgeAt(j);
-                                            getEdgeId(edgeObject);
-                                        }
+                                  // Push every cell inside the super block for deletion
+                                  for(var z = 0; z < childCount; z++) {
+                                    switch(selectionCells[k].getChildAt(z).value.nodeName){
+                                        case 'ImplicitInBlock':
+                                        case 'ExplicitInBlock':
+                                            window.inBitMap = window.inBitMap.replaceAt(parseInt(selectionCells[k].getChildAt(z).value.getAttribute('ordering'))-1,'0') ;
+                                            break;
+                                        case 'ImplicitOutBlock':
+                                        case 'ExplicitOutBlock':
+                                            window.outBitMap = window.outBitMap.replaceAt(parseInt(selectionCells[k].getChildAt(z).value.getAttribute('ordering'))-1,'0') ;
+                                            break;
                                     }
+                                  }
+
+                                  // Push superblock for deletion
+                                  cells.push(selectionCells[k]);
+                                }
+                                else {
+                                  console.log('insid');
+                                  var portCount = selectionCells[k].getChildCount();
+                                  /*
+                                      Maverick, Adhitya
+                                      switch-case statements to handle the ordering of following blocks.
+                                      The variables window.inBitMap and window.outBitMap are defined in
+                                      the file 'dependencies.js'.
+                                  */
+                                  switch(selectionCells[k].value.nodeName){
+                                      case 'ImplicitInBlock':
+                                      case 'ExplicitInBlock':
+                                          window.inBitMap = window.inBitMap.replaceAt(parseInt(selectionCells[k].value.getAttribute('ordering'))-1,'0') ;
+                                          break;
+                                      case 'ImplicitOutBlock':
+                                      case 'ExplicitOutBlock':
+                                          window.outBitMap = window.outBitMap.replaceAt(parseInt(selectionCells[k].value.getAttribute('ordering'))-1,'0') ;
+                                          break;
+                                  }
+                                  cells.push(selectionCells[k]);
+                                  for (var i = 0; i < portCount; i++) {
+                                      var edgeCount = selectionCells[k].getChildAt(i).getEdgeCount();
+                                      if (edgeCount != 0) {
+
+                                          /*
+                                           * For every edge associated with the current selected cell,
+                                           * call the getEdgeId(@parameter), parameter is an edgeObject for deletion
+                                           */
+
+                                          for (var j = 0; j < edgeCount; j++) {
+                                              var edgeObject = selectionCells[k].getChildAt(i).getEdgeAt(j);
+                                              getEdgeId(edgeObject);
+                                          }
+                                      }
+                                  }
                                 }
                             }
                         }
@@ -1080,17 +1411,17 @@
 
                 /*
                     Maverick
-                    Adding a new button to import an Xcos diagram to our GUI and perform the simulation 
+                    Adding a new button to import an Xcos diagram to our GUI and perform the simulation
                     on the remote server.
                     The flow of control is as follows:
                     The entire XML document is traversed, beginning from the root node.
-                    The document is traversed three times: 
-                    1. All the blocks are appended on the graph. 
+                    The document is traversed three times:
+                    1. All the blocks are appended on the graph.
                     2. All the ports are added to the blocks.
                     3. All the links are made.
 
-                    Old ids are the ones which can be found from the imported file but when the blocks are added 
-                    to the graph mxGraph assigns new ids to them. 
+                    Old ids are the ones which can be found from the imported file but when the blocks are added
+                    to the graph mxGraph assigns new ids to them.
                     Careful mapping needs to be done between these two ids.
                 */
                 editor.addAction('importXcos', function(editor, cell) {
@@ -1123,7 +1454,7 @@
                     button.type = "button";
                     button.name = "submit";
                     node.appendChild(button);
-                    
+
                     /*
                         Maverick
                         Reference: www.htmlgoodies.com
@@ -1172,7 +1503,7 @@
                             var rootNode = doc.documentElement;
                             /*
                                 Maverick
-                                Extracting 'Setup Window' values from Xcos diagram and setting the same 
+                                Extracting 'Setup Window' values from Xcos diagram and setting the same
                                 on the new diagram.
                             */
                             var defaultProperties = setup("get");
@@ -1181,7 +1512,7 @@
                             for (var key in defaultProperties) {
                                 if (defaultProperties.hasOwnProperty(key)) {
                                     propertiesObject[defaultProperties[key][1]] = rootNode.getAttribute(defaultProperties[key][1]);
-                                    /*    
+                                    /*
                                         Maverick
                                         Adding the corresponding attributes to the <XcosDiagram> tag.
                                     */
@@ -1197,7 +1528,7 @@
 
                                 /*
                                     Maverick
-                                    Extracting 'Set Context' values from Xcos diagram and setting the same 
+                                    Extracting 'Set Context' values from Xcos diagram and setting the same
                                     on the new diagram.
                                 */
                                 if (rootNode.nodeName == 'Array') {
@@ -1269,7 +1600,7 @@
                                     temporaryMapObject.outputIds = [];
                                     temporaryMapObject.controlIds = [];
                                     temporaryMapObject.commandIds = [];
-                                    
+
                                     switch(curNodeName){
                                         case 'ExplicitInBlock': ifaceFuncName='IN_f'; break;
                                         case 'ExplicitOutBlock': ifaceFuncName='OUT_f'; break;
@@ -1283,7 +1614,7 @@
                                         details_instance = new window[ifaceFuncName]();
                                     }
 
-                                    
+
                                     if (details_instance != null) {
                                         var details = details_instance.define();
                                         var enc = new mxCodec(mxUtils.createXmlDocument());
@@ -1431,9 +1762,9 @@
 
                             /*
                                 Maverick
-                                Connecting the links. 
+                                Connecting the links.
                             */
-                            
+
                             currentNode = rootNode.firstChild;
                             while (currentNode != null) {
                                 var curNodeName = currentNode.nodeName;
@@ -2571,7 +2902,10 @@
                     var node = enc.encode(details);
                     var temp = enc.encode(parent);
 
-                    // Get the stylesheet for the graph
+                    /*
+                     * @jiteshjha
+                     * Get the stylesheet for the graph
+                     */
                     var stylesheet = graph.getStylesheet();
                     // From the stylesheet, get the style of the particular block
                     var style = stylesheet.styles[name];
@@ -2691,8 +3025,8 @@
         // Create ports
         /*
             Maverick
-            Modified the createPorts funtion so that it can be used while creating ports from 
-            a given Xcos diagram. 
+            Modified the createPorts funtion so that it can be used while creating ports from
+            a given Xcos diagram.
             New parameters are the parentObj where the port is supposed to be added and a dictionary
             object which contains the mapping between the newly assigned Ids and imported Ids.
         */
