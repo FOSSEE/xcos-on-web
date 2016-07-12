@@ -192,22 +192,22 @@
                             menu.addItem('Selection to superblock', 'images/superblock.png', function() {
                                 // @ToDo: Functionality to be put.
                             });
-                            var format = menu.addItem('Format', null, null);
+                            var formatMenu = menu.addItem('Format', null, null);
                             menu.addItem('Rotate', 'images/rotate.png', function() {
                                 editor.execute('rotateCustom');
-                            }, format);
+                            }, formatMenu);
                             menu.addItem('Flip', 'images/flip.png', function() {
                                 editor.execute('flipCustom');
-                            }, format);
+                            }, formatMenu);
                             menu.addItem('Mirror', 'images/mirror.png', function() {
                                 editor.execute('mirrorCustom');
-                            }, format);
+                            }, formatMenu);
                             menu.addItem('Border Color', 'images/draw-brush.png', function() {
                                 showColorWheel(graph, cell, 'vertexStrokeColor');
-                            }, format);
+                            }, formatMenu);
                             menu.addItem('Fill Color', 'images/edit.png', function() {
                                 showColorWheel(graph, cell, 'vertexFillColor');
-                            }, format);
+                            }, formatMenu);
                             menu.addItem('Details', null, function() {
                                 // @ToDo: Functionality to be put.
                             });
