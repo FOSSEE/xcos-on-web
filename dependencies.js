@@ -1202,6 +1202,8 @@ function _check() {
     }
 }
 
+//Converts string to array of ascii values of characters
+
 function ascii() {
 
     var convertAscii = [];
