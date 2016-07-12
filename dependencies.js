@@ -1208,10 +1208,12 @@ function SuperBlock() {
         this.blockType = getData(options.model.blocktype)[0];
         this.connectable = options.connectable; // Not Known
         var dep_ut = getData(options.model.dep_ut);
-        if (dep_ut[0] == "true")
+        if (dep_ut[0] == "true") {
             this.dependsOnU = "1";
-        if (dep_ut[1] == "true")
+        }
+        if (dep_ut[1] == "true") {
             this.dependsOnT = "1";
+        }
         this.id = options.id;
         this.interfaceFunctionName = arguments.callee.caller.name;
         this.ordering = options.ordering;
