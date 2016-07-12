@@ -710,56 +710,47 @@
                                 var inputPort, outputPort, controlPort, commandPort;
                                 if (cellvar.model.in.height == null) {
                                     inputPort = 0;
-                                }
-                                else {
+                                } else {
                                     inputPort = cellvar.model.in.height;
                                 }
                                 if (cellvar.model.out.height == null) {
                                     outputPort = 0;
-                                }
-                                else {
+                                } else {
                                     outputPort = cellvar.model.out.height;
                                 }
                                 if (cellvar.model.evtin.height == null) {
                                     controlPort = 0;
-                                }
-                                else {
+                                } else {
                                     controlPort = cellvar.model.evtin.height;
                                 }
                                 if (cellvar.model.evtout.height == null) {
                                     commandPort = 0;
-                                }
-                                else {
+                                } else {
                                     commandPort = cellvar.model.evtout.height;
                                 }
 
-                                var flip = false, mirror = false;
+                                var flip = false,
+                                    mirror = false;
                                 var style = cell.style;
                                 var styleObject = styleToObject(style);
-                                if(styleObject['stencilFlipV'] == null){
+                                if (styleObject['stencilFlipV'] == null) {
                                     flip = false;
-                                }
-                                else
-                                {
-                                    
-                                    if(styleObject['stencilFlipV'] == 0){
+                                } else {
+
+                                    if (styleObject['stencilFlipV'] == 0) {
                                         flip = false;
-                                    }
-                                    else{
+                                    } else {
                                         flip = true;
                                     }
 
                                 }
-                                if(styleObject['stencilFlipH'] == null){
+                                if (styleObject['stencilFlipH'] == null) {
                                     mirror = false;
-                                }
-                                else
-                                {
-                                   
-                                    if(styleObject['stencilFlipH'] == 0 ){
+                                } else {
+
+                                    if (styleObject['stencilFlipH'] == 0) {
                                         mirror = false;
-                                    }
-                                    else{
+                                    } else {
                                         mirror = true;
                                     }
 
@@ -794,12 +785,12 @@
 
                     if (mxUtils.isNode(cell.value)) {
                         var stylesheet = graph.getStylesheet();
-						var attribute = cell.value.getAttribute('style');
-                        if(attribute == null){
+                        var attribute = cell.value.getAttribute('style');
+                        if (attribute == null) {
                             attribute = cell.value.getAttribute('interfaceFunctionName');
                         }
                         var style = stylesheet.styles[attribute];
-						var displayedLabel = style['displayedLabel'];
+                        var displayedLabel = style['displayedLabel'];
                         if (displayedLabel != null) {
                             var displayParameter = cell.blockInstance.instance.displayParameter;
                             for (i in displayParameter) {
@@ -874,7 +865,7 @@
                  * @jiteshjha, @pooja
                  * mirrorCustom(@parameters) is defined in 'orientation.js'
                  */
-                 editor.addAction('mirrorCustom', function(editor, cell) {
+                editor.addAction('mirrorCustom', function(editor, cell) {
                     mirrorCustom(editor, graph, cell);
                 });
 
@@ -1174,7 +1165,7 @@
                     button.type = "button";
                     button.name = "submit";
                     node.appendChild(button);
-                    
+
                     /*
                         Maverick
                         Reference: www.htmlgoodies.com
@@ -1474,7 +1465,7 @@
                                 Maverick
                                 Connecting the links. 
                             */
-                            
+
                             currentNode = rootNode.firstChild;
                             while (currentNode != null) {
                                 var curNodeName = currentNode.nodeName;
@@ -1688,12 +1679,10 @@
         */
 
         function styleToObject(style) {
-            if (style.indexOf(';') == -1) {
+            //To add semicolon at the end if it isn't already present.
+            if (style[style.length - 1] != ';') {
                 style = style + ';';
             }
-            else if ( style[style.length-1] != ';'){
-            	style = style + ';';
-        	}
             var defaultStyle = style.substring(0, style.indexOf(';'));
             var styleObject = {
                 "default": defaultStyle
@@ -2474,7 +2463,7 @@
                 var selectedCells = graph.getSelectionCells();
                 graph.getModel().beginUpdate();
                 try {
-                    for ( var count = 0 ; count < selectedCells.length; count++){
+                    for (var count = 0; count < selectedCells.length; count++) {
                         var selectedCell = selectedCells[count];
                         var input = document.getElementById('color').value;
                         var style = graph.getModel().getStyle(selectedCell);
@@ -2500,8 +2489,7 @@
                             graph.getModel().setStyle(selectedCell, style);
                         }
                     }
-                }
-                finally {
+                } finally {
                     graph.getModel().endUpdate();
                 }
 
