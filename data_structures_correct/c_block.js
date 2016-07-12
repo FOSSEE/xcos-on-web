@@ -1,7 +1,7 @@
 function c_block() {
 
     c_block.prototype.define = function c_block() {
-        
+
         this.in1 = 1;
         this.out = 1;
         this.rpar = [];
@@ -28,7 +28,6 @@ function c_block() {
         return new BasicBlock(this.x);
     }
     c_block.prototype.details = function c_block() {
-        
         return this.x;
     }
 }

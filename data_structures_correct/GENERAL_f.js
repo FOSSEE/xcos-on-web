@@ -22,7 +22,7 @@ function GENERAL_f() {
         this.x = new standard_define(new ScilabDouble([3, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
     }
-    
+
     GENERAL_f.prototype.details = function GENERAL_f() {
         return this.x;
     }

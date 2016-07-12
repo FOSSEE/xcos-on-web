@@ -1,12 +1,11 @@
 function CANIMXY3D() {
 
     CANIMXY3D.prototype.define = function CANIMXY3D() {
-
-        this.win = -1;
-        this.N = 2;
-        this.clrs = [[1],[2],[3],[4],[5],[6],[7],[13]];
-        this.siz = [[1],[1],[1],[1],[1],[1],[1],[1]];
-        this.wpos = [[-1],[-1]];
+		this.win = -1;
+		this.N = 2;
+		this.clrs = [[1],[2],[3],[4],[5],[6],[7],[13]];
+		this.siz = [[1],[1],[1],[1],[1],[1],[1],[1]];
+		this.wpos = [[-1],[-1]];
 		this.wdim = [[-1],[-1]];
 		this.param3ds = [[50],[280]];
 		this.vec_x = [[-15],[15]];
@@ -34,7 +33,6 @@ function CANIMXY3D() {
     }
 
     CANIMXY3D.prototype.details = function CANIMXY3D() {
-
         return this.x;
     }
 

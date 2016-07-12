@@ -16,10 +16,11 @@
     <script type="text/javascript" src="details.js"></script>
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="combined.js"></script>
-    <script type="text/javascript">
 
+    <script type="text/javascript">
         // Stores edgeState for every recently created edge in updateFixedTerminalPoint() function
         var edgeState = {};
+
         function main(container, outline, toolbar, sidebar, status) {
             // Checks if the browser is supported
             if (!mxClient.isBrowserSupported()) {
@@ -76,7 +77,6 @@
                     diagram.
                 */
                 var diagRoot = new XcosDiagram(null, model, null);
-
                 graph.setPanning(true);
                 graph.setConnectable(true);
                 graph.setConnectableEdges(true);
@@ -103,8 +103,8 @@
 
                 /*
                   @jiteshjha, @pooja
-        				  Overrides mxGraphModel.getStyle to return a specific style
-        				  for edges that reflects their target terminal.
+                          Overrides mxGraphModel.getStyle to return a specific style
+                          for edges that reflects their target terminal.
                 */
 
                 graph.model.getStyle = function(cell) {
@@ -256,21 +256,19 @@
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
                 editor.configure(config);
 
-                graph.isCellSelectable = function(cell)
-                {
-                  if(cell.isConnectable() == true && cell.isEdge() == false) {
-                    return false;
-                  }
-                  return true;
+                graph.isCellSelectable = function(cell) {
+                    if (cell.isConnectable() == true && cell.isEdge() == false) {
+                        return false;
+                    }
+                    return true;
                 };
 
                 graph.resizeCell = function(cell, bounds, recurse) {
-                  if(cell.getStyle() == 'Split') {
-                    return null;
-                  }
-                  else {
-                    return mxGraph.prototype.resizeCell.apply(this, arguments);
-                  }
+                    if (cell.getStyle() == 'Split') {
+                        return null;
+                    } else {
+                        return mxGraph.prototype.resizeCell.apply(this, arguments);
+                    }
                 }
 
                 /*
@@ -283,382 +281,353 @@
                 */
                 graph.addEdge = function(edge, parent, source, target, index) {
 
-                  if(source.isEdge() == true && target.isEdge() == true) {
-                    alert("Illegal connection! - Link to link connection");
-                    return null;
-                  }
-
-                  // If the edge is legit, return the edge.
-                  if(source.isEdge() == true) {
-                    graph.getModel().beginUpdate();
-                    try
-                    {
-                      var edgeSource = source;
-
-                      // While the source of the edge is an edge, find the final port
-                      while (edgeSource.isEdge() == true) {
-                          edgeSource = edgeSource.source;
-                      }
-
-                      // If the edge violates any of the port constraints, don't create the edge
-                      if(edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
-                        alert("Explicit data output port must be connected to explicit data input port");
+                    if (source.isEdge() == true && target.isEdge() == true) {
+                        alert("Illegal connection! - Link to link connection");
                         return null;
-                      }
-                      else if(edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
-                        alert("Explicit data input port must be connected to explicit data output port");
-                        return null;
-                      }
-                      else if(edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
-                        alert("Implicit data output port must be connected to implicit data input port");
-                        return null;
-                      }
-                      else if(edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
-                        alert("Implicit data input port must be connected to implicit data output port");
-                        return null;
-                      }
-                      else if(edgeSource.value == "CommandPort" && target.value != "ControlPort") {
-                        alert("Command port must be connected to control port");
-                        return null;
-                      }
-                      else if(edgeSource.value == "ControlPort" && target.value != "CommandPort") {
-                        alert("Control port must be connected to command port");
-                        return null;
-                      }
-
-                      // Create the splitBlock
-                      // (x-5, y-5.5) is the offset to correct the position of split-block
-                      var cell = graph.insertVertex(graph.getDefaultParent(), null, '', source.sourcePoint.x-5, source.sourcePoint.y-5.5, 10, 10,'Split', false);
-
-
-
-                      // Get the source state
-                      var sourceState = graph.view.getState(source);
-                      var waypoints = source.waypoints;
-                      var waypoints1 = [];
-
-                      // Add the absolute points for source edge to waypoints variable
-                      for(i in sourceState.absolutePoints) {
-                        waypoints1.push(sourceState.absolutePoints[i]);
-                      }
-
-                      // Remove source and target points
-                      waypoints1.shift();
-                      waypoints1.pop();
-
-                      // Store the waypoints to the source edge
-                      waypoints = waypoints1;
-
-                      // Find the index in the waypoints nearest to the split-block
-                      var seg = mxUtils.findNearestSegment(sourceState, source.sourcePoint.x, source.sourcePoint.y);
-                      var sourceTarget = source.target;
-
-                      // Set the type of ports for split-block according to type of source edge
-                      if (edgeSource.value == 'ExplicitOutputPort') {
-                        createPorts(graph, cell, ['E'], [], ['E'], ['E']);
-                      }
-                      else if (edgeSource.value == 'ImplicitOutputPort') {
-                        createPorts(graph, cell, ['I'], [], ['I', 'I'], []);
-                      }
-                      else {
-                        createPorts(graph, cell, ['CONTROL'], [], ['COMMAND', 'COMMAND'], []);
-                      }
-
-                      // Source edge is replaced with first edge and futureSource edges
-                      cell.name = 'SPLIT_f';
-
-                      // Hide all the ports of a split-block
-                      cell.getChildAt(0).setVisible(false);
-                      cell.getChildAt(1).setVisible(false);
-                      cell.getChildAt(2).setVisible(false);
-
-                      // Remove the current source
-                      graph.removeCells([source], true);
-
-                      /*
-                       * If there are any waypoints, divide them for the two newly created edges.
-                       * The two newly created edges are inherited from the source edge
-                       */
-                      if(waypoints != null) {
-                        var waypoints1 = [];
-                        for(var i = 0; i < seg; i++) {
-                          waypoints1.push(waypoints[i]);
-                        }
-
-                        var waypoints2 = [];
-                        for(var i = seg; i < waypoints.length; i++) {
-                          waypoints2.push(waypoints[i]);
-                        }
-                      }
-
-                      // Find the waypoints of the current edge, and set the waypoints for the new thirdEdge
-                      var waypoints3 = edgeState.absolutePoints;
-                      if(waypoints3 != null && waypoints3.length > 1) {
-                        // Remove last absolute point
-                        waypoints3.pop();
-                      }
-
-                      // Create three edges associated with the split-block
-                      var firstEdge = createEdgeObject(graph, cell.getChildAt(1), sourceTarget, waypoints2);
-                      var thirdEdge = createEdgeObject(graph, cell.getChildAt(2), target, waypoints3);
-                      var futureSource = createEdgeObject(graph, source.source, cell.getChildAt(0), waypoints1);
-
-                      // Set the newly made futureSource as the source
-                      source = futureSource;
-
-                      // Connectable for the ports and the split-block should be false
-                      cell.getChildAt(0).setConnectable(false);
-                      cell.getChildAt(1).setConnectable(false);
-                      cell.getChildAt(2).setConnectable(false);
-                      cell.setConnectable(false);
-
-                      // Get the parent of the splitBlock
-                      var parent = graph.model.getParent(cell);
-
-                      graph.model.beginUpdate();
-                      try {
-                        /*
-                         * Adds the split-block to the parent at the last index
-                         * Enables split-block to appear over it's associated edges
-                         */
-                        graph.model.add(parent, cell, graph.model.getChildCount(parent) - 1);
-                      }
-                      finally {
-                        graph.model.endUpdate();
-                      }
-
-                      graph.refresh();
-                    }
-                    finally
-                    {
-                      graph.getModel().endUpdate();
                     }
 
-                    /*
-                     * Remove the current edge, as we have already created
-                     * thirdEdge as it's replacement, to enable waypoints.
-                     */
-                    return null;
-                  }
-
-                  // If the edge is legit, return the edge.
-                  if(target.isEdge() == true) {
-                    graph.getModel().beginUpdate();
-                    try
-                    {
-                      var edgeSource = target;
-
-                      // While the source of the edge is an edge, find the final port
-                      while (edgeSource.isEdge() == true) {
-                          edgeSource = edgeSource.source;
-                      }
-
-                      // If the edge violates any of the port constraints, don't create the edge
-                      if(source.value == "ExplicitOutputPort" && edgeSource.value != "ExplicitInputPort") {
-                        alert("Explicit data output port must be connected to explicit data input port");
-                        return null;
-                      }
-                      else if(source.value == "ExplicitInputPort" && edgeSource.value != "ExplicitOutputPort") {
-                        alert("Explicit data input port must be connected to explicit data output port");
-                        return null;
-                      }
-                      else if(source.value == "ImplicitOutputPort" && edgeSource.value != "ImplicitInputPort") {
-                        alert("Implicit data output port must be connected to implicit data input port");
-                        return null;
-                      }
-                      else if(source.value == "ImplicitInputPort" && edgeSource.value != "ImplicitOutputPort") {
-                        alert("Implicit data input port must be connected to implicit data output port");
-                        return null;
-                      }
-                      else if(source.value == "CommandPort" && edgeSource.value != "ControlPort") {
-                        alert("Command port must be connected to control port");
-                        return null;
-                      }
-                      else if(source.value == "ControlPort" && edgeSource.value != "CommandPort") {
-                        alert("Control port must be connected to command port");
-                        return null;
-                      }
-
-                      // Create the splitBlock
-                      // (x-5, y-5.5) is the offset to correct the position of split-block
-                      var cell = graph.insertVertex(graph.getDefaultParent(), null, '', target.sourcePoint.x-5, target.sourcePoint.y-5, 10, 10,'Split', false);
-
-                      // Get the source state
-                      var sourceState = graph.view.getState(target);
-                      var waypoints = target.waypoints;
-                      var waypoints1 = [];
-
-                      // Add the absolute points for source edge to waypoints variable
-                      for(i in sourceState.absolutePoints) {
-                        waypoints1.push(sourceState.absolutePoints[i]);
-                      }
-                      waypoints1.shift();
-                      waypoints1.pop();
-                      waypoints = waypoints1;
-
-                      // Find the index in the waypoints nearest to the split-block
-                      var seg = mxUtils.findNearestSegment(sourceState, target.sourcePoint.x, target.sourcePoint.y);
-                      var sourceTarget = target.target;
-
-                      if (edgeSource.value == 'ExplicitOutputPort') {
-                        createPorts(graph, cell, ['E'], [], ['E'], ['E']);
-
-                      }
-                      else if (edgeSource.value == 'ImplicitOutputPort') {
-                        createPorts(graph, cell, ['I'], [], ['I', 'I'], []);
-                      }
-                      else {
-                        createPorts(graph, cell, ['CONTROL'], [], ['COMMAND', 'COMMAND'], []);
-                      }
-
-                      // Source edge is replaced with first edge and futureSource edges
-                      cell.name = 'SPLIT_f';
-
-                      // Hide all the ports of a split-block
-                      cell.getChildAt(0).setVisible(false);
-                      cell.getChildAt(1).setVisible(false);
-                      cell.getChildAt(2).setVisible(false);
-
-                      // Remove the current source
-                      graph.removeCells([target], true);
-
-                      /*
-                       * If there are any waypoints, divide them for the two newly created edges.
-                       * The two newly created edges are inherited from the source edge
-                       */
-                      if(waypoints != null)  {
-                        var waypoints1 = [];
-                        for(var i = 0; i < seg; i++) {
-                          waypoints1.push(waypoints[i]);
-                        }
-
-                        var waypoints2 = [];
-                        for(var i = seg; i < waypoints.length; i++) {
-                          waypoints2.push(waypoints[i]);
-                        }
-                      }
-
-                      // Find the waypoints of the current edge, and set the waypoints for the new thirdEdge
-                      var waypoints3 = edgeState.absolutePoints;
-                      if(waypoints3 != null && waypoints3.length > 1) {
-                        waypoints3.pop();
-                      }
-                      waypoints3.reverse();
-
-                      // Create three edges associated with the split-block
-                      var firstEdge = createEdgeObject(graph, cell.getChildAt(1), sourceTarget, waypoints2);
-                      var thirdEdge = createEdgeObject(graph, cell.getChildAt(2), source, waypoints3);
-                      var futureSource = createEdgeObject(graph, target.source, cell.getChildAt(0), waypoints1);
-
-                      // Set the newly made futureSource as the source
-                      target = futureSource;
-
-                      // Connectable for the ports and the split-block should be false
-                      cell.getChildAt(0).setConnectable(false);
-                      cell.getChildAt(1).setConnectable(false);
-                      cell.getChildAt(2).setConnectable(false);
-                      cell.setConnectable(false);
-
-                      // Get the parent of the splitBlock
-                      var parent = graph.model.getParent(cell);
-
-                      graph.model.beginUpdate();
-                      try {
-                        /*
-                         * Adds the split-block to the parent at the last index
-                         * Enables split-block to appear over it's associated edges
-                         */
-                        graph.model.add(parent, cell, graph.model.getChildCount(parent) - 1);
-                      }
-                      finally {
-                        graph.model.endUpdate();
-                      }
-
-                      graph.refresh();
-                    }
-                    finally
-                    {
-                      graph.getModel().endUpdate();
-                    }
-
-                    /*
-                     * Remove the current edge, as we have already created
-                     * thirdEdge as it's replacement, to enable waypoints.
-                     */
-                    return null;
-                  }
-
-                  // If the newly created edge is related to a splitBlock, make the edge.
-                  if(source.parent.name == 'SPLIT_f' || target.parent.name == 'SPLIT_f') {
-                    return mxGraph.prototype.addEdge.apply(this, arguments);
-                  }
-
-                  var edgeSource = source;
-
-                  // If the source of the edge is also an edge, find the port.
-                  while (edgeSource.isEdge() == true) {
-                      edgeSource = edgeSource.source;
-                  }
-
-                  // For port-to-port edges with port constraint violations, don't create that edge
-                  if(source.getEdgeCount() > 0 || target.getEdgeCount() > 0) {
-                    alert("Port is already connected, please select an please select an unconnected port or a valid link");
-                  }
-                  else if(edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
-                    alert("Explicit data output port must be connected to explicit data input port");
-                  }
-                  else if(edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
-                    alert("Explicit data input port must be connected to explicit data output port");
-                  }
-                  else if(edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
-                    alert("Implicit data output port must be connected to implicit data input port");
-                  }
-                  else if(edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
-                    alert("Implicit data input port must be connected to implicit data output port");
-                  }
-                  else if(edgeSource.value == "CommandPort" && target.value != "ControlPort") {
-                    alert("Command port must be connected to control port");
-                  }
-                  else if(edgeSource.value == "ControlPort" && target.value != "CommandPort") {
-                    alert("Control port must be connected to command port");
-                  }
-                  else {
-
-                    /*
-                     * For reverse edges, (that is, edges from input port to outport) :
-                     * If the source is input port, and target is an output port
-                     * NOTE: Manipulation of source object and target object
-                     *       with respect to current edge is not possible,
-                     *       as mxGraph.prototype.addEdge(@parameters) function is
-                     *       called just before the creation of the edge.
-                     *       Hence, the following code creates a identical new edge
-                     *       to replace the current edge.
-                     */
-
-                    if((source.value.indexOf('Input') != -1 && target.value.indexOf('Output') != -1)
-                    || (target.value == 'CommandPort' && source.value == 'ControlPort')) {
-
-                      // Get points for the current edge from the global edgeState object
-                      var waypoints = edgeState.absolutePoints;
-
-                      // Reverse waypoint array
-                      waypoints.reverse();
-
-                      // Create a new edge
-                      var newEdge = createEdgeObject(graph, target, source, waypoints);
-
-                      // Return null for the current edge,
-
-                      /*
-                       * Return null for the current edge,
-                       * since we have created a new edge above to replace it
-                       */
-                      return null;
-                    }
                     // If the edge is legit, return the edge.
-                    return mxGraph.prototype.addEdge.apply(this, arguments);
-                  }
-                  return null;
+                    if (source.isEdge() == true) {
+                        graph.getModel().beginUpdate();
+                        try {
+                            var edgeSource = source;
+
+                            // While the source of the edge is an edge, find the final port
+                            while (edgeSource.isEdge() == true) {
+                                edgeSource = edgeSource.source;
+                            }
+
+                            // If the edge violates any of the port constraints, don't create the edge
+                            if (edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
+                                alert("Explicit data output port must be connected to explicit data input port");
+                                return null;
+                            } else if (edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
+                                alert("Explicit data input port must be connected to explicit data output port");
+                                return null;
+                            } else if (edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
+                                alert("Implicit data output port must be connected to implicit data input port");
+                                return null;
+                            } else if (edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
+                                alert("Implicit data input port must be connected to implicit data output port");
+                                return null;
+                            } else if (edgeSource.value == "CommandPort" && target.value != "ControlPort") {
+                                alert("Command port must be connected to control port");
+                                return null;
+                            } else if (edgeSource.value == "ControlPort" && target.value != "CommandPort") {
+                                alert("Control port must be connected to command port");
+                                return null;
+                            }
+
+                            // Create the splitBlock
+                            // (x-5, y-5.5) is the offset to correct the position of split-block
+                            var cell = graph.insertVertex(graph.getDefaultParent(), null, '', source.sourcePoint.x - 5, source.sourcePoint.y - 5.5, 10, 10, 'Split', false);
+
+
+
+                            // Get the source state
+                            var sourceState = graph.view.getState(source);
+                            var waypoints = source.waypoints;
+                            var waypoints1 = [];
+
+                            // Add the absolute points for source edge to waypoints variable
+                            for (i in sourceState.absolutePoints) {
+                                waypoints1.push(sourceState.absolutePoints[i]);
+                            }
+
+                            // Remove source and target points
+                            waypoints1.shift();
+                            waypoints1.pop();
+
+                            // Store the waypoints to the source edge
+                            waypoints = waypoints1;
+
+                            // Find the index in the waypoints nearest to the split-block
+                            var seg = mxUtils.findNearestSegment(sourceState, source.sourcePoint.x, source.sourcePoint.y);
+                            var sourceTarget = source.target;
+
+                            // Set the type of ports for split-block according to type of source edge
+                            if (edgeSource.value == 'ExplicitOutputPort') {
+                                createPorts(graph, cell, ['E'], [], ['E'], ['E']);
+                            } else if (edgeSource.value == 'ImplicitOutputPort') {
+                                createPorts(graph, cell, ['I'], [], ['I', 'I'], []);
+                            } else {
+                                createPorts(graph, cell, ['CONTROL'], [], ['COMMAND', 'COMMAND'], []);
+                            }
+
+                            // Source edge is replaced with first edge and futureSource edges
+                            cell.name = 'SPLIT_f';
+
+                            // Hide all the ports of a split-block
+                            cell.getChildAt(0).setVisible(false);
+                            cell.getChildAt(1).setVisible(false);
+                            cell.getChildAt(2).setVisible(false);
+
+                            // Remove the current source
+                            graph.removeCells([source], true);
+
+                            /*
+                             * If there are any waypoints, divide them for the two newly created edges.
+                             * The two newly created edges are inherited from the source edge
+                             */
+                            if (waypoints != null) {
+                                var waypoints1 = [];
+                                for (var i = 0; i < seg; i++) {
+                                    waypoints1.push(waypoints[i]);
+                                }
+
+                                var waypoints2 = [];
+                                for (var i = seg; i < waypoints.length; i++) {
+                                    waypoints2.push(waypoints[i]);
+                                }
+                            }
+
+                            // Find the waypoints of the current edge, and set the waypoints for the new thirdEdge
+                            var waypoints3 = edgeState.absolutePoints;
+                            if (waypoints3 != null && waypoints3.length > 1) {
+                                // Remove last absolute point
+                                waypoints3.pop();
+                            }
+
+                            // Create three edges associated with the split-block
+                            var firstEdge = createEdgeObject(graph, cell.getChildAt(1), sourceTarget, waypoints2);
+                            var thirdEdge = createEdgeObject(graph, cell.getChildAt(2), target, waypoints3);
+                            var futureSource = createEdgeObject(graph, source.source, cell.getChildAt(0), waypoints1);
+
+                            // Set the newly made futureSource as the source
+                            source = futureSource;
+
+                            // Connectable for the ports and the split-block should be false
+                            cell.getChildAt(0).setConnectable(false);
+                            cell.getChildAt(1).setConnectable(false);
+                            cell.getChildAt(2).setConnectable(false);
+                            cell.setConnectable(false);
+
+                            // Get the parent of the splitBlock
+                            var parent = graph.model.getParent(cell);
+
+                            graph.model.beginUpdate();
+                            try {
+                                /*
+                                 * Adds the split-block to the parent at the last index
+                                 * Enables split-block to appear over it's associated edges
+                                 */
+                                graph.model.add(parent, cell, graph.model.getChildCount(parent) - 1);
+                            } finally {
+                                graph.model.endUpdate();
+                            }
+
+                            graph.refresh();
+                        } finally {
+                            graph.getModel().endUpdate();
+                        }
+
+                        /*
+                         * Remove the current edge, as we have already created
+                         * thirdEdge as it's replacement, to enable waypoints.
+                         */
+                        return null;
+                    }
+
+                    // If the edge is legit, return the edge.
+                    if (target.isEdge() == true) {
+                        graph.getModel().beginUpdate();
+                        try {
+                            var edgeSource = target;
+
+                            // While the source of the edge is an edge, find the final port
+                            while (edgeSource.isEdge() == true) {
+                                edgeSource = edgeSource.source;
+                            }
+
+                            // If the edge violates any of the port constraints, don't create the edge
+                            if (source.value == "ExplicitOutputPort" && edgeSource.value != "ExplicitInputPort") {
+                                alert("Explicit data output port must be connected to explicit data input port");
+                                return null;
+                            } else if (source.value == "ExplicitInputPort" && edgeSource.value != "ExplicitOutputPort") {
+                                alert("Explicit data input port must be connected to explicit data output port");
+                                return null;
+                            } else if (source.value == "ImplicitOutputPort" && edgeSource.value != "ImplicitInputPort") {
+                                alert("Implicit data output port must be connected to implicit data input port");
+                                return null;
+                            } else if (source.value == "ImplicitInputPort" && edgeSource.value != "ImplicitOutputPort") {
+                                alert("Implicit data input port must be connected to implicit data output port");
+                                return null;
+                            } else if (source.value == "CommandPort" && edgeSource.value != "ControlPort") {
+                                alert("Command port must be connected to control port");
+                                return null;
+                            } else if (source.value == "ControlPort" && edgeSource.value != "CommandPort") {
+                                alert("Control port must be connected to command port");
+                                return null;
+                            }
+
+                            // Create the splitBlock
+                            // (x-5, y-5.5) is the offset to correct the position of split-block
+                            var cell = graph.insertVertex(graph.getDefaultParent(), null, '', target.sourcePoint.x - 5, target.sourcePoint.y - 5, 10, 10, 'Split', false);
+
+                            // Get the source state
+                            var sourceState = graph.view.getState(target);
+                            var waypoints = target.waypoints;
+                            var waypoints1 = [];
+
+                            // Add the absolute points for source edge to waypoints variable
+                            for (i in sourceState.absolutePoints) {
+                                waypoints1.push(sourceState.absolutePoints[i]);
+                            }
+                            waypoints1.shift();
+                            waypoints1.pop();
+                            waypoints = waypoints1;
+
+                            // Find the index in the waypoints nearest to the split-block
+                            var seg = mxUtils.findNearestSegment(sourceState, target.sourcePoint.x, target.sourcePoint.y);
+                            var sourceTarget = target.target;
+
+                            if (edgeSource.value == 'ExplicitOutputPort') {
+                                createPorts(graph, cell, ['E'], [], ['E'], ['E']);
+
+                            } else if (edgeSource.value == 'ImplicitOutputPort') {
+                                createPorts(graph, cell, ['I'], [], ['I', 'I'], []);
+                            } else {
+                                createPorts(graph, cell, ['CONTROL'], [], ['COMMAND', 'COMMAND'], []);
+                            }
+
+                            // Source edge is replaced with first edge and futureSource edges
+                            cell.name = 'SPLIT_f';
+
+                            // Hide all the ports of a split-block
+                            cell.getChildAt(0).setVisible(false);
+                            cell.getChildAt(1).setVisible(false);
+                            cell.getChildAt(2).setVisible(false);
+
+                            // Remove the current source
+                            graph.removeCells([target], true);
+
+                            /*
+                             * If there are any waypoints, divide them for the two newly created edges.
+                             * The two newly created edges are inherited from the source edge
+                             */
+                            if (waypoints != null) {
+                                var waypoints1 = [];
+                                for (var i = 0; i < seg; i++) {
+                                    waypoints1.push(waypoints[i]);
+                                }
+
+                                var waypoints2 = [];
+                                for (var i = seg; i < waypoints.length; i++) {
+                                    waypoints2.push(waypoints[i]);
+                                }
+                            }
+
+                            // Find the waypoints of the current edge, and set the waypoints for the new thirdEdge
+                            var waypoints3 = edgeState.absolutePoints;
+                            if (waypoints3 != null && waypoints3.length > 1) {
+                                waypoints3.pop();
+                            }
+                            waypoints3.reverse();
+
+                            // Create three edges associated with the split-block
+                            var firstEdge = createEdgeObject(graph, cell.getChildAt(1), sourceTarget, waypoints2);
+                            var thirdEdge = createEdgeObject(graph, cell.getChildAt(2), source, waypoints3);
+                            var futureSource = createEdgeObject(graph, target.source, cell.getChildAt(0), waypoints1);
+
+                            // Set the newly made futureSource as the source
+                            target = futureSource;
+
+                            // Connectable for the ports and the split-block should be false
+                            cell.getChildAt(0).setConnectable(false);
+                            cell.getChildAt(1).setConnectable(false);
+                            cell.getChildAt(2).setConnectable(false);
+                            cell.setConnectable(false);
+
+                            // Get the parent of the splitBlock
+                            var parent = graph.model.getParent(cell);
+
+                            graph.model.beginUpdate();
+                            try {
+                                /*
+                                 * Adds the split-block to the parent at the last index
+                                 * Enables split-block to appear over it's associated edges
+                                 */
+                                graph.model.add(parent, cell, graph.model.getChildCount(parent) - 1);
+                            } finally {
+                                graph.model.endUpdate();
+                            }
+
+                            graph.refresh();
+                        } finally {
+                            graph.getModel().endUpdate();
+                        }
+
+                        /*
+                         * Remove the current edge, as we have already created
+                         * thirdEdge as it's replacement, to enable waypoints.
+                         */
+                        return null;
+                    }
+
+                    // If the newly created edge is related to a splitBlock, make the edge.
+                    if (source.parent.name == 'SPLIT_f' || target.parent.name == 'SPLIT_f') {
+                        return mxGraph.prototype.addEdge.apply(this, arguments);
+                    }
+
+                    var edgeSource = source;
+
+                    // If the source of the edge is also an edge, find the port.
+                    while (edgeSource.isEdge() == true) {
+                        edgeSource = edgeSource.source;
+                    }
+
+                    // For port-to-port edges with port constraint violations, don't create that edge
+                    if (source.getEdgeCount() > 0 || target.getEdgeCount() > 0) {
+                        alert("Port is already connected, please select an please select an unconnected port or a valid link");
+                    } else if (edgeSource.value == "ExplicitOutputPort" && target.value != "ExplicitInputPort") {
+                        alert("Explicit data output port must be connected to explicit data input port");
+                    } else if (edgeSource.value == "ExplicitInputPort" && target.value != "ExplicitOutputPort") {
+                        alert("Explicit data input port must be connected to explicit data output port");
+                    } else if (edgeSource.value == "ImplicitOutputPort" && target.value != "ImplicitInputPort") {
+                        alert("Implicit data output port must be connected to implicit data input port");
+                    } else if (edgeSource.value == "ImplicitInputPort" && target.value != "ImplicitOutputPort") {
+                        alert("Implicit data input port must be connected to implicit data output port");
+                    } else if (edgeSource.value == "CommandPort" && target.value != "ControlPort") {
+                        alert("Command port must be connected to control port");
+                    } else if (edgeSource.value == "ControlPort" && target.value != "CommandPort") {
+                        alert("Control port must be connected to command port");
+                    } else {
+
+                        /*
+                         * For reverse edges, (that is, edges from input port to outport) :
+                         * If the source is input port, and target is an output port
+                         * NOTE: Manipulation of source object and target object
+                         *       with respect to current edge is not possible,
+                         *       as mxGraph.prototype.addEdge(@parameters) function is
+                         *       called just before the creation of the edge.
+                         *       Hence, the following code creates a identical new edge
+                         *       to replace the current edge.
+                         */
+
+                        if ((source.value.indexOf('Input') != -1 && target.value.indexOf('Output') != -1) ||
+                            (target.value == 'CommandPort' && source.value == 'ControlPort')) {
+
+                            // Get points for the current edge from the global edgeState object
+                            var waypoints = edgeState.absolutePoints;
+
+                            // Reverse waypoint array
+                            waypoints.reverse();
+
+                            // Create a new edge
+                            var newEdge = createEdgeObject(graph, target, source, waypoints);
+
+                            // Return null for the current edge,
+
+                            /*
+                             * Return null for the current edge,
+                             * since we have created a new edge above to replace it
+                             */
+                            return null;
+                        }
+                        // If the edge is legit, return the edge.
+                        return mxGraph.prototype.addEdge.apply(this, arguments);
+                    }
+                    return null;
                 }
 
                 // Shows a "modal" window when double clicking a vertex.
@@ -736,28 +705,24 @@
                                 var inputPort, outputPort, controlPort, commandPort;
                                 if (cellvar.model.in.height == null) {
                                     inputPort = 0;
-								}
-                                else {
+                                } else {
                                     inputPort = cellvar.model.in.height;
-								}
+                                }
                                 if (cellvar.model.out.height == null) {
                                     outputPort = 0;
-                                }
-								else {
+                                } else {
                                     outputPort = cellvar.model.out.height;
-								}
+                                }
                                 if (cellvar.model.evtin.height == null) {
                                     controlPort = 0;
-								}
-                                else {
+                                } else {
                                     controlPort = cellvar.model.evtin.height;
-								}
+                                }
                                 if (cellvar.model.evtout.height == null) {
                                     commandPort = 0;
-								}
-                                else {
+                                } else {
                                     commandPort = cellvar.model.evtout.height;
-								}
+                                }
                                 var geometry = cell.getGeometry();
                                 text = 'Block Name : ' + cell.value.getAttribute('blockElementName') + "\n" +
                                     'Simulation : ' + cell.value.getAttribute('simulationFunctionName') + "\n" +
@@ -783,25 +748,26 @@
                 // @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
                 // https://jgraph.github.io/mxgraph/docs/js-api/files/model/mxCell-js.html
                 // Uncomment this block to see XML tags work
-                graph.convertValueToString = function(cell)
-                {
+                graph.convertValueToString = function(cell) {
 
-                  if (mxUtils.isNode(cell.value))
-                  {
-                    var stylesheet = graph.getStylesheet();
-                    var style = stylesheet.styles[cell.value.getAttribute('style')];
-                    var displayedLabel = style['displayedLabel'];
-                    if(displayedLabel != null) {
-                      var displayParameter = cell.blockInstance.instance.displayParameter;
-                      for(i in displayParameter) {
-                        displayedLabel = displayedLabel.replace("%s", displayParameter[i].toString());
-                      }
-                      return displayedLabel;
+                    if (mxUtils.isNode(cell.value)) {
+                        var stylesheet = graph.getStylesheet();
+						var attribute = cell.value.getAttribute('style');
+                        if(attribute == null){
+                            attribute = cell.value.getAttribute('interfaceFunctionName');
+                        }
+                        var style = stylesheet.styles[attribute];
+						var displayedLabel = style['displayedLabel'];
+                        if (displayedLabel != null) {
+                            var displayParameter = cell.blockInstance.instance.displayParameter;
+                            for (i in displayParameter) {
+                                displayedLabel = displayedLabel.replace("%s", displayParameter[i].toString());
+                            }
+                            return displayedLabel;
+                        } else {
+                            return cell.getAttribute('label', '');
+                        }
                     }
-                    else {
-                      return cell.getAttribute('label', '');
-                    }
-                  }
                 };
 
                 var cellLabelChanged = graph.cellLabelChanged;
@@ -854,136 +820,134 @@
                    Used Preorder traversal for edges.
                 */
                 editor.addAction('deleteBlock', function(editor, cell) {
-                  graph.getModel().beginUpdate();
-                  try {
+                    graph.getModel().beginUpdate();
+                    try {
 
-                  // getEdgeId(@edgeObject) finds all the associated edges and split-block, and deletes them
-                  function getEdgeId(edgeObject) {
+                        // getEdgeId(@edgeObject) finds all the associated edges and split-block, and deletes them
+                        function getEdgeId(edgeObject) {
 
-                    var cellStack = [];
-                    if(edgeObject != null && edgeObject.isEdge() == true) {
-                      cellStack.push(edgeObject);
-                      while(cellStack.length != 0) {
-                        var tempEdgeObject = cellStack.pop();
-                        if (tempEdgeObject.edge == true && (cells.indexOf(tempEdgeObject) == -1)) {
-                            cells.push(tempEdgeObject);
+                            var cellStack = [];
+                            if (edgeObject != null && edgeObject.isEdge() == true) {
+                                cellStack.push(edgeObject);
+                                while (cellStack.length != 0) {
+                                    var tempEdgeObject = cellStack.pop();
+                                    if (tempEdgeObject.edge == true && (cells.indexOf(tempEdgeObject) == -1)) {
+                                        cells.push(tempEdgeObject);
+                                    }
+
+                                    // If the edge is associated with a split-block(source is a split-block)
+                                    if (tempEdgeObject.source.parent.name == "SPLIT_f") {
+                                        if (tempEdgeObject.source == tempEdgeObject.source.parent.getChildAt(1)) {
+
+                                            var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
+                                            var target = tempEdgeObject.source.parent.getChildAt(2).getEdgeAt(0).target;
+
+                                            // If the state of the edge is not null
+                                            if (graph.view.getState(sourceEdge) != null) {
+
+                                                // Find waypoints for the first edge related to split-block
+                                                var waypoints1 = graph.view.getState(sourceEdge).absolutePoints;
+
+                                                // Find the waypoints for the second edge related to split-block
+                                                var waypoints2 = graph.view.getState(tempEdgeObject.source.parent.getChildAt(2).getEdgeAt(0)).absolutePoints;
+                                                waypoints2.shift();
+                                                for (i in waypoints2) {
+                                                    waypoints1.push(waypoints2[i]);
+                                                }
+                                                var geometry = graph.getModel().getGeometry(sourceEdge);
+                                                var cloneGeometry = geometry.clone();
+
+                                                cloneGeometry.points = waypoints1;
+                                                graph.getModel().setGeometry(sourceEdge, cloneGeometry);
+                                                graph.refresh();
+
+                                                // Shift the target for the first edge related to splitBlock
+                                                graph.getModel().setTerminal(sourceEdge, target, false);
+                                            }
+                                            cells.push(tempEdgeObject.source.parent);
+                                        } else {
+                                            var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
+                                            var target = tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0).target;
+
+                                            // If the state of the edge is not null
+                                            if (graph.view.getState(sourceEdge) != null) {
+
+                                                // Find waypoints for the first edge related to split-block
+                                                var waypoints1 = graph.view.getState(sourceEdge).absolutePoints;
+
+                                                // Find the waypoints for the second edge related to split-block
+                                                var waypoints2 = graph.view.getState(tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0)).absolutePoints;
+                                                waypoints1.pop();
+                                                waypoints2.shift();
+                                                for (i in waypoints2) {
+                                                    waypoints1.push(waypoints2[i]);
+                                                }
+                                                var geometry = graph.getModel().getGeometry(sourceEdge);
+                                                var cloneGeometry = geometry.clone();
+
+                                                cloneGeometry.points = waypoints1;
+                                                graph.getModel().setGeometry(sourceEdge, cloneGeometry);
+                                                graph.refresh();
+
+                                                // Shift the target for the first edge related to splitBlock
+                                                graph.getModel().setTerminal(sourceEdge, target, false);
+                                            }
+                                            cells.push(tempEdgeObject.source.parent);
+                                        }
+
+                                    }
+
+                                    // If the edge is associated with a split-block(target is a split-block)
+                                    if (tempEdgeObject.target.parent.name == "SPLIT_f") {
+                                        if (cells.indexOf(tempEdgeObject.target.parent) == -1) {
+                                            cells.push(tempEdgeObject.target.parent);
+                                        }
+                                        cellStack.push(tempEdgeObject.target.parent.getChildAt(1).getEdgeAt(0));
+                                        cellStack.push(tempEdgeObject.target.parent.getChildAt(2).getEdgeAt(0));
+                                    }
+                                }
+                            }
                         }
 
-                        // If the edge is associated with a split-block(source is a split-block)
-                        if(tempEdgeObject.source.parent.name == "SPLIT_f") {
-                            if(tempEdgeObject.source == tempEdgeObject.source.parent.getChildAt(1)) {
+                        var cells = [];
 
-                              var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
-                              var target = tempEdgeObject.source.parent.getChildAt(2).getEdgeAt(0).target;
+                        // Get all selected cells
+                        var selectionCells = graph.getSelectionCells();
 
-                              // If the state of the edge is not null
-                              if(graph.view.getState(sourceEdge) != null) {
+                        // For each cell in the selection
+                        for (var k = 0; k < selectionCells.length; k++) {
 
-                                // Find waypoints for the first edge related to split-block
-                                var waypoints1 = graph.view.getState(sourceEdge).absolutePoints;
-
-                                // Find the waypoints for the second edge related to split-block
-                                var waypoints2 = graph.view.getState(tempEdgeObject.source.parent.getChildAt(2).getEdgeAt(0)).absolutePoints;
-                                waypoints2.shift();
-                                for(i in waypoints2) {
-                                  waypoints1.push(waypoints2[i]);
-                                }
-                                var geometry = graph.getModel().getGeometry(sourceEdge);
-                                var cloneGeometry = geometry.clone();
-
-                                cloneGeometry.points = waypoints1;
-                                graph.getModel().setGeometry(sourceEdge, cloneGeometry);
-                                graph.refresh();
-
-                                // Shift the target for the first edge related to splitBlock
-                                graph.getModel().setTerminal(sourceEdge, target, false);
-                              }
-                              cells.push(tempEdgeObject.source.parent);
+                            // If the cell is an edge, directly call getEdgeId(@parameter) for deletion
+                            if (selectionCells[k].isEdge() == true) {
+                                getEdgeId(selectionCells[k]);
                             }
+
+                            // If the cell is a vertex, select the cell
                             else {
-                              var sourceEdge = tempEdgeObject.source.parent.getChildAt(0).getEdgeAt(0);
-                              var target = tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0).target;
+                                var portCount = selectionCells[k].getChildCount();
+                                cells.push(selectionCells[k]);
+                                for (var i = 0; i < portCount; i++) {
+                                    var edgeCount = selectionCells[k].getChildAt(i).getEdgeCount();
+                                    if (edgeCount != 0) {
 
-                              // If the state of the edge is not null
-                              if(graph.view.getState(sourceEdge) != null) {
+                                        /*
+                                         * For every edge associated with the current selected cell,
+                                         * call the getEdgeId(@parameter), parameter is an edgeObject for deletion
+                                         */
 
-                                // Find waypoints for the first edge related to split-block
-                                var waypoints1 = graph.view.getState(sourceEdge).absolutePoints;
-
-                                // Find the waypoints for the second edge related to split-block
-                                var waypoints2 = graph.view.getState(tempEdgeObject.source.parent.getChildAt(1).getEdgeAt(0)).absolutePoints;
-                                waypoints1.pop();
-                                waypoints2.shift();
-                                for(i in waypoints2) {
-                                  waypoints1.push(waypoints2[i]);
+                                        for (var j = 0; j < edgeCount; j++) {
+                                            var edgeObject = selectionCells[k].getChildAt(i).getEdgeAt(j);
+                                            getEdgeId(edgeObject);
+                                        }
+                                    }
                                 }
-                                var geometry = graph.getModel().getGeometry(sourceEdge);
-                                var cloneGeometry = geometry.clone();
-
-                                cloneGeometry.points = waypoints1;
-                                graph.getModel().setGeometry(sourceEdge, cloneGeometry);
-                                graph.refresh();
-
-                                // Shift the target for the first edge related to splitBlock
-                                graph.getModel().setTerminal(sourceEdge, target, false);
-                              }
-                              cells.push(tempEdgeObject.source.parent);
                             }
-
                         }
 
-                        // If the edge is associated with a split-block(target is a split-block)
-                        if(tempEdgeObject.target.parent.name == "SPLIT_f") {
-                          if(cells.indexOf(tempEdgeObject.target.parent) == -1) {
-                            cells.push(tempEdgeObject.target.parent);
-                          }
-                          cellStack.push(tempEdgeObject.target.parent.getChildAt(1).getEdgeAt(0));
-                          cellStack.push(tempEdgeObject.target.parent.getChildAt(2).getEdgeAt(0));
-                        }
-                      }
+                        graph.removeCells(cells, true);
+                    } finally {
+                        graph.getModel().endUpdate();
                     }
-                  }
-
-                    var cells = [];
-
-                    // Get all selected cells
-                    var selectionCells = graph.getSelectionCells();
-
-                    // For each cell in the selection
-                    for (var k = 0; k < selectionCells.length; k++) {
-
-                        // If the cell is an edge, directly call getEdgeId(@parameter) for deletion
-                        if(selectionCells[k].isEdge() == true) {
-                          getEdgeId(selectionCells[k]);
-                        }
-
-                        // If the cell is a vertex, select the cell
-                        else {
-                          var portCount = selectionCells[k].getChildCount();
-                          cells.push(selectionCells[k]);
-                          for (var i = 0; i < portCount; i++) {
-                              var edgeCount = selectionCells[k].getChildAt(i).getEdgeCount();
-                              if (edgeCount != 0) {
-
-                                  /*
-                                   * For every edge associated with the current selected cell,
-                                   * call the getEdgeId(@parameter), parameter is an edgeObject for deletion
-                                   */
-
-                                  for (var j = 0; j < edgeCount; j++) {
-                                      var edgeObject = selectionCells[k].getChildAt(i).getEdgeAt(j);
-                                      getEdgeId(edgeObject);
-                                  }
-                              }
-                          }
-                       }
-                    }
-
-                    graph.removeCells(cells, true);
-                  }
-                  finally {
-                    graph.getModel().endUpdate();
-                  }
 
                 });
 
@@ -1011,7 +975,7 @@
                     Maverick
                     This method is used for loading the stylesheet from the file.
                     Reference: http://www.w3schools.com/xsl/xsl_client.asp
-	              */
+                  */
 
                 function loadXMLDoc(filename) {
                     if (window.ActiveXObject) {
@@ -1028,122 +992,521 @@
                 }
 
 
-				/*
-				 Maverick
-				 The Export buttons in toolbar call this function with varying
-				 arguments.
-				 The third argument is used to deciFde which button is being
-				 pressed.
-				 exportXML : 2 arguments
-				 exportXcos: 3 arguments
-				 */
-				function displayXMLorXcos() {
-					var textarea = document.createElement('textarea');
-					textarea.style.width = '400px';
-					textarea.style.height = '400px';
+                /*
+                 Maverick
+                 The Export buttons in toolbar call this function with varying
+                 arguments.
+                 The third argument is used to deciFde which button is being
+                 pressed.
+                 exportXML : 2 arguments
+                 exportXcos: 3 arguments
+                 */
+                function displayXMLorXcos() {
+                    var textarea = document.createElement('textarea');
+                    textarea.style.width = '400px';
+                    textarea.style.height = '400px';
 
-					var enc = new mxCodec(mxUtils.createXmlDocument());
-					var node = enc.encode(diagRoot);
+                    var enc = new mxCodec(mxUtils.createXmlDocument());
+                    var node = enc.encode(diagRoot);
 
-					var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + mxUtils.getPrettyXml(node);
+                    var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" + mxUtils.getPrettyXml(node);
 
-					textarea.value = str;
+                    textarea.value = str;
 
-					if (arguments[2] == null) {
-						showModalWindow(graph, 'XML', textarea, 410, 440);
-					} else {
+                    if (arguments[2] == null) {
+                        showModalWindow(graph, 'XML', textarea, 410, 440);
+                    } else {
 
-						return mxUtils.getPrettyXml(node);
-					}
-				}
+                        return mxUtils.getPrettyXml(node);
+                    }
+                }
 
-				function getXcosDiagram(editor, cell) {
-					//Mind the 3 parameters.
-					var xmlFromExportXML = displayXMLorXcos(editor, cell, true);
-					if (xmlFromExportXML === null)
-						alert('First create the XML file.');
-					else {
+                function getXcosDiagram(editor, cell) {
+                    //Mind the 3 parameters.
+                    var xmlFromExportXML = displayXMLorXcos(editor, cell, true);
+                    if (xmlFromExportXML === null)
+                        alert('First create the XML file.');
+                    else {
 
-						var xml = mxUtils.parseXml(xmlFromExportXML);
+                        var xml = mxUtils.parseXml(xmlFromExportXML);
 
-						var xsl = loadXMLDoc("finalmodsheet.xsl");
+                        var xsl = loadXMLDoc("finalmodsheet.xsl");
 
-						xsltProcessor = new XSLTProcessor();
-						xsltProcessor.importStylesheet(xsl);
-						resultDocument = xsltProcessor.transformToDocument(xml);
-						/*
-						 Maverick
-						 Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
-						 */
-						var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocument.documentElement);
+                        xsltProcessor = new XSLTProcessor();
+                        xsltProcessor.importStylesheet(xsl);
+                        resultDocument = xsltProcessor.transformToDocument(xml);
+                        /*
+                         Maverick
+                         Using resultDocument.documentElement to remove an additional tag "<#document>" created by the XSLTProcessor.
+                         */
+                        var str = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n\n" + mxUtils.getPrettyXml(resultDocument.documentElement);
 
-						str = str.replace(/\n\n/g, "\n");
-						return str;
-					}
-				}
+                        str = str.replace(/\n\n/g, "\n");
+                        return str;
+                    }
+                }
 
-				// Defines a new export action
-				editor.addAction('exportXML', function (editor, cell) {
-					//Only two parameters passed here.
-					displayXMLorXcos(editor, cell);
-				});
+                // Defines a new export action
+                editor.addAction('exportXML', function(editor, cell) {
+                    //Only two parameters passed here.
+                    displayXMLorXcos(editor, cell);
+                });
 
-				/* Maverick
-				 Reference: http://www.w3schools.com/xsl/xsl_client.asp
-				 */
+                /* Maverick
+                 Reference: http://www.w3schools.com/xsl/xsl_client.asp
+                 */
 
-				editor.addAction('exportXcos', function (editor, cell) {
-					var textarea = document.createElement('textarea');
-					textarea.style.width = '400px';
-					textarea.style.height = '400px';
-					textarea.value = getXcosDiagram(editor, cell);
-					showModalWindow(graph, 'Xcos', textarea, 410, 440);
-				});
+                editor.addAction('exportXcos', function(editor, cell) {
+                    var textarea = document.createElement('textarea');
+                    textarea.style.width = '400px';
+                    textarea.style.height = '400px';
+                    textarea.value = getXcosDiagram(editor, cell);
+                    showModalWindow(graph, 'Xcos', textarea, 410, 440);
+                });
 
-				addToolbarButton(editor, toolbar, 'exportXML', 'Export XML', 'images/export1.png');
-				addToolbarButton(editor, toolbar, 'exportXcos', 'Export Xcos', 'images/export1.png');
+                /*
+                    Maverick
+                    Adding a new button to import an Xcos diagram to our GUI and perform the simulation 
+                    on the remote server.
+                    The flow of control is as follows:
+                    The entire XML document is traversed, beginning from the root node.
+                    The document is traversed three times: 
+                    1. All the blocks are appended on the graph. 
+                    2. All the ports are added to the blocks.
+                    3. All the links are made.
 
-				toolbar.appendChild(spacer.cloneNode(true));
+                    Old ids are the ones which can be found from the imported file but when the blocks are added 
+                    to the graph mxGraph assigns new ids to them. 
+                    Careful mapping needs to be done between these two ids.
+                */
+                editor.addAction('importXcos', function(editor, cell) {
+                    var xmlDocument = '';
+                    var div = document.createElement('div');
+                    var node = document.createElement('form');
+                    div.setAttribute("id", "tempdiv");
+                    div.setAttribute("style", "height:200;width:200");
 
-				addToolbarButton(editor, toolbar, 'simulate', 'Simulate', 'images/ScilabExecute.png');
+                    /*
+                        Maverick
+                        Implementing a file picker to choose the Xcos diagram.
+                    */
+                    var fileNode = document.createElement('input');
+                    fileNode.type = 'file';
+                    if (!(window.File && window.FileReader && window.Blob && window.FileList)) {
+                        alert('This browser doesn\'t support this feature.');
+                        return;
+                    }
 
-				editor.addAction('simulate', function (editor, cell) {
-					var diagram = getXcosDiagram(editor, cell);
+                    node.id = "tempform";
+                    node.appendChild(fileNode);
+                    var textArea = document.createElement('textarea');
+                    textArea.setAttribute("rows", "15");
+                    textArea.setAttribute("cols", "60");
+                    textArea.setAttribute("name", "tarea");
+                    node.appendChild(textArea);
+                    var button = document.createElement('button');
+                    button.innerHTML = 'Submit';
+                    button.type = "button";
+                    button.name = "submit";
+                    node.appendChild(button);
+                    
+                    /*
+                        Maverick
+                        Reference: www.htmlgoodies.com
+                    */
+                    fileNode.addEventListener('change', function(evt) {
 
-					var blob = new Blob([diagram], {type: 'text/plain'});
-					var xhr = new XMLHttpRequest();
-					xhr.open('POST','ScilabServlet', true);
-					xhr.onload = function() {
-						// Create basic structure for the form
-						var content = document.createElement('div');
-						content.setAttribute("id", "contentProperties");
+                        var f = evt.target.files[0];
+                        var r = new FileReader();
+                        r.onload = function(e) {
+                            var contents = e.target.result;
+                            /*
+                                Maverick
+                                The following regular expressions are used to format the imported Xcos XML
+                                according to the format that is recognized by the mxCodec decoder.
+                            */
+                            xmlDocument = contents;
+                            //RegEx to replace all the newline characters.
+                            xmlDocument = xmlDocument.replace(/\n*/, '');
+                            //RegEx to replace all the space characters between any a closing and the next opening tag.
+                            xmlDocument = xmlDocument.replace(/>\s*</g, '><');
+                            //RegEx to replace all the XML comments.
+                            xmlDocument = xmlDocument.replace(/<!--[\s\S]*?-->/g, '');
+                            textArea.value = xmlDocument;
 
-						// Heading of content
-						var heading = document.createElement('h2');
-						heading.innerHTML = "Set Scope Parameters";
-						heading.id = "headingProperties";
-						content.appendChild(heading);
+                        }
 
-						var paragraph = document.createElement("p");
-						paragraph.innerHTML = xhr.responseText;
-						content.appendChild(paragraph);
+                        r.readAsText(f);
+                    }, false);
+
+                    /*
+                        Maverick
+                        A dictionary is used to perform the mapping between the old ids and the new ids.
+                        See explanation at the beginning of the function!!!
+                    */
+                    var nodeDataObject = {};
+
+                    button.onclick = function() {
+
+                        wind.destroy();
+
+                        graph.model.beginUpdate();
+                        try {
+                            var parent = graph.getDefaultParent();
+                            var doc = mxUtils.parseXml(xmlDocument);
+                            var codec = new mxCodec(doc);
+                            var rootNode = doc.documentElement;
+                            /*
+                                Maverick
+                                Extracting 'Setup Window' values from Xcos diagram and setting the same 
+                                on the new diagram.
+                            */
+                            var defaultProperties = setup("get");
+                            var propertiesObject = {};
+
+                            for (var key in defaultProperties) {
+                                if (defaultProperties.hasOwnProperty(key)) {
+                                    propertiesObject[defaultProperties[key][1]] = rootNode.getAttribute(defaultProperties[key][1]);
+                                    /*    
+                                        Maverick
+                                        Adding the corresponding attributes to the <XcosDiagram> tag.
+                                    */
+                                    diagRoot[defaultProperties[key][1]] = rootNode.getAttribute(defaultProperties[key][1]);
+                                }
+                            }
+
+                            setup("set", propertiesObject);
 
 
-						 //var img = document.createElement("img");
-						 //img.src = "data:image/;base64,"+xhr.responseText;
-						 //content.appendChild(img);
 
-						var wind = showModalWindow(graph, 'Properties', content, 1000, 1000);
-					};
-					xhr.onreadystatechange = function(){
-						console.log("state: " + xhr.readyState);
-					};
-					xhr.upload.onprogress = function() {
-						console.log("uploading...");
-					};
-					xhr.setRequestHeader("Content-Type", "text/plain");
-					xhr.send(blob);
-				});
+                            while (rootNode.nodeName != 'root') {
+
+                                /*
+                                    Maverick
+                                    Extracting 'Set Context' values from Xcos diagram and setting the same 
+                                    on the new diagram.
+                                */
+                                if (rootNode.nodeName == 'Array') {
+
+                                    var contextValues = [];
+
+                                    var contextChild = rootNode.firstChild;
+
+                                    while (contextChild != null) {
+                                        contextValues.push(contextChild.getAttribute('value'));
+                                        contextChild = contextChild.nextSibling;
+                                    }
+
+                                    diagRoot.context = contextValues;
+                                    diagRoot.context.scilabClass = "String[]";
+                                    handleContext("set", contextValues);
+                                    rootNode = rootNode.nextSibling;
+                                } else {
+
+                                    rootNode = rootNode.firstChild;
+                                }
+
+                            }
+
+                            var cells = [];
+                            var currentNode = rootNode.firstChild;
+                            while (currentNode != null) {
+                                var curNodeName = currentNode.nodeName;
+
+                                var cell = codec.decode(currentNode);
+
+                                var curId = currentNode.getAttribute('id');
+
+                                /*
+                                    Maverick
+                                    Finding the mxGeometry node for all the nodes.
+                                */
+                                var geometryNode = currentNode.firstChild;
+                                var geometryCell = null;
+
+                                if (geometryNode != null) {
+                                    while (geometryNode != null && geometryNode.nodeName != 'mxGeometry') {
+                                        geometryNode = geometryNode.nextSibling;
+                                    }
+                                    if (geometryNode != null) {
+                                        geometryCell = codec.decode(geometryNode);
+                                    }
+                                }
+                                /*
+                                    Maverick
+                                    Adding the blocks.
+                                    Finding out the constructor names for all the blocks which are not a port or a link.
+                                    Ports will be automatically handled with the respective constructor calls.
+                                */
+                                if (!(curNodeName.endsWith('Link') || curNodeName.endsWith('Port'))) {
+                                    var ifaceFuncName = cell.interfaceFunctionName;
+
+                                    /*
+                                        Maverick
+                                        The following data structure is used to store the information required for each block
+                                        to the subsequent mapping.
+                                    */
+                                    var temporaryMapObject = new Object();
+                                    temporaryMapObject.inputArray = [];
+                                    temporaryMapObject.outputArray = [];
+                                    temporaryMapObject.controlArray = [];
+                                    temporaryMapObject.commandArray = [];
+                                    temporaryMapObject.inputIds = [];
+                                    temporaryMapObject.outputIds = [];
+                                    temporaryMapObject.controlIds = [];
+                                    temporaryMapObject.commandIds = [];
+
+
+                                    var details_instance = null;
+                                    if (ifaceFuncName != null) {
+
+                                        details_instance = new window[ifaceFuncName]();
+                                    }
+                                    if (details_instance != null) {
+                                        var details = details_instance.define();
+                                        var enc = new mxCodec(mxUtils.createXmlDocument());
+                                        var node = enc.encode(details);
+                                        var temp = enc.encode(parent);
+                                        var stylesheet = graph.getStylesheet();
+                                        var styleName = currentNode.getAttribute('style');
+                                        if (styleName.indexOf(';') != -1) {
+                                            styleName = styleName.substring(0, styleName.indexOf(';'));
+                                        }
+                                        var style = stylesheet.styles[styleName];
+
+
+                                        /*
+                                         * When a particular block is loaded for the first time,
+                                         * the image in the style of the block will be a path to the image.
+                                         * Set the label in the style property of the block has a html image,
+                                         * and set the image in the style property as null
+                                         *
+                                         * NOTE: Since the image of any block need not be changed for
+                                         *       for every movement of that block, the image must be
+                                         *       set only once.
+                                         */
+                                        if (style != null && style['image'] != null) {
+
+                                            // Make label as a image html element
+                                            var label = '<img src="' + style['image'] + '" height="80" width="80">';
+
+                                            // Set label
+                                            style['label'] = label;
+                                            style['imagePath'] = style['image'];
+                                            // Set image as null
+                                            style['image'] = null;
+
+                                            // Add the label as a part of node
+                                            node.setAttribute('label', label);
+                                        }
+
+                                        /*
+                                         * If a particular block with image tag in it's style property
+                                         * has been invoked already, the image tag would be null for any
+                                         * successive instances of the same block. Hence, set the label
+                                         * from the label tag in style which was set when that blockModel
+                                         * was invoked on the first time.
+                                         */
+                                        if (style != null && style['label'] != null) {
+
+                                            // Set label from the label field in the style property
+                                            node.setAttribute('label', style['label']);
+                                        }
+                                        node.setAttribute('parent', temp.getAttribute('id'));
+
+                                        var blockModel = details_instance.x.model;
+                                        var graphics = details_instance.x.graphics;
+
+
+                                        var v1 = graph.insertVertex(graph.getDefaultParent(), null, node, geometryCell.x, geometryCell.y, 80, 80, ifaceFuncName);
+                                        // @Chhavi: Additional attribute to store the block's instance
+                                        v1.blockInstance = createInstanceTag(details_instance);
+                                        temporaryMapObject.newId = v1.id;
+
+                                        nodeDataObject[curId] = temporaryMapObject;
+
+                                        //findAndCreatePorts(graph,v1,doc,curId,codec);
+                                        //createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
+
+                                        v1.setConnectable(false);
+                                    }
+
+                                    /*
+                                        Maverick
+                                        Handling SplitBlock in a different manner.
+                                    */
+                                    if (curNodeName == 'SplitBlock') {
+                                        // (x-5, y-5.5) is the offset to correct the position of split-block
+                                        var v1 = graph.insertVertex(graph.getDefaultParent(), null, '', geometryCell.x - 5, geometryCell.y - 5.5, 10, 10, 'Split', false);
+                                        temporaryMapObject.newId = v1.id;
+                                        nodeDataObject[curId] = temporaryMapObject;
+                                        v1.setConnectable(false);
+                                    }
+                                }
+
+                                if (curNodeName.endsWith('Port')) {
+
+                                    var oldParentId = currentNode.getAttribute('parent');
+                                    var newParentObj = nodeDataObject[oldParentId];
+                                    var newParentId = newParentObj.newId;
+
+                                    var newParentCell = graph.getModel().getCell(newParentId);
+                                    if (curNodeName == 'ExplicitInputPort') {
+                                        newParentObj.inputArray.push('E');
+                                        newParentObj.inputIds.push(curId);
+                                    }
+                                    if (curNodeName == 'ImplicitInputPort') {
+                                        newParentObj.inputArray.push('I');
+                                        newParentObj.inputIds.push(curId);
+                                    }
+                                    if (curNodeName == 'ExplicitOutputPort') {
+                                        newParentObj.outputArray.push('E');
+                                        newParentObj.outputIds.push(curId);
+                                    }
+                                    if (curNodeName == 'ImplicitOutputPort') {
+                                        newParentObj.outputArray.push('I');
+                                        newParentObj.outputIds.push(curId);
+                                    }
+                                    if (curNodeName == 'CommandPort') {
+                                        newParentObj.commandArray.push('COMMAND');
+                                        newParentObj.commandIds.push(curId);
+                                    }
+                                    if (curNodeName == 'ControlPort') {
+                                        newParentObj.controlArray.push('CONTROL');
+                                        newParentObj.controlIds.push(curId);
+                                    }
+                                }
+
+                                //To continue traversal of all the nodes.
+                                currentNode = currentNode.nextSibling;
+                            }
+
+                            /*
+                                Maverick
+                                Adding the ports.
+                            */
+                            currentNode = rootNode.firstChild;
+                            while (currentNode != null) {
+                                var curNodeName = currentNode.nodeName;
+                                /*
+                                    Maverick
+                                    Handling all the ports of a given block collectively.
+                                */
+                                if (!(curNodeName.endsWith('Port') || curNodeName.endsWith('Link'))) {
+                                    var curId = currentNode.getAttribute('id');
+                                    var newParentObj = nodeDataObject[curId];
+                                    if (newParentObj != null) {
+                                        var newParentId = newParentObj.newId;
+
+                                        var newParentCell = graph.getModel().getCell(newParentId);
+                                        createPorts(graph, newParentCell, newParentObj.inputArray, newParentObj.controlArray, newParentObj.outputArray, newParentObj.commandArray, newParentObj, nodeDataObject);
+                                    }
+                                }
+                                currentNode = currentNode.nextSibling;
+                            }
+
+                            /*
+                                Maverick
+                                Connecting the links. 
+                            */
+                            
+                            currentNode = rootNode.firstChild;
+                            while (currentNode != null) {
+                                var curNodeName = currentNode.nodeName;
+                                if (curNodeName.endsWith('Link')) {
+
+                                    var pointsArray = [];
+                                    var newSourceObj = nodeDataObject[currentNode.getAttribute('source')];
+                                    var newTargetObj = nodeDataObject[currentNode.getAttribute('target')];
+
+                                    var newSourceCell = graph.getModel().getCell(newSourceObj.newId);
+                                    var newTargetCell = graph.getModel().getCell(newTargetObj.newId);
+
+                                    var childNode = currentNode.firstChild;
+                                    if (childNode != null) {
+                                        if (childNode.nodeName == 'mxGeometry') {
+                                            var tempNode = childNode.firstChild;
+                                            if (tempNode != null) {
+                                                if (tempNode.nodeName == 'mxPoint') {
+                                                    pointsArray.push(new mxPoint(tempNode.getAttribute('x'), tempNode.getAttribute('y')));
+                                                } else {
+                                                    if (tempNode.nodeName == 'Array') {
+                                                        var mxPointNode = tempNode.firstChild;
+                                                        while (mxPointNode != null) {
+                                                            pointsArray.push(new mxPoint(mxPointNode.getAttribute('x'), mxPointNode.getAttribute('y')));
+                                                            mxPointNode = mxPointNode.nextSibling;
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    createEdgeObject(graph, newSourceCell, newTargetCell, null);
+                                }
+                                currentNode = currentNode.nextSibling;
+                            }
+
+                        } finally {
+                            graph.model.endUpdate();
+                        }
+
+                    }
+
+                    div.appendChild(node);
+
+                    node.style.visibility = "visible";
+                    var wind = showModalWindow(graph, 'Set Context', div, 410, 440);
+                });
+
+
+                addToolbarButton(editor, toolbar, 'importXcos', 'Import Xcos', 'images/export1.png');
+                addToolbarButton(editor, toolbar, 'exportXML', 'Export XML', 'images/export1.png');
+                addToolbarButton(editor, toolbar, 'exportXcos', 'Export Xcos', 'images/export1.png');
+
+                toolbar.appendChild(spacer.cloneNode(true));
+
+                addToolbarButton(editor, toolbar, 'simulate', 'Simulate', 'images/ScilabExecute.png');
+
+                editor.addAction('simulate', function(editor, cell) {
+                    var diagram = getXcosDiagram(editor, cell);
+
+                    var blob = new Blob([diagram], {
+                        type: 'text/plain'
+                    });
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', 'servlet/SciExec', true);
+                    xhr.onload = function() {
+                        // Create basic structure for the form
+                        var content = document.createElement('div');
+                        content.setAttribute("id", "contentProperties");
+
+                        // Heading of content
+                        var heading = document.createElement('h2');
+                        heading.innerHTML = "Set Scope Parameters";
+                        heading.id = "headingProperties";
+                        content.appendChild(heading);
+
+                        var paragraph = document.createElement("p");
+                        paragraph.innerHTML = xhr.responseText;
+                        content.appendChild(paragraph);
+
+
+                        var img = document.createElement("img");
+                        img.src = xhr.responseText;
+                        content.appendChild(img);
+
+                        var wind = showModalWindow(graph, 'Properties', content, 1000, 1000);
+                    };
+                    xhr.onreadystatechange = function() {
+                        console.log("state: " + xhr.readyState);
+                    };
+                    xhr.upload.onprogress = function() {
+                        console.log("uploading...");
+                    };
+                    xhr.setRequestHeader("Content-Type", "text/plain");
+                    xhr.send(blob);
+                });
 
                 // Adds toolbar buttons into the status bar at the bottom
                 // of the window.
@@ -1260,8 +1623,8 @@
         */
 
         function styleToObject(style) {
-            if(style.indexOf(';') == -1) {
-              style = style + ';';
+            if (style.indexOf(';') == -1) {
+                style = style + ';';
             }
 
             var defaultStyle = style.substring(0, style.indexOf(';'));
@@ -1566,41 +1929,40 @@
          */
         function createEdgeObject(graph, source, target, points) {
 
-          // Start the update on the graph
-          graph.getModel().beginUpdate();
+            // Start the update on the graph
+            graph.getModel().beginUpdate();
 
-          try {
+            try {
 
-            // Create an edge from the given source object and target object
-            var edge = graph.insertEdge(graph.getDefaultParent(), null, '', source, target);
+                // Create an edge from the given source object and target object
+                var edge = graph.insertEdge(graph.getDefaultParent(), null, '', source, target);
 
-            // Get geometry of the edge
-            var geometry = graph.getModel().getGeometry(edge);
+                // Get geometry of the edge
+                var geometry = graph.getModel().getGeometry(edge);
 
-            /*
-             * Clone the geometry object
-             * NOTE: Direct manipulation of the geometry object may not be
-             *       registered as an action for some cases, hence we clone the
-             *       geometry, manipulate it and set the geometry.
-             */
-            var cloneGeometry = geometry.clone();
+                /*
+                 * Clone the geometry object
+                 * NOTE: Direct manipulation of the geometry object may not be
+                 *       registered as an action for some cases, hence we clone the
+                 *       geometry, manipulate it and set the geometry.
+                 */
+                var cloneGeometry = geometry.clone();
 
-            // Add points in the cloned geometry
-            cloneGeometry.points = points;
+                // Add points in the cloned geometry
+                cloneGeometry.points = points;
 
-            // Set the changed geometry for the edge
-            graph.getModel().setGeometry(edge, cloneGeometry);
+                // Set the changed geometry for the edge
+                graph.getModel().setGeometry(edge, cloneGeometry);
 
-            // Refresh to reflect changes made
-            graph.refresh();
-          }
-          finally {
+                // Refresh to reflect changes made
+                graph.refresh();
+            } finally {
 
-            // End the update
-            graph.getModel().endUpdate();
-          }
+                // End the update
+                graph.getModel().endUpdate();
+            }
 
-          return edge;
+            return edge;
         }
 
         /*
@@ -1979,9 +2341,9 @@
                             element.value = defaultProperties[key][2];
                         } else {
                             /*
- 								Maverick
- 								Code modified to reset the drop down list.
-                    		*/
+                                Maverick
+                                Code modified to reset the drop down list.
+                            */
                             element.selectedIndex = 0;
                         }
                     }
@@ -2045,8 +2407,8 @@
                 var input = document.getElementById('color').value;
                 var style = graph.getModel().getStyle(cell);
 
-                if(style != null) {
-                  var styleObject = styleToObject(style);
+                if (style != null) {
+                    var styleObject = styleToObject(style);
                 }
 
                 if (selectProperty == "edgeStrokeColor") {
@@ -2061,9 +2423,9 @@
                     styleObject['fontColor'] = input;
                 }
 
-                if(style != null) {
-                  style = objectToStyle(styleObject);
-                  graph.getModel().setStyle(cell, style);
+                if (style != null) {
+                    style = objectToStyle(styleObject);
+                    graph.getModel().setStyle(cell, style);
                 }
 
                 wind.destroy();
@@ -2185,13 +2547,9 @@
                     var node = enc.encode(details);
                     var temp = enc.encode(parent);
 
-                    /*
-                     * @jiteshjha
-                     */
-
                     // Get the stylesheet for the graph
                     var stylesheet = graph.getStylesheet();
-
+                    console.log(name);
                     // From the stylesheet, get the style of the particular block
                     var style = stylesheet.styles[name];
 
@@ -2205,19 +2563,19 @@
                      *       for every movement of that block, the image must be
                      *       set only once.
                      */
-                    if(style != null && style['image'] != null) {
+                    if (style != null && style['image'] != null) {
 
-                      // Make label as a image html element
-                      var label = '<img src="' + style['image'] + '" height="80" width="80">';
+                        // Make label as a image html element
+                        var label = '<img src="' + style['image'] + '" height="80" width="80">';
 
-                      // Set label
-                      style['label'] = label;
+                        // Set label
+                        style['label'] = label;
 
-                      // Set image as null
-                      style['image'] = null;
+                        // Set image as null
+                        style['image'] = null;
 
-                      // Add the label as a part of node
-                      node.setAttribute('label', label);
+                        // Add the label as a part of node
+                        node.setAttribute('label', label);
                     }
 
                     /*
@@ -2227,10 +2585,10 @@
                      * from the label tag in style which was set when that blockModel
                      * was invoked on the first time.
                      */
-                    if(style!= null && style['label'] != null) {
+                    if (style != null && style['label'] != null) {
 
-                      // Set label from the label field in the style property
-                      node.setAttribute('label', style['label']);
+                        // Set label from the label field in the style property
+                        node.setAttribute('label', style['label']);
                     }
 
                     node.setAttribute('parent', temp.getAttribute('id'));
@@ -2308,20 +2666,38 @@
         };
 
         // Create ports
-        function createPorts(graph, block, left, top, right, bottom) {
-            createInputPorts(graph, block, left, top);
-            createOutputPorts(graph, block, right, bottom);
+        /*
+            Maverick
+            Modified the createPorts funtion so that it can be used while creating ports from 
+            a given Xcos diagram. 
+            New parameters are the parentObj where the port is supposed to be added and a dictionary
+            object which contains the mapping between the newly assigned Ids and imported Ids.
+        */
+        function createPorts(graph, block, left, top, right, bottom, parentObj, nodeDataObject) {
+
+            createInputPorts(graph, block, left, top, parentObj, nodeDataObject);
+            createOutputPorts(graph, block, right, bottom, parentObj, nodeDataObject);
+
         }
 
-        function createInputPorts(graph, block, leftArray, topArray) {
+        function createInputPorts(graph, block, leftArray, topArray, parentObj, nodeDataObject) {
+
             var topNumber = topArray.length;
             var leftNumber = leftArray.length;
+
             if (leftNumber != 0) {
                 for (var i = 1; i <= leftNumber; i++) {
+
                     var x = 0;
                     var y = (i / (leftNumber + 1)).toFixed(4);
                     var portType = leftArray[i - 1];
-                    createInputPort(graph, block, x, y, portType, 'left', i);
+                    //console.log(parentObj.inputIds);
+                    if (parentObj != null) {
+                        createInputPort(graph, block, x, y, portType, 'left', i, nodeDataObject, parentObj.inputIds);
+                    } else {
+                        createInputPort(graph, block, x, y, portType, 'left', i);
+                    }
+
                 }
             }
             if (topNumber != 0) {
@@ -2329,12 +2705,19 @@
                     var x = (i / (topNumber + 1)).toFixed(4);
                     var y = 0;
                     var portType = topArray[i - 1];
-                    createInputPort(graph, block, x, y, portType, 'top', i);
+                    //console.log(parentObj.controlIds);
+                    if (parentObj != null) {
+                        createInputPort(graph, block, x, y, portType, 'top', i, nodeDataObject, parentObj.controlIds);
+                    } else {
+                        createInputPort(graph, block, x, y, portType, 'top', i);
+                    }
                 }
             }
+
         };
 
-        function createOutputPorts(graph, block, rightArray, bottomArray) {
+        function createOutputPorts(graph, block, rightArray, bottomArray, parentObj, nodeDataObject) {
+
             var bottomNumber = bottomArray.length;
             var rightNumber = rightArray.length;
             if (rightNumber != 0) {
@@ -2342,7 +2725,12 @@
                     var x = 1;
                     var y = (i / (rightNumber + 1)).toFixed(4);
                     var portType = rightArray[i - 1];
-                    createOutputPort(graph, block, x, y, portType, 'right', i);
+                    //console.log(parentObj.outputIds);
+                    if (parentObj != null) {
+                        createOutputPort(graph, block, x, y, portType, 'right', i, nodeDataObject, parentObj.outputIds);
+                    } else {
+                        createOutputPort(graph, block, x, y, portType, 'right', i);
+                    }
                 }
             }
             if (bottomNumber != 0) {
@@ -2350,12 +2738,19 @@
                     var x = (i / (bottomNumber + 1)).toFixed(4);
                     var y = 1;
                     var portType = bottomArray[i - 1];
-                    createOutputPort(graph, block, x, y, portType, 'bottom', i);
+                    //console.log(parentObj.commandIds);
+                    if (parentObj != null) {
+                        createOutputPort(graph, block, x, y, portType, 'bottom', i, nodeDataObject, parentObj.commandIds);
+                    } else {
+                        createOutputPort(graph, block, x, y, portType, 'bottom', i);
+                    }
                 }
             }
+
         };
 
-        function createInputPort(graph, block, x, y, portType, position, ordering) {
+        function createInputPort(graph, block, x, y, portType, position, ordering, nodeDataObject, idArray) {
+
             var port = null;
             if (portType == 'COMMAND') {
                 port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
@@ -2373,11 +2768,25 @@
                     port.geometry.offset = new mxPoint(-10, -6);
                 }
                 port.ordering = ordering;
+
+                if (nodeDataObject != null) {
+                    var obj = new Object();
+                    obj.newId = port.id;
+                    obj.oldId = idArray[ordering - 1];
+                    //console.log(idArray[ordering-1]);
+                    nodeDataObject[idArray[ordering - 1]] = obj;
+                }
+
+                if (block.style == 'Split') {
+                    port.setVisible(false);
+                    port.setConnectable(false);
+                }
             }
         };
 
-        function createOutputPort(graph, block, x, y, portType, position, ordering) {
+        function createOutputPort(graph, block, x, y, portType, position, ordering, nodeDataObject, idArray) {
             var port = null;
+
             if (portType == 'COMMAND') {
                 port = graph.insertVertex(block, null, 'CommandPort', x, y, 10, 10, 'CommandPort', true);
             } else if (portType == 'CONTROL') {
@@ -2395,6 +2804,19 @@
                     port.geometry.offset = new mxPoint(0, -6);
                 }
                 port.ordering = ordering;
+
+                if (nodeDataObject != null) {
+                    var obj = new Object();
+                    obj.newId = port.id;
+                    obj.oldId = idArray[ordering - 1];
+                    //console.log(idArray[ordering-1]);
+                    nodeDataObject[idArray[ordering - 1]] = obj;
+                }
+
+                if (block.style == 'Split') {
+                    port.setVisible(false);
+                    port.setConnectable(false);
+                }
             }
         };
 
@@ -2406,7 +2828,7 @@
         };
     </script>
     <!--
-    	Updates connection points before the routing is called.
+        Updates connection points before the routing is called.
     -->
     <script type="text/javascript">
         // Computes the position of edge to edge connection points.
@@ -2582,7 +3004,7 @@
         };
     </script>
     <!--
-	    Adds in-place highlighting for complete cell area (no hotspot).
+        Adds in-place highlighting for complete cell area (no hotspot).
     -->
     <script type="text/javascript">
         mxConnectionHandlerCreateMarker = mxConnectionHandler.prototype.createMarker;
@@ -2608,125 +3030,124 @@
         }
     </script>
     <!--
-	   Implements a perpendicular wires connection edge style
+       Implements a perpendicular wires connection edge style
     -->
     <script type="text/javascript">
-      mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
-          state.cell.waypoints = state.cell.geometry.points;
-          // Creates array of all way- and terminalpoints
-          var pts = state.absolutePoints;
-          var horizontal = true;
-          var hint = null;
+        mxEdgeStyle.WireConnector = function(state, source, target, hints, result) {
+            state.cell.waypoints = state.cell.geometry.points;
+            // Creates array of all way- and terminalpoints
+            var pts = state.absolutePoints;
+            var horizontal = true;
+            var hint = null;
 
-          // Gets the initial connection from the source terminal or edge
-          if (source != null && state.view.graph.model.isEdge(source.cell)) {
+            // Gets the initial connection from the source terminal or edge
+            if (source != null && state.view.graph.model.isEdge(source.cell)) {
                 horizontal = state.style['sourceConstraint'] == 'horizontal';
-          }
-          // If the source terminal is a Split Block, set the horizontal false
-          else if(source != null && source.cell.name == 'SPLIT_f') {
-            if(state.cell.source != null) {
-              // If the port is the third child of splitBlock, only then set the horizontal as false
-              if(state.cell.source ==  state.cell.source.parent.getChildAt(2)) {
-                horizontal = state.style['sourceConstraint'] == 'horizontal';
-              }
             }
-          }
-          else if (source != null) {
-              horizontal = source.style['portConstraint'] != 'vertical';
+            // If the source terminal is a Split Block, set the horizontal false
+            else if (source != null && source.cell.name == 'SPLIT_f') {
+                if (state.cell.source != null) {
+                    // If the port is the third child of splitBlock, only then set the horizontal as false
+                    if (state.cell.source == state.cell.source.parent.getChildAt(2)) {
+                        horizontal = state.style['sourceConstraint'] == 'horizontal';
+                    }
+                }
+            } else if (source != null) {
+                horizontal = source.style['portConstraint'] != 'vertical';
 
-              // Checks the direction of the shape and rotates
-              var direction = source.style[mxConstants.STYLE_DIRECTION];
+                // Checks the direction of the shape and rotates
+                var direction = source.style[mxConstants.STYLE_DIRECTION];
 
-              if (direction == 'north' || direction == 'south') {
-                  horizontal = !horizontal;
-              }
-          }
-
-          // Adds the first point
-          var pt = pts[0];
-
-          /* @jiteshjha splitBlock
-          */
-          if(state.cell.getGeometry().getTerminalPoint(true) != null) {
-            source.cell['sourcePoint'] = state.cell.getGeometry().getTerminalPoint(true);
-          }
-
-          if (pt == null && source != null) {
-              pt = new mxPoint(state.view.getRoutingCenterX(source), state.view.getRoutingCenterY(source));
-          } else if (pt != null) {
-              pt = pt.clone();
-          }
-
-          var first = pt;
-          if(state.cell.getGeometry().getTerminalPoint(false) != null) {
-            target.cell['sourcePoint'] = state.cell.getGeometry().getTerminalPoint(false);
-          }
-
-          // Adds the waypoints
-          if (hints != null && hints.length > 0) {
-
-
-              for (var i = 0; i < hints.length; i++) {
-                  horizontal = !horizontal;
-                  hint = state.view.transformControlPoint(state, hints[i]);
-
-                  if (horizontal) {
-                      if (pt.y != hint.y) {
-                          pt.y = hint.y;
-                          result.push(pt.clone());
-                      }
-                  } else if (pt.x != hint.x) {
-                      pt.x = hint.x;
-                      result.push(pt.clone());
-                  }
-              }
-          } else {
-              hint = pt;
-          }
-
-          // Adds the last point
-          pt = pts[pts.length - 1];
-          if (pt == null && target != null) {
-              pt = new mxPoint(state.view.getRoutingCenterX(target), state.view.getRoutingCenterY(target));
-
-          }
-
-          if (horizontal) {
-              if (pt.y != hint.y && first.x != pt.x) {
-                  result.push(new mxPoint(pt.x, hint.y));
-              }
-          } else if (pt.x != hint.x && first.y != pt.y) {
-              result.push(new mxPoint(hint.x, pt.y));
-          }
-
-          // If the target of the edge is a splitBlock, push final coordinate as vertical.
-          if(state.cell.target != null) {
-            if(state.cell.target.parent.name == "SPLIT_f") {
-              result.pop();
-              result.push(new mxPoint(hint.x, pt.y));
+                if (direction == 'north' || direction == 'south') {
+                    horizontal = !horizontal;
+                }
             }
-          }
-      };
 
-      mxStyleRegistry.putValue('wireEdgeStyle', mxEdgeStyle.WireConnector);
+            // Adds the first point
+            var pt = pts[0];
 
-      // This connector needs an mxEdgeSegmentHandler
-      mxGraphCreateHandler = mxGraph.prototype.createHandler;
-      mxGraph.prototype.createHandler = function(state) {
-          var result = null;
+            /* @jiteshjha splitBlock
+             */
+            if (state.cell.getGeometry().getTerminalPoint(true) != null) {
+                source.cell['sourcePoint'] = state.cell.getGeometry().getTerminalPoint(true);
+            }
 
-          if (state != null) {
-              if (this.model.isEdge(state.cell)) {
-                  var style = this.view.getEdgeStyle(state);
+            if (pt == null && source != null) {
+                pt = new mxPoint(state.view.getRoutingCenterX(source), state.view.getRoutingCenterY(source));
+            } else if (pt != null) {
+                pt = pt.clone();
+            }
 
-                  if (style == mxEdgeStyle.WireConnector) {
-                      return new mxEdgeSegmentHandler(state);
-                  }
-              }
-          }
+            var first = pt;
+            if (state.cell.getGeometry().getTerminalPoint(false) != null) {
+                target.cell['sourcePoint'] = state.cell.getGeometry().getTerminalPoint(false);
+            }
 
-          return mxGraphCreateHandler.apply(this, arguments);
-      };
+            // Adds the waypoints
+            if (hints != null && hints.length > 0) {
+
+
+                for (var i = 0; i < hints.length; i++) {
+                    horizontal = !horizontal;
+                    hint = state.view.transformControlPoint(state, hints[i]);
+
+                    if (horizontal) {
+                        if (pt.y != hint.y) {
+                            pt.y = hint.y;
+                            result.push(pt.clone());
+                        }
+                    } else if (pt.x != hint.x) {
+                        pt.x = hint.x;
+                        result.push(pt.clone());
+                    }
+                }
+            } else {
+                hint = pt;
+            }
+
+            // Adds the last point
+            pt = pts[pts.length - 1];
+            if (pt == null && target != null) {
+                pt = new mxPoint(state.view.getRoutingCenterX(target), state.view.getRoutingCenterY(target));
+
+            }
+
+            if (horizontal) {
+                if (pt.y != hint.y && first.x != pt.x) {
+                    result.push(new mxPoint(pt.x, hint.y));
+                }
+            } else if (pt.x != hint.x && first.y != pt.y) {
+                result.push(new mxPoint(hint.x, pt.y));
+            }
+
+            // If the target of the edge is a splitBlock, push final coordinate as vertical.
+            if (state.cell.target != null) {
+                if (state.cell.target.parent.name == "SPLIT_f") {
+                    result.pop();
+                    result.push(new mxPoint(hint.x, pt.y));
+                }
+            }
+        };
+
+        mxStyleRegistry.putValue('wireEdgeStyle', mxEdgeStyle.WireConnector);
+
+        // This connector needs an mxEdgeSegmentHandler
+        mxGraphCreateHandler = mxGraph.prototype.createHandler;
+        mxGraph.prototype.createHandler = function(state) {
+            var result = null;
+
+            if (state != null) {
+                if (this.model.isEdge(state.cell)) {
+                    var style = this.view.getEdgeStyle(state);
+
+                    if (style == mxEdgeStyle.WireConnector) {
+                        return new mxEdgeSegmentHandler(state);
+                    }
+                }
+            }
+
+            return mxGraphCreateHandler.apply(this, arguments);
+        };
     </script>
 
 </head>
@@ -2734,10 +3155,10 @@
 <!-- Page passes the container for the graph to the program -->
 
 <body onload="main(document.getElementById('graphContainer'),
-			document.getElementById('outlineContainer'),
-		 	document.getElementById('toolbarContainer'),
-			document.getElementById('sidebarContainer'),
-			document.getElementById('statusContainer'));" style="margin:0px;">
+            document.getElementById('outlineContainer'),
+            document.getElementById('toolbarContainer'),
+            document.getElementById('sidebarContainer'),
+            document.getElementById('statusContainer'));" style="margin:0px;">
 
     <!-- Creates a container for the splash screen -->
     <div id="splash" style="position:absolute;top:0px;left:0px;width:100%;height:100%;background:white;z-index:1;">
@@ -2777,38 +3198,37 @@
 </body>
 <!-- It's good if this part happens after the entire page has loaded-->
 <script type="text/javascript">
-
     // Preload all images
     var directory = ["/blocks/", "/images/", "/palettes/"];
-    for(folder in directory) {
-      $.ajax({
-          type: "POST",
+    for (folder in directory) {
+        $.ajax({
+            type: "POST",
 
-          // Invoke filenames.php
-          url: "filenames.php",
+            // Invoke filenames.php
+            url: "filenames.php",
 
-          // Receive the resultant filenames from the php script in JSON format
-          dataType: "json",
+            // Receive the resultant filenames from the php script in JSON format
+            dataType: "json",
 
-          // Add url for the required folder
-          data: {
-            url: directory[folder]
-          },
-          success: function (data) {
-            function preload(sources) {
+            // Add url for the required folder
+            data: {
+                url: directory[folder]
+            },
+            success: function(data) {
+                function preload(sources) {
 
-                /*
-                 * @Parameter: sources will have the required filenames in the mentioned folder
-                 * For each image url, make a new image to enable preloading
-                 */
-                for (i in sources) {
-                    var image = new Image();
-                    image.src = sources[i];
+                    /*
+                     * @Parameter: sources will have the required filenames in the mentioned folder
+                     * For each image url, make a new image to enable preloading
+                     */
+                    for (i in sources) {
+                        var image = new Image();
+                        image.src = sources[i];
+                    }
                 }
+                preload(data);
             }
-            preload(data);
-          }
-      });
+        });
     }
 
     //Find out more here: http://stackoverflow.com/questions/12843418/jquery-ui-accordion-expand-collapse-all

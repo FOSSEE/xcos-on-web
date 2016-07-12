@@ -9,7 +9,7 @@ function CFSCOPE() {
         this.ymin = -15;
         this.ymax = 15;
         this.per = 30;
-        
+
         var model = scicos_model();
         model.sim = list(new ScilabString(["cfscope"]), new ScilabDouble([4]));
         model.evtin = new ScilabDouble([1]);

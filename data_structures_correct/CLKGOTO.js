@@ -15,7 +15,7 @@ function CLKGOTO() {
         this.x.graphics.id = new ScilabString(["Goto"]);
         return new BasicBlock(this.x);
     }
-    
+
     CLKGOTO.prototype.details = function CLKGOTO() {
         return this.x;
     }

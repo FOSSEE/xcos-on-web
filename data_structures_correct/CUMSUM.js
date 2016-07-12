@@ -5,7 +5,7 @@ function CUMSUM() {
 
         this.function_name = "cumsum_m";
         this.funtyp = 4;
-        
+
         model.sim = list(new ScilabString([this.function_name]), new ScilabDouble([this.funtyp]));
         model.in = new ScilabDouble([-1]);
         model.in2 = new ScilabDouble([-2]);

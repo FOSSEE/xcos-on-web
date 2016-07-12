@@ -9,7 +9,7 @@ function OUT_f () {
 		model.in = new ScilabDouble([-1]);
 		model.in2 = new ScilabDouble([-2]);
 		model.intyp = new ScilabDouble([-1]);
-		model.ipar=new ScilabDouble([this.prt]);
+		model.ipar = new ScilabDouble([this.prt]);
 		model.blocktype = new ScilabString(["c"]);
 		model.dep_ut = new ScilabBoolean([false,false]);
 		var exprs = new ScilabString([sci2exp(this.prt)]);
