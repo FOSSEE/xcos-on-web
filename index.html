@@ -1076,7 +1076,7 @@
                     Careful mapping needs to be done between these two ids.
                 */
                 editor.addAction('importXcos', function(editor, cell) {
-                    var xml = '';
+                    var xmlDoc = '';
                     var div = document.createElement('div');
                     var node = document.createElement('form');
                     div.setAttribute("id", "tempdiv");
@@ -1100,11 +1100,11 @@
                     textArea.setAttribute("cols", "60");
                     textArea.setAttribute("name", "tarea");
                     node.appendChild(textArea);
-                    var btn = document.createElement('button');
-                    btn.innerHTML = 'Submit';
-                    btn.type = "button";
-                    btn.name = "submit";
-                    node.appendChild(btn);
+                    var button = document.createElement('button');
+                    button.innerHTML = 'Submit';
+                    button.type = "button";
+                    button.name = "submit";
+                    node.appendChild(button);
 
 
                     fileNode.addEventListener('change', function(evt) {
@@ -1118,14 +1118,14 @@
                                 The following regular expressions are used to format the imported Xcos XML
                                 according to the format that is recognized by the mxCodec decoder.
                             */
-                            xml = contents;
+                            xmlDoc = contents;
                             //RegEx to replace all the newline characters.
-                            xml = xml.replace(/\n*/, '');
+                            xmlDoc = xmlDoc.replace(/\n*/, '');
                             //RegEx to replace all the space characters between any a closing and the next opening tag.
-                            xml = xml.replace(/>\s*</g, '><');
+                            xmlDoc = xmlDoc.replace(/>\s*</g, '><');
                             //RegEx to replace all the XML comments.
-                            xml = xml.replace(/<!--[\s\S]*?-->/g, '');
-                            textArea.value = xml;
+                            xmlDoc = xmlDoc.replace(/<!--[\s\S]*?-->/g, '');
+                            textArea.value = xmlDoc;
 
                         }
 
@@ -1137,16 +1137,16 @@
                         A dictionary is used to perform the mapping between the old ids and the new ids.
                         See explanation at the beginning of the function!!!
                     */
-                    var dict = {};
+                    var dictionary = {};
 
-                    btn.onclick = function() {
+                    button.onclick = function() {
 
                         wind.destroy();
 
                         graph.model.beginUpdate();
                         try {
                             var parent = graph.getDefaultParent();
-                            var doc = mxUtils.parseXml(xml);
+                            var doc = mxUtils.parseXml(xmlDoc);
                             var codec = new mxCodec(doc);
                             var rootNode = doc.documentElement;
                             /*
@@ -1202,19 +1202,19 @@
                             }
 
                             var cells = [];
-                            var elt = rootNode.firstChild;
-                            while (elt != null) {
-                                var curNodeName = elt.nodeName;
+                            var currentNode = rootNode.firstChild;
+                            while (currentNode != null) {
+                                var curNodeName = currentNode.nodeName;
 
-                                var cell = codec.decode(elt);
+                                var cell = codec.decode(currentNode);
 
-                                var curId = elt.getAttribute('id');
+                                var curId = currentNode.getAttribute('id');
 
                                 /*
                                     Maverick
                                     Finding the mxGeometry node for all the nodes.
                                 */
-                                var geometryNode = elt.firstChild;
+                                var geometryNode = currentNode.firstChild;
                                 var geometryCell = null;
 
                                 if (geometryNode != null) {
@@ -1261,7 +1261,7 @@
                                         var node = enc.encode(details);
                                         var temp = enc.encode(parent);
                                         var stylesheet = graph.getStylesheet();
-                                        var styleName = elt.getAttribute('style');
+                                        var styleName = currentNode.getAttribute('style');
                                         if (styleName.indexOf(';') != -1) {
                                             styleName = styleName.substring(0, styleName.indexOf(';'));
                                         }
@@ -1316,7 +1316,7 @@
                                         v1.blockInstance = createInstanceTag(details_instance);
                                         temporaryMapObject.newId = v1.id;
 
-                                        dict[curId] = temporaryMapObject;
+                                        dictionary[curId] = temporaryMapObject;
 
                                         //findAndCreatePorts(graph,v1,doc,curId,codec);
                                         //createPorts(graph, v1, inputPorts, controlPorts, outputPorts, commandPorts);
@@ -1332,15 +1332,15 @@
                                         // (x-5, y-5.5) is the offset to correct the position of split-block
                                         var v1 = graph.insertVertex(graph.getDefaultParent(), null, '', geometryCell.x - 5, geometryCell.y - 5.5, 10, 10, 'Split', false);
                                         temporaryMapObject.newId = v1.id;
-                                        dict[curId] = temporaryMapObject;
+                                        dictionary[curId] = temporaryMapObject;
                                         v1.setConnectable(false);
                                     }
                                 }
 
                                 if (curNodeName.endsWith('Port')) {
 
-                                    var oldParentId = elt.getAttribute('parent');
-                                    var newParentObj = dict[oldParentId];
+                                    var oldParentId = currentNode.getAttribute('parent');
+                                    var newParentObj = dictionary[oldParentId];
                                     var newParentId = newParentObj.newId;
 
                                     var newParentCell = graph.getModel().getCell(newParentId);
@@ -1371,51 +1371,51 @@
                                 }
 
                                 //To continue traversal of all the nodes.
-                                elt = elt.nextSibling;
+                                currentNode = currentNode.nextSibling;
                             }
 
                             /*
                                 Maverick
                                 Adding the ports.
                             */
-                            elt = rootNode.firstChild;
-                            while (elt != null) {
-                                var curNodeName = elt.nodeName;
+                            currentNode = rootNode.firstChild;
+                            while (currentNode != null) {
+                                var curNodeName = currentNode.nodeName;
                                 /*
                                     Maverick
                                     Handling all the ports of a given block collectively.
                                 */
                                 if (!(curNodeName.endsWith('Port') || curNodeName.endsWith('Link'))) {
-                                    var curId = elt.getAttribute('id');
-                                    var newParentObj = dict[curId];
+                                    var curId = currentNode.getAttribute('id');
+                                    var newParentObj = dictionary[curId];
                                     if (newParentObj != null) {
                                         var newParentId = newParentObj.newId;
 
                                         var newParentCell = graph.getModel().getCell(newParentId);
-                                        createPorts(graph, newParentCell, newParentObj.inputArray, newParentObj.controlArray, newParentObj.outputArray, newParentObj.commandArray, newParentObj, dict);
+                                        createPorts(graph, newParentCell, newParentObj.inputArray, newParentObj.controlArray, newParentObj.outputArray, newParentObj.commandArray, newParentObj, dictionary);
                                     }
                                 }
-                                elt = elt.nextSibling;
+                                currentNode = currentNode.nextSibling;
                             }
 
                             /*
                                 Maverick
                                 Connecting the links. 
                             */
-                            //elt=doc.documentElement.firstChild.firstChild.firstChild;
-                            elt = rootNode.firstChild;
-                            while (elt != null) {
-                                var curNodeName = elt.nodeName;
+                            
+                            currentNode = rootNode.firstChild;
+                            while (currentNode != null) {
+                                var curNodeName = currentNode.nodeName;
                                 if (curNodeName.endsWith('Link')) {
 
                                     var pointsArray = [];
-                                    var newSourceObj = dict[elt.getAttribute('source')];
-                                    var newTargetObj = dict[elt.getAttribute('target')];
+                                    var newSourceObj = dictionary[currentNode.getAttribute('source')];
+                                    var newTargetObj = dictionary[currentNode.getAttribute('target')];
 
                                     var newSourceCell = graph.getModel().getCell(newSourceObj.newId);
                                     var newTargetCell = graph.getModel().getCell(newTargetObj.newId);
 
-                                    var childNode = elt.firstChild;
+                                    var childNode = currentNode.firstChild;
                                     if (childNode != null) {
                                         if (childNode.nodeName == 'mxGeometry') {
                                             var tempNode = childNode.firstChild;
@@ -1437,7 +1437,7 @@
 
                                     createEdgeObject(graph, newSourceCell, newTargetCell, null);
                                 }
-                                elt = elt.nextSibling;
+                                currentNode = currentNode.nextSibling;
                             }
 
                         } finally {
@@ -2670,14 +2670,14 @@
             New parameters are the parentObj where the port is supposed to be added and a dictionary
             object which contains the mapping between the newly assigned Ids and imported Ids.
         */
-        function createPorts(graph, block, left, top, right, bottom, parentObj, dict) {
+        function createPorts(graph, block, left, top, right, bottom, parentObj, dictionary) {
 
-            createInputPorts(graph, block, left, top, parentObj, dict);
-            createOutputPorts(graph, block, right, bottom, parentObj, dict);
+            createInputPorts(graph, block, left, top, parentObj, dictionary);
+            createOutputPorts(graph, block, right, bottom, parentObj, dictionary);
 
         }
 
-        function createInputPorts(graph, block, leftArray, topArray, parentObj, dict) {
+        function createInputPorts(graph, block, leftArray, topArray, parentObj, dictionary) {
 
             var topNumber = topArray.length;
             var leftNumber = leftArray.length;
@@ -2690,7 +2690,7 @@
                     var portType = leftArray[i - 1];
                     //console.log(parentObj.inputIds);
                     if (parentObj != null) {
-                        createInputPort(graph, block, x, y, portType, 'left', i, dict, parentObj.inputIds);
+                        createInputPort(graph, block, x, y, portType, 'left', i, dictionary, parentObj.inputIds);
                     } else {
                         createInputPort(graph, block, x, y, portType, 'left', i);
                     }
@@ -2704,7 +2704,7 @@
                     var portType = topArray[i - 1];
                     //console.log(parentObj.controlIds);
                     if (parentObj != null) {
-                        createInputPort(graph, block, x, y, portType, 'top', i, dict, parentObj.controlIds);
+                        createInputPort(graph, block, x, y, portType, 'top', i, dictionary, parentObj.controlIds);
                     } else {
                         createInputPort(graph, block, x, y, portType, 'top', i);
                     }
@@ -2713,7 +2713,7 @@
 
         };
 
-        function createOutputPorts(graph, block, rightArray, bottomArray, parentObj, dict) {
+        function createOutputPorts(graph, block, rightArray, bottomArray, parentObj, dictionary) {
 
             var bottomNumber = bottomArray.length;
             var rightNumber = rightArray.length;
@@ -2724,7 +2724,7 @@
                     var portType = rightArray[i - 1];
                     //console.log(parentObj.outputIds);
                     if (parentObj != null) {
-                        createOutputPort(graph, block, x, y, portType, 'right', i, dict, parentObj.outputIds);
+                        createOutputPort(graph, block, x, y, portType, 'right', i, dictionary, parentObj.outputIds);
                     } else {
                         createOutputPort(graph, block, x, y, portType, 'right', i);
                     }
@@ -2737,7 +2737,7 @@
                     var portType = bottomArray[i - 1];
                     //console.log(parentObj.commandIds);
                     if (parentObj != null) {
-                        createOutputPort(graph, block, x, y, portType, 'bottom', i, dict, parentObj.commandIds);
+                        createOutputPort(graph, block, x, y, portType, 'bottom', i, dictionary, parentObj.commandIds);
                     } else {
                         createOutputPort(graph, block, x, y, portType, 'bottom', i);
                     }
@@ -2746,7 +2746,7 @@
 
         };
 
-        function createInputPort(graph, block, x, y, portType, position, ordering, dict, idArray) {
+        function createInputPort(graph, block, x, y, portType, position, ordering, dictionary, idArray) {
 
             var port = null;
             if (portType == 'COMMAND') {
@@ -2766,12 +2766,12 @@
                 }
                 port.ordering = ordering;
 
-                if (dict != null) {
+                if (dictionary != null) {
                     var obj = new Object();
                     obj.newId = port.id;
                     obj.oldId = idArray[ordering - 1];
                     //console.log(idArray[ordering-1]);
-                    dict[idArray[ordering - 1]] = obj;
+                    dictionary[idArray[ordering - 1]] = obj;
                 }
 
                 if (block.style == 'Split') {
@@ -2781,7 +2781,7 @@
             }
         };
 
-        function createOutputPort(graph, block, x, y, portType, position, ordering, dict, idArray) {
+        function createOutputPort(graph, block, x, y, portType, position, ordering, dictionary, idArray) {
             var port = null;
 
             if (portType == 'COMMAND') {
@@ -2802,12 +2802,12 @@
                 }
                 port.ordering = ordering;
 
-                if (dict != null) {
+                if (dictionary != null) {
                     var obj = new Object();
                     obj.newId = port.id;
                     obj.oldId = idArray[ordering - 1];
                     //console.log(idArray[ordering-1]);
-                    dict[idArray[ordering - 1]] = obj;
+                    dictionary[idArray[ordering - 1]] = obj;
                 }
 
                 if (block.style == 'Split') {
