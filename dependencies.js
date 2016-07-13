@@ -1418,3 +1418,80 @@ function ascii() {
     return convertAscii;
 }
 
+function genSwitchInnerDiagram(stateOpen) {
+    diagram = scicos_diagram();
+    // Input forward
+    diagram.objs.push(new IN_f().internal());
+    diagram.objs[0].graphics.pout = new ScilabDouble([5]);
+    diagram.objs[0].graphics.flip = new ScilabBoolean([true]);
+    diagram.objs[0].model.uid = new ScilabString([count]);
+    diagram.objs[0].doc = list(new ScilabString([count++]));
+
+    // Output's forward
+    diagram.objs.push(new OUT_f().internal());
+    diagram.objs[1].graphics.pin = new ScilabDouble([7]);
+    diagram.objs[1].graphics.flip = new ScilabBoolean([true]);
+    diagram.objs[1].model.outtyp = new ScilabDouble();
+    diagram.objs[1].model.uid = new ScilabString([count]);
+    diagram.objs[1].doc = list(new ScilabString([count++]));
+
+    diagram.objs.push(new CONST_m().internal());
+    diagram.objs[2].graphics.pout = new ScilabDouble([6]);
+    diagram.objs[2].graphics.flip = new ScilabBoolean([true]);
+    diagram.objs[2].graphics.exprs = new ScilabString(["0"]);
+    diagram.objs[2].graphics.out_implicit = new ScilabString(["E"]);
+    diagram.objs[2].graphics.out_style = new ScilabString(["ExplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0"]);
+    diagram.objs[2].graphics.out_label = new ScilabString([""]);
+    diagram.objs[2].model.rpar = new ScilabDouble([0]);
+    diagram.objs[2].model.uid = new ScilabString([count]);
+    diagram.objs[2].doc = list(new ScilabString([count++]));
+
+    diagram.objs.push(new SWITCH_f().internal());
+    diagram.objs[3].graphics.pin = new ScilabDouble([5], [6]);
+    diagram.objs[3].graphics.flip = new ScilabBoolean([true]);
+    diagram.objs[3].graphics.pout = new ScilabDouble([7]);
+    diagram.objs[3].graphics.in_implicit = new ScilabString(["E"], ["E"]);
+    diagram.objs[3].graphics.in_style = new ScilabString(["ExplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0"], ["ExplicitInputPort;align=left;verticalAlign=middle;spacing=10.0;rotation=0"]);
+    diagram.objs[3].graphics.in_label = new ScilabString([""], [""]);
+    diagram.objs[3].graphics.out_implicit = new ScilabString(["E"]);
+    diagram.objs[3].graphics.out_style = new ScilabString(["ExplicitOutputPort;align=right;verticalAlign=middle;spacing=10.0;rotation=0"]);
+    diagram.objs[3].graphics.out_label = new ScilabString([""]);
+    diagram.objs[3].graphics.style = new ScilabString(["SWITCH_f"]);
+    diagram.objs[3].model.in2 = new ScilabDouble([1], [1]);
+    diagram.objs[3].model.intyp = new ScilabDouble([1], [1]);
+    diagram.objs[3].model.out2 = new ScilabDouble([1]);
+    diagram.objs[3].model.uid = new ScilabString([count]);
+    diagram.objs[3].doc = list(new ScilabString([count++]));
+
+    if (stateOpen == true) {
+        diagram.objs[3].model.ipar = new ScilabDouble([1]);
+        diagram.objs[3].graphics.exprs = new ScilabString(["2"], ["2"]);
+    } else {
+        diagram.objs[3].model.ipar = new ScilabDouble([0]);
+        diagram.objs[3].graphics.exprs = new ScilabString(["2"], ["1"]);
+    }
+
+    // IN_f <-> SWITCH_f
+    diagram.objs[4] = scicos_link({
+        xx: new ScilabDouble([0], [0]),
+        yy: new ScilabDouble([0], [0]),
+        from: new ScilabDouble([1, 1, 0]),
+        to: new ScilabDouble([4, 1, 1])
+    });
+    // CONST_m <-> SWITCH_f
+    diagram.objs[5] = scicos_link({
+        xx: new ScilabDouble([0], [0]),
+        yy: new ScilabDouble([0], [0]),
+        from: new ScilabDouble([3, 1, 0]),
+        to: new ScilabDouble([4, 2, 1])
+    });
+    // SWITCH_f <-> OUT_f
+    diagram.objs[6] = scicos_link({
+        xx: new ScilabDouble([0], [0]),
+        yy: new ScilabDouble([0], [0]),
+        from: new ScilabDouble([4, 1, 0]),
+        to: new ScilabDouble([2, 1, 1])
+    });
+
+    return diagram;
+}
