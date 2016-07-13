@@ -1102,7 +1102,8 @@
 
                         var xsl = loadXMLDoc("finalmodsheet.xsl");
 
-                        xsltProcessor = new XSLTProcessor();
+                        var xsltProcessor = new XSLTProcessor();
+                        //console.log(xsltProcessor);
                         xsltProcessor.importStylesheet(xsl);
                         resultDocument = xsltProcessor.transformToDocument(xml);
                         /*
