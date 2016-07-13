@@ -818,12 +818,12 @@
 
                     if (mxUtils.isNode(cell.value)) {
                         var stylesheet = graph.getStylesheet();
-						var attribute = cell.value.getAttribute('style');
+						            var attribute = cell.value.getAttribute('style');
                         if(attribute == null){
                             attribute = cell.value.getAttribute('interfaceFunctionName');
                         }
                         var style = stylesheet.styles[attribute];
-						var displayedLabel = style['displayedLabel'];
+						            var displayedLabel = style['displayedLabel'];
                         if (displayedLabel != null) {
                             var displayParameter = cell.blockInstance.instance.displayParameter;
                             for (i in displayParameter) {
@@ -919,7 +919,7 @@
 
                           // Set label
                           style['label'] = label;
-                          style['imagePath'] = style['image'];
+                          //style['imagePath'] = style['image'];
                           // Set image as null
                           style['image'] = null;
 
@@ -1104,12 +1104,22 @@
                       }
                     }
 
+                    /*
+                     * TODO: Incomplete
+                     *
+                     */
                     for(index in edgesNotInSuperBlock) {
                       var edge = edgesNotInSuperBlock[index];
                       var previousTarget = edge.target;
                       var targetPort = groupPorts[index];
                       graph.getModel().setTerminal(edge, targetPort, false);
                       var edge = graph.insertEdge(graph.getDefaultParent(), null, '', connectingBlocks[index].getChildAt(0), previousTarget);
+                    }
+
+                    // Set all group ports invisible
+                    for(index in groupPorts) {
+                      var groupPort = groupPorts[index];
+                      groupPort.setVisible(false);
                     }
 
                     // Add the connecting block to the superblock
@@ -1230,8 +1240,9 @@
 
                             // If the cell is a vertex, select the cell
                             else {
+
                                 // If the cell is a superblock
-                                if(selectionCells[k].value.getAttribute('style') == 'SUPER_f') {
+                                if(selectionCells[k].style == 'SUPER_f') {
                                   var childCount = selectionCells[k].getChildCount();
 
                                   // Push every cell inside the super block for deletion
@@ -1252,7 +1263,6 @@
                                   cells.push(selectionCells[k]);
                                 }
                                 else {
-                                  console.log('insid');
                                   var portCount = selectionCells[k].getChildCount();
                                   /*
                                       Maverick, Adhitya
