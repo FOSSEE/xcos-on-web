@@ -197,6 +197,49 @@
                              */
                             if(cell.value.getAttribute('style') != 'SUPER_f') {
                               menu.addItem('Selection to superblock', 'images/superblock.png', function() {
+                                  // Defines the default group to be used for grouping. The
+                                  // default group is a field in the mxEditor instance that
+                                  // is supposed to be a cell which is cloned for new cells.
+                                  // The groupBorderSize is used to define the spacing between
+                                  // the children of a group and the group bounds.
+
+                                  /*
+                                   * @jiteshjha
+                                   * Create and add data structure to superblock
+                                   * Courtesy : Chhavi and Nimish for the code and logic
+                                   */
+
+                                  var details_instance = new window['SUPER_f']();
+                                  var details = details_instance.define();
+                                  var enc = new mxCodec(mxUtils.createXmlDocument());
+                                  var node = enc.encode(details);
+                                  var temp = enc.encode(graph.getDefaultParent());
+                                  node.setAttribute('parent', temp.getAttribute('id'));
+
+                                  var blockModel = details_instance.x.model;
+                                  var graphics = details_instance.x.graphics;
+
+                                  var group = new mxCell(node, new mxGeometry(0, 0, 80, 80), 'SUPER_f');
+                                  console.log(group);
+                                  group.blockInstance = createInstanceTag(details_instance);
+
+                                  // Set the super block as a vertex
+                                  group.setVertex(true);
+
+                                  // The super block shouldn't be connectable by the user
+                                  group.setConnectable(false);
+
+                                  /*
+                                   * Default grouping for the web app is
+                                   * our defined superblock 'group'
+                                   */
+                                  editor.defaultGroup = group;
+
+                                  /*
+                                   * For testing purposes, can be eliminated in production version
+                                   * Sets the super border size under expanded version
+                                   */
+                                  editor.groupBorderSize = 100;
                                   editor.execute('groupOrUngroup');
                               });
                             }
@@ -212,7 +255,7 @@
                                * If the selected super block is selected,
                                * enter the super block as a new graph
                                */
-                              if(graph.isCellCollapsed(cell) == true) {
+                              if(graph.isCellCollapsed(cell) == true && graph.getSelectionCells().length == 1) {
                                 menu.addItem('Expand superblock', null, function() {
                                     editor.execute('enterGroup');
                                 });
@@ -295,50 +338,6 @@
                 //var config = mxUtils.load('config/editor-commons.xml').getDocumentElement();
                 var config = mxUtils.load('config/keyhandler-commons.xml').getDocumentElement();
                 editor.configure(config);
-
-                // Defines the default group to be used for grouping. The
-        				// default group is a field in the mxEditor instance that
-        				// is supposed to be a cell which is cloned for new cells.
-        				// The groupBorderSize is used to define the spacing between
-        				// the children of a group and the group bounds.
-
-                /*
-                 * @jiteshjha
-                 * Create and add data structure to superblock
-                 * Courtesy : Chhavi and Nimish for the code and logic
-                 */
-
-                var details_instance = new window['SUPER_f']();
-                var details = details_instance.define();
-                var enc = new mxCodec(mxUtils.createXmlDocument());
-                var node = enc.encode(details);
-                var temp = enc.encode(graph.getDefaultParent());
-                node.setAttribute('parent', temp.getAttribute('id'));
-
-                var blockModel = details_instance.x.model;
-                var graphics = details_instance.x.graphics;
-
-        				var group = new mxCell(node, new mxGeometry(), 'SUPER_f');
-
-                group.blockInstance = createInstanceTag(details_instance);
-
-                // Set the super block as a vertex
-        				group.setVertex(true);
-
-                // The super block shouldn't be connectable by the user
-        				group.setConnectable(false);
-
-                /*
-                 * Default grouping for the web app is
-                 * our defined superblock 'group'
-                 */
-        				editor.defaultGroup = group;
-
-                /*
-                 * For testing purposes, can be eliminated in production version
-                 * Sets the super border size under expanded version
-                 */
-        				editor.groupBorderSize = 100;
 
                 graph.isCellSelectable = function(cell) {
                     if (cell.isConnectable() == true && cell.isEdge() == false) {
@@ -968,12 +967,6 @@
                     // get all selectedCells
                     var selectedCells = graph.getSelectionCells();
 
-                    // create a super block
-                    editor.execute('group');
-
-                    // get the super block
-                    var group = cell.getParent();
-
                     // Store all edges among selectedEdges here
                     var selectedEdges = [];
 
@@ -983,9 +976,24 @@
 
                       // If the cell is an edge, push it into selectedEdges
                       if(cell != null && cell.isEdge() == true) {
-                        selectedEdges.push(cell);
+                        var sourceParent = cell.source.getParent();
+                        var targetParent = cell.target.getParent();
+                        if($.inArray(sourceParent, selectedCells) != -1
+                          && $.inArray(targetParent, selectedCells) != -1) {
+                          selectedEdges.push(cell);
+                        }
+                        else {
+                          graph.getSelectionModel().removeCell(cell);
+                          selectedCells.splice(selectedCells.indexOf(cell), 1);
+                        }
                       }
                     }
+
+                    // Create a super block
+                    editor.execute('group');
+
+                    // Get the super block
+                    var group = selectedCells[0].getParent();
 
                     /*
                      * Find all edges which are not included
@@ -1011,7 +1019,6 @@
 
                         // If there exists an edge,
                         if(edge != null) {
-
                           // If thr edge is not in the selectedEdges
                           // NOTE: Reference : https://api.jquery.com/jQuery.inArray/
                           if($.inArray(edge, selectedEdges) == -1) {
@@ -1110,10 +1117,19 @@
                      */
                     for(index in edgesNotInSuperBlock) {
                       var edge = edgesNotInSuperBlock[index];
-                      var previousTarget = edge.target;
+                      var previousTarget = null;
+                      var isSource = null;
+                      if($.inArray(edge.source.getParent(), selectedCells) == -1) {
+                        previousTarget = edge.target;
+                        isSource = false;
+                      }
+                      else if($.inArray(edge.target.getParent(), selectedCells) == -1) {
+                        previousTarget = edge.source;
+                        isSource = true;
+                      }
                       var targetPort = groupPorts[index];
-                      graph.getModel().setTerminal(edge, targetPort, false);
-                      var edge = graph.insertEdge(graph.getDefaultParent(), null, '', connectingBlocks[index].getChildAt(0), previousTarget);
+                      graph.getModel().setTerminal(edge, targetPort, isSource);
+                      graph.insertEdge(graph.getDefaultParent(), null, '', connectingBlocks[index].getChildAt(0), previousTarget);
                     }
 
                     // Set all group ports invisible
