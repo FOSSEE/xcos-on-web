@@ -1027,23 +1027,39 @@
                     // Number of ports = edges not in the superblock
                     var numberOfPorts = edgesNotInSuperBlock.length;
                     // Store the ports to be added to the superblock in portList
-                    var portList = [];
+                    var InputPortList1 = [];
+                    var InputPortList2 = [];
+                    var OutputPortList1 = [];
+                    var OutputPortList2 = [];
                     for(var i = 0; i < numberOfPorts; i++) {
-                      // Get the type of the link
-                      var target = edgesNotInSuperBlock[i].name;
-                      // Push into portList according to type of edge
-                      if(target == 'ExplicitLink') {
-                        portList.push('E');
+                      var edge = edgesNotInSuperBlock[i];
+                      var target = edge.name;
+                      if($.inArray(edge.source.getParent(), selectedCells) == -1) {
+                        if(target == 'ExplicitLink') {
+                          InputPortList1.push('E');
+                        }
+                        else if(target == 'ImplicitLink') {
+                          InputPortList1.push('I');
+                        }
+                        else if(target == 'CommandControlLink') {
+                          InputPortList2.push('CONTROL');
+                        }
                       }
-                      else if(target == 'ImplicitLink') {
-                        portList.push('I');
-                      }
-                      else if(target == 'CommandControlLink') {
-                        portList.push('CONTROL');
+                      else if($.inArray(edge.target.getParent(), selectedCells) == -1) {
+                        if(target == 'ExplicitLink') {
+                          OutputPortList1.push('E');
+                        }
+                        else if(target == 'ImplicitLink') {
+                          OutputPortList1.push('I');
+                        }
+                        else if(target == 'CommandControlLink') {
+                          OutputPortList2.push('COMMAND');
+                        }
                       }
                     }
+
                     // Create all ports associated with the superblock
-                    createPorts(editor.graph, group, portList, [], [], []);
+                    createPorts(editor.graph, group, InputPortList1, InputPortList2, OutputPortList1, OutputPortList2);
                     // Get all the group ports as objects in groupPorts
                     var groupPorts = [];
                     for(var i = 0; i < group.getChildCount(); i++) {
@@ -1054,45 +1070,76 @@
                         groupPorts.push(child);
                       }
                     }
+
                     // Add all the connectingBlocks
-                    // connectingBlocks are {IN_f, CLKINV_f, INIMPL_f}
+                    // connectingBlocks for incoming edges are {IN_f, CLKINV_f, INIMPL_f}
+                    // connectingBlocks for outgoing edges are {OUT_f, CLKOUTV_f, OUTIMPL_f}
                     var connectingBlocks = [];
                     // If there are edges not in superblock related to super block
                     if(edgesNotInSuperBlock.length != 0) {
                       var connectingBlock = null;
                       var x = 0;
                       var y = 0;
+
+                      var xIn = 0;
+                      var yIn = 0;
+
+                      var xOut = group.getGeometry().width;
+                      var yOut = group.getGeometry().height;
+
                       for(var i = 0; i < edgesNotInSuperBlock.length; i++) {
+                        var edge = edgesNotInSuperBlock[i];
+                        var target = edge.name;
                         var ifaceFuncName = null;
-                        var target = edgesNotInSuperBlock[i].name;
-                        var portType = [];
-                        if(target == 'ExplicitLink') {
-                          ifaceFuncName = 'IN_f';
-                          portType.push('E');
+                        var InputPortList1 = [];
+                        var InputPortList2 = [];
+                        var OutputPortList1 = [];
+                        var OutputPortList2 = [];
+                        if($.inArray(edge.source.getParent(), selectedCells) == -1) {
+                          yIn += 60;
+                          x = xIn;
+                          y = yIn;
+                          if(target == 'ExplicitLink') {
+                            ifaceFuncName = 'IN_f';
+                            OutputPortList1.push('E');
+                          }
+                          else if(target == 'ImplicitLink') {
+                            ifaceFuncName = 'CLKINV_f';
+                            OutputPortList1.push('I');
+                          }
+                          else if(target == 'CommandControlLink') {
+                            ifaceFuncName = 'INIMPL_f';
+                            OutputPortList2.push('COMMAND');
+                          }
                         }
-                        else if(target == 'ImplicitLink') {
-                          ifaceFuncName = 'CLKINV_f';
-                          portType.push('I');
+                        else if($.inArray(edge.target.getParent(), selectedCells) == -1) {
+                          yOut += 60;
+                          x = xOut;
+                          y = yOut;
+                          if(target == 'ExplicitLink') {
+                            ifaceFuncName = 'OUT_f';
+                            InputPortList1.push('E');
+                          }
+                          else if(target == 'ImplicitLink') {
+                            ifaceFuncName = 'CLKOUTV_f';
+                            InputPortList1.push('I');
+                          }
+                          else if(target == 'CommandControlLink') {
+                            ifaceFuncName = 'OUTIMPL_f';
+                            InputPortList2.push('CONTROL');
+                          }
                         }
-                        else if(target == 'CommandControlLink') {
-                          ifaceFuncName = 'INIMPL_f';
-                          portType.push('COMMAND');
-                        }
+
                         // Create the connectingBlock
                         connectingBlock = addConnectingBlock(graph, x, y, ifaceFuncName, 40, 40, false);
-                        y += 60;
-                        if(target == 'CommandControlLink') {
-                          createPorts(graph, connectingBlock, [], [], [], portType);
-                        }
-                        else {
-                          createPorts(graph, connectingBlock, [], [], portType, []);
-                        }
+                        createPorts(graph, connectingBlock, InputPortList1, InputPortList2, OutputPortList1, OutputPortList2);
+
                         graph.addCells([connectingBlock], group);
                         connectingBlocks.push(connectingBlock);
                       }
                     }
                     /*
-                     * TODO: Incomplete
+                     *
                      *
                      */
                     for(index in edgesNotInSuperBlock) {
@@ -1109,7 +1156,14 @@
                       }
                       var targetPort = groupPorts[index];
                       graph.getModel().setTerminal(edge, targetPort, isSource);
-                      graph.insertEdge(graph.getDefaultParent(), null, '', connectingBlocks[index].getChildAt(0), previousTarget);
+                      if($.inArray(edge.source.getParent(), selectedCells) == -1) {
+                        graph.insertEdge(graph.getDefaultParent(), null, '', connectingBlocks[index].getChildAt(0), previousTarget);
+                      }
+                      else if($.inArray(edge.target.getParent(), selectedCells) == -1) {
+                        graph.insertEdge(graph.getDefaultParent(), null, '', previousTarget, connectingBlocks[index].getChildAt(0));
+                      }
+
+                      connectingBlocks[index].getChildAt(0).getEdgeAt(0).getGeometry().points = null;
                     }
                     // Set all group ports invisible
                     for(index in groupPorts) {
@@ -1117,7 +1171,7 @@
                       groupPort.setVisible(false);
                     }
                     // Add the connecting block to the superblock
-                    editor.graph.foldCells(true, true, [group]);
+                    editor.graph.foldCells(true, false, [group]);
                   }
                   finally {
                     graph.getModel().endUpdate();
