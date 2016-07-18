@@ -1,7 +1,7 @@
 /**
  * Servlet code for xcos-on-web
  * Authors: Maverick and Adhitya
- * Description: Thefollowing servlet creates a shell command to run Scilab
+ * Description: The following servlet creates a shell command to run Scilab
  * without any GUI/simulation window. The diagram sent from client
  * is stored in a usr-xxx.xcos file and is then simulated.
  * The result is a .png file which is then sent back to the client.
@@ -43,8 +43,7 @@ public class SciExec extends GenericServlet {
         /**
          * Maverick:
          * Ignore the following block.
-         */
-        /**
+		 *
          * commands.add("plot3d();xs2png(gcf(),'img2.png');exit();"); String
          * data=request.getParameter("name"); pw.println(data);
          * commands.add("echo "+data+" >
