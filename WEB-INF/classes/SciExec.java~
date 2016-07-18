@@ -1,0 +1,91 @@
+import java.io.*;
+import javax.servlet.*;
+import java.util.*;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.FilenameUtils;
+
+
+public class SciExec extends GenericServlet {
+
+
+	public void service(ServletRequest request,ServletResponse response) throws ServletException, IOException
+	{   
+        PrintWriter pw = response.getWriter();
+
+        
+        
+
+        InputStream is = null;
+        ByteArrayOutputStream baos = null;
+        List<String> commands = new ArrayList<String>();
+        commands.add("scilab-adv-cli");
+        commands.add("-noatomsautoload");
+        commands.add("-nogui");
+        commands.add("-nb");
+        commands.add("-e");
+
+        String imagePath="";
+        String fileNameWithoutExt="";
+        //commands.add("plot3d();xs2png(gcf(),'img2.png');exit();");
+        /*String data=request.getParameter("name");
+        pw.println(data);
+        commands.add("echo "+data+" > /home/saarang/Softwares/apache-tomcat-8.0.36/webapps/sci/servlet/file.xcos");*/
+        //commands.add("driver('PNG');xinit('/home/saarang/apache-tomcat-8.0.36/webapps/worknogui/servlet/ans"+k+".png');loadXcosLibs();importXcosDiagram('/home/saarang/apache-tomcat-8.0.36/file.xcos');xcos_simulate(scs_m,4);mode(2);xend();quit();");
+        ProcessBuilder pb = new ProcessBuilder(commands);
+        try 
+        {
+            InputStream inputStream = request.getInputStream();
+
+            File xcosFile = File.createTempFile("usr-", ".xcos");
+            OutputStream outputStream = new FileOutputStream(xcosFile);
+            IOUtils.copy(inputStream, outputStream);
+            outputStream.close();
+
+            String tempPath = xcosFile.getAbsolutePath();
+
+            String parentPath = xcosFile.getParent();
+            fileNameWithoutExt = FilenameUtils.removeExtension(xcosFile.getName());
+
+            imagePath = "/home/saarang/apache-tomcat-8.0.36/webapps/xcos-on-web/servlet"+File.separator + fileNameWithoutExt + ".png";
+
+            commands.add("driver('PNG');xinit('"+imagePath+"');loadXcosLibs();importXcosDiagram('"+tempPath+"');xcos_simulate(scs_m,4);mode(2);xend();quit();");
+
+            Process prs = pb.start();
+            is = prs.getInputStream();
+            byte[] b = new byte[1024];
+            int size = 0;
+            baos = new ByteArrayOutputStream();
+            while((size = is.read(b)) != -1){
+                baos.write(b, 0, size);
+            }
+            System.out.println(new String(baos.toByteArray()));
+
+
+        } 
+        catch (IOException e) 
+        {
+            e.printStackTrace();
+        } 
+        catch(Exception e)
+        {
+            /*System.out.println(e.toString()+"Some Exception");*/
+            pw.println("Exception");
+        }
+        finally
+        {
+            try {
+                if(is != null) is.close();
+                if(baos != null) baos.close();
+            } catch (Exception ex){}
+        }
+        pw.println("servlet/"+fileNameWithoutExt+".png");
+        //pw.println(request.getParameter("name"));
+        pw.close();
+    }
+   
+}
