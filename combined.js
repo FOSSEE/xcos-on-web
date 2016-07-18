@@ -1473,6 +1473,25 @@ function CONST_m() {
         this.x.graphics.exprs = new ScilabString([sci2exp(this.c)]);
         return new BasicBlock(this.x);
     }
+    CONST_m.prototype.internal = function CONST_m() {
+        this.c = [1];
+        var model = new scicos_model();
+        model.sim = list(new ScilabString(["cstblk4"]), new ScilabDouble([4]));
+        model.in = new ScilabDouble();
+        model.out = new ScilabDouble([this.c.length]);
+        model.in2 = new ScilabDouble();
+        model.out2 = new ScilabDouble([this.c.length]);
+        model.rpar = new ScilabDouble(this.c);
+        model.opar = list();
+        model.blocktype = new ScilabString(["d"]);
+        model.dep_ut = new ScilabBoolean([false, false]);
+
+        var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"CONST_m\",sz(1),sz(2));"]);
+        var exprs = new ScilabString([sci2exp(this.c)]);
+        var block = new standard_define(new ScilabDouble([80, 80]), model, exprs, gr_i); // 1 -> 80
+        block.graphics.style = new ScilabString(["CONST_m"]);
+        return block;
+    }
     CONST_m.prototype.define = function CONST_m() {
         this.c = [1];
         var model = new scicos_model();
@@ -9428,6 +9447,36 @@ function SELECT_m() {
     }
 }
 
+function SELF_SWITCH() {
+
+    SELF_SWITCH.prototype.define = function SELF_SWITCH() {
+        this.stateOpen = true;
+
+        this.x = scicos_block();
+        this.x.gui = new ScilabString(["SELF_SWITCH"]);
+        this.x.graphics.sz = new ScilabDouble([2, 2]);
+        this.x.graphics.gr_i = new ScilabDouble();
+        this.x.graphics.pin = new ScilabDouble([0]);
+        this.x.graphics.pout = new ScilabDouble([0]);
+        this.x.model.sim = new ScilabString(["csuper"]);
+        this.x.model.in = new ScilabDouble([1]);
+        this.x.model.out = new ScilabDouble([1]);
+        this.x.model.blocktype = new ScilabString(["h"]);
+        this.x.model.dep_ut = new ScilabBoolean([false, false]);
+        this.x.model.rpar = genSwitchInnerDiagram(this.stateOpen);
+        this.x.model.opar = list(new ScilabBoolean([this.stateOpen]));
+        this.x.graphics.in_implicit = new ScilabString(["E"]);
+        this.x.graphics.in_style = new ScilabString([""]);
+        this.x.graphics.out_implicit = new ScilabString(["E"]);
+        this.x.graphics.out_style = new ScilabString([""]);
+        this.x.graphics.style = new ScilabString(["SELF_SWITCH;SELF_SWITCH_OFF"]);
+        return new BasicBlock(this.x);
+    }
+
+    SELF_SWITCH.prototype.details = function SELF_SWITCH() {
+        return this.x;
+    }
+}
 function SHIFT() {
 
     SHIFT.prototype.define = function SHIFT() {
@@ -10643,6 +10692,27 @@ function SWITCH_f() {
         var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"SWITCH_f\",sz(1),sz(2));"]);
         this.x = new standard_define(new ScilabDouble([2, 2]), model, exprs, gr_i);
         return new BasicBlock(this.x);
+    }
+    
+    SWITCH_f.prototype.internal = function SWITCH_f() {
+    	this.i0 = 0;
+    	this.in1 = [[-1],[-1]];
+    	this.nin = 2;
+    
+    	var model = scicos_model();
+    	model.sim=list(new ScilabString(["switchn"]),new ScilabDouble([2]));
+    	model.in=new ScilabDouble(...this.in1);
+    	model.out = new ScilabDouble([-1]);
+    	model.ipar=new ScilabDouble([this.i0]);
+    	model.blocktype = new ScilabString(["c"]);
+    	model.firing = new ScilabDouble();
+    	model.dep_ut = new ScilabBoolean([true,true]);
+    
+    	var exprs = new ScilabString([this.nin],[this.i0+1]);
+    
+    	var gr_i = new ScilabString(["xstringb(orig(1),orig(2),\"SWITCH_f\",sz(1),sz(2));"]);
+    	var block=new standard_define(new ScilabDouble([2,2]),model,exprs,gr_i);
+    	return block;
     }
 
     SWITCH_f.prototype.details = function SWITCH_f() {

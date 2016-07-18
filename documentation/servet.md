@@ -1,0 +1,4 @@
+ - Download apache-tomcat-xxx.
+ - Create a folder 'temp' in the tomcat directory.
+ - Paste the entire 'xcos-on-web' directory inside the '/path/to/tomcat/webapps' directory.
+ - Run the server and access using a web browser.
