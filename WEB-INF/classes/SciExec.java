@@ -43,7 +43,7 @@ public class SciExec extends GenericServlet {
         /**
          * Maverick:
          * Ignore the following block.
-		 *
+         * 
          * commands.add("plot3d();xs2png(gcf(),'img2.png');exit();"); String
          * data=request.getParameter("name"); pw.println(data);
          * commands.add("echo "+data+" >
