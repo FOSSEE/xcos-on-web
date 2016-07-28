@@ -4,10 +4,13 @@ Xcos is an open source graphic simulator available with Scilab. Scilab can be in
 The main aim of this project will be to port core functionalities of Xcos to a browser-only version that can be used without installing additional plugins or software.
 
 ## Installation
-Host the contents of this repository on Apache2 and run index.html
+
+* sudo apt-get scilab
+* mvn clean install
+* Host the contents of this repository on Tomcat and run index.html
 
 ## License information
-This project has a Creative Commons Public License. 
+This project has a Creative Commons Public License.
 
 For further information please refer to 'license.txt'-file
 
@@ -16,15 +19,15 @@ For further information please refer to 'license.txt'-file
 You can get support in the community mailing list and forums:
 
     https://groups.google.com/forum/#!forum/xcos-on-web
-    
+
 ## Demo
 
-An online demo with continous integration with repository can be found over here:
+An online demo can be found over here:
 
-    https://xcos.herokuapp.com/
+    https://xcos.fossee.in/
 
 Our application is still in development stage - let us know your feedback!
-    
+
 ## Contributors
 
 * Amit Kumar Yadav, Motilal Nehru National Institute of Technology, Allahabad
