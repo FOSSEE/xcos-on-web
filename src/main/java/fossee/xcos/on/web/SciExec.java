@@ -37,6 +37,7 @@ public class SciExec extends GenericServlet {
 
         String imagePath = "";
         String fileNameWithoutExt = "";
+		String tempPath = "";
 
         /**
          * Maverick: Ignore the following block.
@@ -60,7 +61,7 @@ public class SciExec extends GenericServlet {
             IOUtils.copy(inputStream, outputStream);
             outputStream.close();
 
-            String tempPath = xcosFile.getAbsolutePath();
+            tempPath = xcosFile.getAbsolutePath();
 
             String parentPath = xcosFile.getParent();
             fileNameWithoutExt = FilenameUtils.removeExtension(xcosFile.getName());
@@ -123,5 +124,10 @@ public class SciExec extends GenericServlet {
         }
         in.close();
         out.flush();
+		
+		// Adhitya: Delete files after usage
+		new File(tempPath).delete();
+		new File(imagePath).delete();
     }
+	
 }
