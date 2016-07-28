@@ -7,7 +7,7 @@ The main aim of this project will be to port core functionalities of Xcos to a b
 
 * sudo apt-get install scilab
 * mvn clean install
-* Host the contents of this repository on Tomcat and run index.html
+* Host on Tomcat and run index.html
 
 ## License information
 This project has a Creative Commons Public License.
