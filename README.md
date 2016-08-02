@@ -5,8 +5,10 @@ The main aim of this project will be to port core functionalities of Xcos to a b
 
 ## Installation
 
-* sudo apt-get install scilab
-* mvn clean install
+* First install Scilab by,  
+    `sudo apt-get install scilab`
+* Now `cd` into the cloned repository  
+    `mvn clean install`
 * Host on Tomcat and run index.html
 
 ## License information
