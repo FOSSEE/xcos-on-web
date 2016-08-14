@@ -310,7 +310,7 @@
                          * the super block object.
                          */
                          if(graph.getCurrentRoot() != null) {
-                           menu.addItem('Exit SuperBlock', '', function() {
+                           menu.addItem('Exit SuperBlock', null, function() {
                                editor.execute('exitGroup');
                            });
                          }
@@ -938,7 +938,7 @@
                           var label = '<img src="' + style['image'] + '" height="80" width="80">';
                           // Set label
                           style['label'] = label;
-                          //style['imagePath'] = style['image'];
+                          style['imagePath'] = style['image'];
                           // Set image as null
                           style['image'] = null;
                           // Add the label as a part of node
