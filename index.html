@@ -193,8 +193,6 @@
                              * @jiteshjha
                              * To make a selection of mxCells a superblock,
                              * call groupOrUngroup action defined
-                             * NOTE: Change if condition after data structures
-                             *       for SUPER_f is implemented
                              */
                             if(cell.value.getAttribute('style') != 'SUPER_f') {
                               menu.addItem('Selection to superblock', 'images/superblock.png', function() {
@@ -724,7 +722,11 @@
                             content.innerHTML = this.convertValueToString(cell);
                             showModalWindow(this, 'Properties', content, 400, 300);
                             */
-                            if (cell.isVertex() == true) {
+                            if((cell.value.getAttribute('style') != null &&
+                              cell.value.getAttribute('style') == 'SUPER_f')) {
+                                editor.execute('enterGroup');
+                            }
+                            else if (cell.isVertex() == true) {
                                 showPropertiesWindow(graph, cell);
                             }
                         }
