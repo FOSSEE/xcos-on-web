@@ -30,14 +30,15 @@ An online demo can be found over here:
 
 Our application is still in development stage - let us know your feedback!
 
-## Contributors
+## Developers and Testers
 
 * Amit Kumar Yadav, Motilal Nehru National Institute of Technology, Allahabad
 * Chhavi Agarwal, National Institute of Technology, Kurukshetra
+* Hrishikesh Hiraskar, National Institute of Technology Karnataka, Surathkal
 * Jitesh Jha, Manipal Institute of Technology, Manipal
 * Kumar Saarang Singh, Manipal Institute of Technology, Manipal
 * Nimish Singhal, Manipal Institute of Technology, Manipal
 * Pooja Soundalgekar, National Institute of Technology Karnataka, Surathkal
+* Supritha Suresh, Visvesvaraya Technological University, Karnataka
+* Vishnu Nair, Indian Institute of Technology, Bombay
 * Adhitya Kamakshidasan, Visvesvaraya National Institute of Technology, Nagpur
-* Inderpreet Arora
-* Srikant Patnaik
