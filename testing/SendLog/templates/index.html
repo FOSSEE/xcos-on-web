@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!--
+Hrishi Hiraskar
+31 August 2016
+-->
+<!DOCTYPE HTML>
+<html>
+    <head><title>Send Time</title></head>
+<body onload="get_data()">
+	
+	<h3>Data from scilab-log-0.txt</h2>
+        <span id="foo"></span>
+
+	<script type="text/javascript">
+        var eventSource;
+        
+        function get_data(){
+            eventSource = new EventSource('/SendLog');
+			// Start listening to server
+            eventSource.addEventListener("log", function(event){
+               document.getElementById('foo').innerHTML += event.data + "<br/>";
+			   // Scroll to bottom of page
+			   window.scrollTo(0, document.body.scrollHeight);
+            }, false);	
+			// Stop listening
+            eventSource.addEventListener("DONE", function(event){
+               eventSource.close(); 	// Close connection
+            }, false);
+        }
+        
+	</script>
+</body>
+</html>
