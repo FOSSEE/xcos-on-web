@@ -14,12 +14,12 @@ app = Flask(__name__)
 def event_stream():
 	# Open the log file
 	log_dir = "../../bin/"				# Log file directory
-	log_name = "scilab-log-0.txt"		# Log file name
+	log_name = "scilab-log-0.txt"			# Log file name
 	logfile = open(log_dir + log_name, "r")
 	# Seek file pointer to the end of file
 	logfile.seek(0,2)
 	# Start sending log
-	LOOK_DELAY = 0.01					# Delay time to look for new line (in s)
+	LOOK_DELAY = 0.01				# Delay time to look for new line (in s)
 	while 1:
 		line = logfile.readline()
 		if not line:
@@ -28,7 +28,7 @@ def event_stream():
 			gevent.sleep(LOOK_DELAY)
 			continue
 		print(line)
-		yield "event: log\ndata: "+" "+line+"\n\n";
+		yield "event: log\ndata: "+line+"\n\n";
 		
 @app.route('/SendLog')
 def sse_request():
@@ -40,7 +40,7 @@ def page():
 	return render_template('index.html')
 
 if __name__ == '__main__':
-	# Set server address 127.0.0.1:8080/
+	# Set server address 127.0.0.1:8001/
 	http_server = WSGIServer(('127.0.0.1', 8001), app)
 	http_server.serve_forever()
 
