@@ -17,36 +17,39 @@ LOOK_DELAY = 0.01
 def get_line(file):
 	# Function to get a new line from file
 	line = file.readline()
-	if not line:
+	while not line:
 		# If no new line is found
 		# Wait for some time and look again
 		gevent.sleep(LOOK_DELAY)
-		return get_line(file)
-	else:
-		return line
+		line = file.readline()
+	return line
 		
 def parse_line(line):
 	# Function to parse the line
-	# Returns fig ID if new fig created
-	#         -1 if current fig end
-	#         -2 otherwise
+	# Returns tuple of figure ID and state
+	# state = 0 if new figure is created
+	#         1 if current fig end
+	#         2 otherwise
 	linewords = line.split(' ')
-	if linewords.count("Initialization") == 1:
-		# New fig created
+	if linewords[0] == "Initialization":
+		# New figure created
 		# Get fig id
-		figID = int(linewords[-1])
-		return figID
-	elif linewords.count("Ending") == 1:
-		# Current fig end
-		return -1
+		figureID = int(linewords[-1])
+		return (figureID, 0)
+	elif linewords[0] == "Ending":
+		# Current figure end
+		# Get fig id
+		figureID = int(linewords[-1])
+		return (figureID, 1)
 	else:
-		# Current fig coordinates
-		return -2
+		# Current figure coordinates
+		figureID = int(linewords[2])
+		return (figureID, 2)
 
 def event_stream():
-	# List to store fig IDs
-	figList = []
-	# Log  file directory
+	# List to store figure IDs
+	figureList = []
+	# Log file directory
 	log_dir = "../../bin/"
 	# Log file name	
 	log_name = "scilab-log-0.txt"
@@ -54,31 +57,25 @@ def event_stream():
 	logfile = open(log_dir + log_name, "r")
 	# Seek the file pointer to the end of file
 	logfile.seek(0,2)
-	figID = 0
-	# This loop is to get the first fig ID
-	while len(figList) == 0:
-		line = get_line(logfile)
-		# Check if there is new fig
-		r = parse_line(line)
-		if r >= 0:
-			# Add fig ID to list
-			figID = r
-			figList.append(figID)
-			break
+	line = get_line(logfile)
+	r = parse_line(line)
+	figureID = r[0]
+	figureList.append(figureID)
 	# Start sending log
-	while len(figList) > 0:
+	while len(figureList) > 0:
 		line = get_line(logfile)
-		# Parse the line to check state
+		# Parse the line to get ID and state
 		r = parse_line(line)
-		# Check if there is new fig
-		if r >= 0:
-			# Add fig ID to list
-			figID = r
-			figList.append(figID)
-		elif r == -1:
-			# End of fig
-			# Remove fig ID from list
-			figList.remove(figID)
+		figureID = r[0]
+		state = r[1]
+		if state == 0:
+			# New figure created
+			# Add figure ID to list
+			figureList.append(figureID)
+		elif state == 1:
+			# End of figure
+			# Remove figure ID from list
+			figureList.remove(figureID)
 		else:
 			yield "event: log\ndata: "+line+"\n\n";
 	# Finished Sending Log
