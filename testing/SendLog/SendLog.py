@@ -1,5 +1,5 @@
 ## Hrishi Hiraskar
-## 8 September 2016
+## 23 September 2016
 
 import gevent
 import time
@@ -12,73 +12,98 @@ monkey.patch_all()
 app = Flask(__name__)
 
 # Delay time to look for new line (in s)
-LOOK_DELAY = 0.01	
+LOOK_DELAY = 0.1	
+# States of the line
+INITIALIZATION = 0
+ENDING = 1
+DATA = 2
+NOLINE = -1
+# List to store figure IDs
+figure_list = []
 
-def get_line(file):
-	# Function to get a new line from file
-	line = file.readline()
-	while not line:
-		# If no new line is found
-		# Wait for some time and look again
-		gevent.sleep(LOOK_DELAY)
-		line = file.readline()
-	return line
+class line_and_state:
+	# Class to store the line and its state
+	line = None
+	state = -1
+	def __init__(self, line, state):
+		self.line = line
+		self.state = state
+	def set(self, line_state):
+		self.line = line_state[0]
+		self.state = line_state[1]
+		return False
+	def get_line(self):
+		return self.line
+	def get_state(self):
+		return self.state
 		
 def parse_line(line):
 	# Function to parse the line
 	# Returns tuple of figure ID and state
-	# state = 0 if new figure is created
-	#         1 if current fig end
-	#         2 otherwise
-	linewords = line.split(' ')
-	if linewords[0] == "Initialization":
+	# state = INITIALIZATION if new figure is created
+	#         ENDING if current fig end
+	#         DATA otherwise
+	line_words = line.split(' ')
+	if line_words[0] == "Initialization":
 		# New figure created
 		# Get fig id
-		figureID = int(linewords[-1])
-		return (figureID, 0)
-	elif linewords[0] == "Ending":
+		figure_id = int(line_words[-1])
+		return (figure_id, INITIALIZATION)
+	elif line_words[0] == "Ending":
 		# Current figure end
 		# Get fig id
-		figureID = int(linewords[-1])
-		return (figureID, 1)
+		figure_id = int(line_words[-1])
+		return (figure_id, ENDING)
 	else:
 		# Current figure coordinates
-		figureID = int(linewords[2])
-		return (figureID, 2)
+		figure_id = int(line_words[2])
+		return (figure_id, DATA)
+		
+def get_line(file):
+	# Function to get a new line from file
+	# This also parses the line and appends new figures to figure List
+	global figure_list
+	line = file.readline()
+	if not line:
+		return (None, NOLINE)
+	parse_result = parse_line(line)
+	figure_id = parse_result[0]
+	state = parse_result[1]
+	if state == INITIALIZATION:
+		# New figure created
+		# Add figure ID to list
+		figure_list.append(figure_id)
+		return (None, INITIALIZATION)
+	elif state == ENDING:
+		# End of figure
+		# Remove figure ID from list
+		figure_list.remove(figure_id)
+		return (None, ENDING)
+	return (line, DATA)
 
 def event_stream():
-	# List to store figure IDs
-	figureList = []
+	global figure_list
 	# Log file directory
 	log_dir = "../../bin/"
 	# Log file name	
 	log_name = "scilab-log-0.txt"
 	# Open the log file
-	logfile = open(log_dir + log_name, "r")
+	log_file = open(log_dir + log_name, "r")
 	# Seek the file pointer to the end of file
-	logfile.seek(0,2)
-	line = get_line(logfile)
-	r = parse_line(line)
-	figureID = r[0]
-	figureList.append(figureID)
+	# 0 signifies the displacement index relative to given position and
+	# 2 signifies the position (here, end of file; 0 is for start of file and 1 is for current position)
+	# Refer https://www.tutorialspoint.com/python/file_seek.htm for more
+	log_file.seek(0,2)
 	# Start sending log
-	while len(figureList) > 0:
-		line = get_line(logfile)
-		# Parse the line to get ID and state
-		r = parse_line(line)
-		figureID = r[0]
-		state = r[1]
-		if state == 0:
-			# New figure created
-			# Add figure ID to list
-			figureList.append(figureID)
-		elif state == 1:
-			# End of figure
-			# Remove figure ID from list
-			figureList.remove(figureID)
+	line = line_and_state(None, NOLINE)
+	while line.set(get_line(log_file)) or (line.get_state()!=ENDING or len(figure_list) > 0):
+		# Get the line and loop until the state is ENDING and figure_list empty
+		if line.get_state()!=DATA:
+			gevent.sleep(LOOK_DELAY)
 		else:
-			yield "event: log\ndata: "+line+"\n\n";
+			yield "event: log\ndata: "+line.get_line()+"\n\n";
 	# Finished Sending Log
+	yield "event: DONE\ndata: None\n\n";
 		
 @app.route('/SendLog')
 def sse_request():
