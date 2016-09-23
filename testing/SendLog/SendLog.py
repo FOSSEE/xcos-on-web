@@ -23,11 +23,9 @@ figure_list = []
 
 class line_and_state:
 	# Class to store the line and its state
-	line = None
-	state = NOLINE
 	def __init__(self, line, state):
-		self.line = line
-		self.state = state
+		self.line = None
+		self.state = NOLINE
 	def set(self, line_state):
 		self.line = line_state[0]
 		self.state = line_state[1]
