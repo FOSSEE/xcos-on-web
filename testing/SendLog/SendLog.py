@@ -24,7 +24,7 @@ figure_list = []
 class line_and_state:
 	# Class to store the line and its state
 	line = None
-	state = -1
+	state = NOLINE
 	def __init__(self, line, state):
 		self.line = line
 		self.state = state
@@ -59,7 +59,7 @@ def parse_line(line):
 		figure_id = int(line_words[2])
 		return (figure_id, DATA)
 		
-def get_line(file):
+def get_line_and_state(file):
 	# Function to get a new line from file
 	# This also parses the line and appends new figures to figure List
 	global figure_list
@@ -96,9 +96,9 @@ def event_stream():
 	log_file.seek(0,2)
 	# Start sending log
 	line = line_and_state(None, NOLINE)
-	while line.set(get_line(log_file)) or (line.get_state()!=ENDING or len(figure_list) > 0):
+	while line.set(get_line_and_state(log_file)) or (line.get_state() != ENDING or len(figure_list) > 0):
 		# Get the line and loop until the state is ENDING and figure_list empty
-		if line.get_state()!=DATA:
+		if line.get_state() != DATA:
 			gevent.sleep(LOOK_DELAY)
 		else:
 			yield "event: log\ndata: "+line.get_line()+"\n\n";
