@@ -15,18 +15,18 @@ var create_new_chart = function(id){
 	data.addColumn('number', 'x');
 	data.addColumn('number', 'y');
 	var options = {
-	  'title' : 'Figure '+id.toString(),
-	  curveType: 'function',
-      hAxis: {
-         title: 'x',
-      },
-      vAxis: {
-         title: 'y',
-		     min: -2,
-		     max: 2
-      },   
-      'width':550,
-      'height':400
+	      'title' : 'Figure '+id.toString(),
+	      curveType: 'function',
+	      hAxis: {
+		 title: 'x',
+	      },
+	      vAxis: {
+		 title: 'y',
+			     min: -2,
+			     max: 2
+	      },   
+	      'width':550,
+	      'height':400
 	};
 	document.body.innerHTML += "<div id='chart-"+id.toString()+"'></div>";
 	var chart = new google.visualization.LineChart(document.getElementById('chart-'+id.toString()));
@@ -69,9 +69,9 @@ var init = function(){
 			var id = chart_id_list[i];
 			// Get chart details
 			var chart   = new google.visualization.LineChart(document.getElementById('chart-'+id.toString())),
-				  data    = data_list[i],
-				  options = option_list[i],
-				  points  = points_list[i];
+			    data    = data_list[i],
+			    options = option_list[i],
+			    points  = points_list[i];
 			// Add points
 			for(var j=0;j<10 && !points.isEmpty();j++){
 				  if(data.getNumberOfRows()>=40)
