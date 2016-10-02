@@ -1,15 +1,15 @@
 ## Hrishi Hiraskar
-## 23 September 2016
+## 2 October 2016
 
 import gevent
 import time
 from gevent import monkey
 from gevent.pywsgi import WSGIServer
-from flask import Flask, request, Response, render_template
+from flask import Flask, request, Response, render_template, send_from_directory
 
 monkey.patch_all()
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder='')
 
 # Delay time to look for new line (in s)
 LOOK_DELAY = 0.1	
@@ -110,9 +110,14 @@ def sse_request():
 	# Set response method to event-stream
 	return Response(event_stream(), mimetype='text/event-stream')
 
+@app.route('/<path:path>')
+def static_file(path):
+	# To serve js files
+	return app.send_static_file(path)
+
 @app.route('/')
 def page():
-	return render_template('index.html')
+	return app.send_static_file('index.html')
 
 if __name__ == '__main__':
 	# Set server address 127.0.0.1:8001/
