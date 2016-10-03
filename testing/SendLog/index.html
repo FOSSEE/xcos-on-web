@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <!--
 Hrishi Hiraskar
-2 October 2016
+3 October 2016
 -->
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html>
-          <head><title>Send Log</title></head>
-	  <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-	  <script type="text/javascript">
-		    google.charts.load('current', {packages: ['corechart','line']}); 
-	  </script>
-	  <script src="js/Queue.js"></script>
-	  <script src="js/script.js"></script>
-<body>
-	
-	  <div id='charts'>
-	  </div>
-	
+    <head><title>Send Log</title></head>
+	<script type="text/javascript" src="js/smoothie.js"></script>
+	<script src="js/Queue.js"></script>
+	<script src="js/script.js"></script>
+<body onload="init()">
+	<div id='charts'></div>
+	<canvas id="chart1" width="400" height="100"></canvas><br>
+	<canvas id="chart2" width="400" height="100"></canvas>
 </body>
 </html>
