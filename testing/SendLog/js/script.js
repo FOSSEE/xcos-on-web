@@ -1,41 +1,20 @@
 // Hrishi Hiraskar
-// 2 October 2016
+// 3 October 2016
 
-var eventSource;
-var chart_list = [];
 var chart_id_list = [];
 var data_list = [];
-var points_list = []
-var option_list = [];
+var points_list = [];
+var start_time_list = [];
 var INTERVAL = 100;
+var eventSource;
 
 var create_new_chart = function(id){
-	// Fuction to create and initialize Google chart on page
-	var data = new google.visualization.DataTable();
-	data.addColumn('number', 'x');
-	data.addColumn('number', 'y');
-	var options = {
-	      'title' : 'Figure '+id.toString(),
-	      curveType: 'function',
-	      hAxis: {
-		 title: 'x',
-	      },
-	      vAxis: {
-		 title: 'y',
-			     min: -2,
-			     max: 2
-	      },   
-	      'width':550,
-	      'height':400
-	};
-	document.body.innerHTML += "<div id='chart-"+id.toString()+"'></div>";
-	var chart = new google.visualization.LineChart(document.getElementById('chart-'+id.toString()));
-	chart.draw(data, options);
-	chart_id_list.push(id)
-	chart_list.push(chart);
-	data_list.push(data);
-	option_list.push(options);
-	points_list.push(new Queue);
+	// Function to create new chart
+	document.getElementById('charts').innerHTML += '<canvas id="chart-'+id.toString()+'" width="400" height="100"></canvas><br>';
+	chart_id_list.push(id);
+	data_list.push(new TimeSeries());
+	points_list.push(new Queue());
+	start_time_list.push(new Date().getTime());
 }
 
 var init = function(){
@@ -50,8 +29,9 @@ var init = function(){
 			z  = parseFloat(data[10]);
 		// If there is new figure
 		// Create a new chart
-		if(chart_id_list.indexOf(id)<0)
+		if(chart_id_list.indexOf(id)<0){
 			create_new_chart(id);
+		}
 		// Get index of figure
 		var index = chart_id_list.indexOf(id);
 		// Add point to the queue
@@ -63,26 +43,23 @@ var init = function(){
 	}, false);
 	
 	setInterval(function(){
-		for(var  i=0;i<chart_id_list.length;i++){
-			// For each figure,  plot incoming points
-			// Get figure id
-			var id = chart_id_list[i];
-			// Get chart details
-			var chart   = new google.visualization.LineChart(document.getElementById('chart-'+id.toString())),
-			    data    = data_list[i],
-			    options = option_list[i],
-			    points  = points_list[i];
-			// Add points
-			for(var j=0;j<10 && !points.isEmpty();j++){
-				  if(data.getNumberOfRows()>=40)
-					    data.removeRow(0);
-				  data.addRow(points.dequeue());
+		for(var i=0;i<chart_id_list.length;i++){
+			var data = data_list[i],
+				start = start_time_list[i],
+				points = points_list[i];	
+			if(data.data.length==0){
+				// If this is a new chart
+				// Place chart on page and bind data to it
+				var chart = new SmoothieChart({grid:{fillStyle:'#ffffff'},labels:{fillStyle:'#000000'}});
+				chart.addTimeSeries(data_list[i], {lineWidth:2,strokeStyle:'#00ff00'});
+				chart.streamTo(document.getElementById("chart-"+chart_id_list[i].toString()), 2000);
 			}
-			// Plot the new points
-			chart.draw(data, options);
+			// Add points for plotting
+			for(var j=0;j<50 && !points.isEmpty();j++){
+				var point = points.dequeue();
+				data.append(start + point[0]*INTERVAL, point[1]);
+			}
 		}
 	}, INTERVAL);
+	
 }
-
-// Initialize Google charts api
-google.charts.setOnLoadCallback(init);
