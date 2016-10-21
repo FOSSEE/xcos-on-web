@@ -1,8 +1,9 @@
 ## Hrishi Hiraskar
-## 2 October 2016
+## 21 October 2016
 
 import gevent
 import time
+import subprocess
 from gevent import monkey
 from gevent.pywsgi import WSGIServer
 from flask import Flask, request, Response, render_template, send_from_directory
@@ -10,6 +11,9 @@ from flask import Flask, request, Response, render_template, send_from_directory
 monkey.patch_all()
 
 app = Flask(__name__, static_folder='')
+
+# Run xcos
+subprocess.Popen("./../../bin/xcos")
 
 # Delay time to look for new line (in s)
 LOOK_DELAY = 0.1	
@@ -44,12 +48,12 @@ def parse_line(line):
 	#         ENDING if current fig end
 	#         DATA otherwise
 	line_words = line.split(' ')
-	if line_words[0] == "Initialization":
+	if line_words[2] == "Initialization":
 		# New figure created
 		# Get fig id
 		figure_id = int(line_words[-1])
 		return (figure_id, INITIALIZATION)
-	elif line_words[0] == "Ending":
+	elif line_words[2] == "Ending":
 		# Current figure end
 		# Get fig id
 		figure_id = int(line_words[-1])
@@ -83,12 +87,20 @@ def get_line_and_state(file):
 
 def event_stream():
 	global figure_list
+	# Get pid of scilab
+	proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
+	(out, err) = proc.communicate()
+	# out will contain output of command, the list of process IDs of scilab
+	# Get the latest process ID of scilab
+	pid = out.split()[-1]
 	# Log file directory
-	log_dir = "../../bin/"
+	# As the scilab process is spawned by this script
+	#    the log directory is same as that of this script
+	log_dir = "" 
 	# Log file name	
-	log_name = "scilab-log-0.txt"
+	log_name = "scilab-log-"+pid+".txt"
 	# Open the log file
-	log_file = open(log_dir + log_name, "r")
+	log_file = open(log_dir + log_name, "a+")
 	# Seek the file pointer to the end of file
 	# 0 signifies the displacement index relative to given position and
 	# 2 signifies the position (here, end of file; 0 is for start of file and 1 is for current position)
@@ -102,7 +114,12 @@ def event_stream():
 			gevent.sleep(LOOK_DELAY)
 		else:
 			yield "event: log\ndata: "+line.get_line()+"\n\n";
+		# Reset line, so server won't send same line twice
+		line = line_and_state(None, NOLINE)
 	# Finished Sending Log
+	# Remove log file
+	subprocess.Popen(["rm",log_dir+log_name])
+	# Notify Client
 	yield "event: DONE\ndata: None\n\n";
 		
 @app.route('/SendLog')
@@ -112,7 +129,6 @@ def sse_request():
 
 @app.route('/<path:path>')
 def static_file(path):
-	# To serve js files
 	return app.send_static_file(path)
 
 @app.route('/')
