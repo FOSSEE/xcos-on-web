@@ -1,5 +1,5 @@
 ## Hrishi Hiraskar
-## 21 October 2016
+## 23 October 2016
 
 import gevent
 import time
@@ -11,9 +11,6 @@ from flask import Flask, request, Response, render_template, send_from_directory
 monkey.patch_all()
 
 app = Flask(__name__, static_folder='')
-
-# Run xcos
-subprocess.Popen("./../../bin/xcos")
 
 # Delay time to look for new line (in s)
 LOOK_DELAY = 0.1	
@@ -87,9 +84,23 @@ def get_line_and_state(file):
 
 def event_stream():
 	global figure_list
-	# Get pid of scilab
+	# Get previously running scilab process IDs
 	proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
+	# out will contain output of command, the list of process IDs of scilab
 	(out, err) = proc.communicate()
+	_l = len(out)
+	# Run xcos
+	subprocess.Popen("./../../bin/xcos")
+	# Wait till xcos is launched
+	while len(out) == _l:
+		# If length of out equals _l, 
+		#    it means scilab hasn't launched yet
+		# Wait 
+		gevent.sleep(LOOK_DELAY)
+		# Get process IDs of scilab instances
+		proc = subprocess.Popen("pgrep scilab", stdout=subprocess.PIPE, shell=True)
+		# out will contain output of command, the list of process IDs of scilab
+		(out, err) = proc.communicate()
 	# out will contain output of command, the list of process IDs of scilab
 	# Get the latest process ID of scilab
 	pid = out.split()[-1]
@@ -114,10 +125,12 @@ def event_stream():
 			gevent.sleep(LOOK_DELAY)
 		else:
 			yield "event: log\ndata: "+line.get_line()+"\n\n";
-		# Reset line, so server won't send same line twice
+		# Reset line
 		line = line_and_state(None, NOLINE)
 	# Finished Sending Log
-	# Remove log file
+	# Exit xcos
+	subprocess.Popen(["kill","-9",pid])
+	# Remove log file, so server won't send same line twice
 	subprocess.Popen(["rm",log_dir+log_name])
 	# Notify Client
 	yield "event: DONE\ndata: None\n\n";
