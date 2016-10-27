@@ -174,10 +174,6 @@ def event_stream(xcos_file_id):
 	# Notify Client
 	yield "event: DONE\ndata: None\n\n"
 
-# For a given file, return whether it's an allowed type or not
-def allowed_file(filename):
-    return '.' in filename and filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
-
 # Route that will process the file upload
 @app.route('/upload', methods=['POST'])
 def upload():
