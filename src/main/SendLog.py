@@ -177,9 +177,9 @@ def event_stream(xcos_file_id):
 # Route that will process the file upload
 @app.route('/upload', methods=['POST'])
 def upload():
-	# Get the name of the uploaded file
+	# Get the file
 	file = request.files['file']
-	# Check if the file is one of the allowed types/extensions
+	# Check if the file is not null
 	if file:
 		# Make the filename safe, remove unsupported chars
 		client_id = len(xcos_file_list)
