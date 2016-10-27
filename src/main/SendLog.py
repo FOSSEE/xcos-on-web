@@ -23,8 +23,6 @@ app.config['ALLOWED_EXTENSIONS'] = set(['zcos', 'xcos'])
 
 # Delay time to look for new line (in s)
 LOOK_DELAY = 0.1
-# Maximum number of lines allowed to be sent to client
-MAX_LINE_COUNT = 1000
 # States of the line
 INITIALIZATION = 0
 ENDING = 1
