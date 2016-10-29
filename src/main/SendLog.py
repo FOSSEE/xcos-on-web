@@ -139,12 +139,7 @@ def event_stream(xcos_file_id):
 	# Log file name	
 	log_name = "scilab-log-"+pid+".txt"
 	# Open the log file
-	log_file = open(log_dir + log_name, "a+")
-	# Seek the file pointer to the end of file
-	# 0 signifies the displacement index relative to given position and
-	# 2 signifies the position (here, end of file; 0 is for start of file and 1 is for current position)
-	# Refer https://www.tutorialspoint.com/python/file_seek.htm for more
-	log_file.seek(0,2)
+	log_file = open(log_dir + log_name, "w+")
 	# Kill scilab-adv-cli, if running and get it's output
 	# If the simulation is error free, no output is generated
 	scilab_proc.kill()
