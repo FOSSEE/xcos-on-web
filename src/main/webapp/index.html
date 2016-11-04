@@ -17,6 +17,9 @@
     <script type="text/javascript" src="setup.js"></script>
     <script type="text/javascript" src="combined.js"></script>
     <script type="text/javascript" src="orientation.js"></script>
+    <script type="text/javascript" src="highcharts/highcharts.js"></script>
+    <script type="text/javascript" src="Queue.js"></script>
+    <script type="text/javascript" src="chart.js"></script>
 
     <script type="text/javascript">
         // Stores edgeState for every recently created edge in updateFixedTerminalPoint() function
@@ -1550,28 +1553,43 @@
 
                 editor.addAction('simulate', function(editor, cell) {
                     var diagram = getXcosDiagram(editor, cell);
-
                     var blob = new Blob([diagram], {
                         type: 'text/plain'
                     });
+
+                    // Create mxWindow for charts
+                    var win = '<div id="charts" style="text-align: center;"><img id="loader" style="position: absolute; top:50%; transform: translate(-50%, -50%);" src="images/loading.gif"/></div>';
+                    var content = document.createElement('div');
+                    content.style.padding="1%";
+                    content.innerHTML = win;
+                    // Center the mxWindow  
+                    var w = document.body.clientWidth;
+                    var h = (document.body.clientHeight || document.documentElement.clientHeight);
+                    wnd = new mxWindow('Simulation', content, (w-600)/2, (h-400)/2, 600, 400, true, true);
+                    wnd.setMaximizable(false);
+                    wnd.setMinimizable(false);
+                    wnd.setScrollable(false);
+                    wnd.setResizable(false);
+                    wnd.setClosable(true);
+                    wnd.setVisible(true);
+                    wnd.addListener(mxEvent.CLOSE, function(e){
+                        chart_reset();
+                    });
+
+                    // Send xcos file to server
+                    var form = new FormData()
+                    form.append("file",blob);
                     var xhr = new XMLHttpRequest();
-                    xhr.open('POST', 'SciExec', true);
+                    xhr.open("POST", "/upload", true);
                     xhr.onload = function() {
-                        // Create basic structure for the form
-                        var content = document.createElement('div');
-                        content.setAttribute("id", "contentProperties");
-
-                        // Heading of content
-                        var heading = document.createElement('h2');
-                        heading.innerHTML = "Set Scope Parameters";
-                        heading.id = "headingProperties";
-                        content.appendChild(heading);
-
-                        var paragraph = document.createElement("p");
-                        paragraph.innerHTML = xhr.responseText;
-                        content.appendChild(paragraph);
-
-                        var wind = showModalWindow(graph, 'Properties', content, 1000, 1000);
+                        console.log(this.responseText);
+                        if(this.responseText!='error'){
+                            // If no error in uploading, initialize chart
+                            clientID = this.responseText;
+                            chart_init(wnd);
+                        }else{
+                            alert("Error");
+                        }
                     };
                     xhr.onreadystatechange = function() {
                         console.log("state: " + xhr.readyState);
@@ -1579,8 +1597,7 @@
                     xhr.upload.onprogress = function() {
                         console.log("uploading...");
                     };
-                    xhr.setRequestHeader("Content-Type", "text/plain");
-                    xhr.send(blob);
+                    xhr.send(form);
                 });
 
                 // Adds toolbar buttons into the status bar at the bottom
