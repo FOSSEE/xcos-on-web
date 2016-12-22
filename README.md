@@ -27,8 +27,6 @@ An online demo can be found over here:
 
     https://xcos.fossee.in/
 
-Our application is still in development stage - let us know your feedback!
-
 ## Developers and Testers
 
 * Amit Kumar Yadav, Motilal Nehru National Institute of Technology, Allahabad
