@@ -13,8 +13,6 @@ The main aim of this project will be to port core functionalities of Xcos to a b
 ## License information
 This project has a Creative Commons Public License.
 
-For further information please refer to 'license.txt'-file
-
 ## Demo
 
 An online demo can be found over here:
