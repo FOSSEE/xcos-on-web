@@ -15,12 +15,6 @@ This project has a Creative Commons Public License.
 
 For further information please refer to 'license.txt'-file
 
-## Support and Contact
-
-You can get support in the community mailing list and forums:
-
-    https://groups.google.com/forum/#!forum/xcos-on-web
-
 ## Demo
 
 An online demo can be found over here:
