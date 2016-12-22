@@ -7,7 +7,7 @@ The main aim of this project will be to port core functionalities of Xcos to a b
 
 * Download the sources of Scilab 6 and replace modules/scicos_blocks/src/c/cscope.c with
  `https://github.com/kamakshidasan/scilab/blob/master/modules/scicos_blocks/src/c/cscope.c`
-* After building, change the Scilab path in SendLog.py and download dependencies
+* After building, change the Scilab path in SendLog.py
 * Host on Flask and run index.html
 
 ## License information
