@@ -5,9 +5,21 @@ The main aim of this project will be to port core functionalities of Xcos to a b
 
 ## Installation
 
-* Download the sources of Scilab 5.5.2 32 bit from `https://github.com/kamakshidasan/scilab`
-* After building, change the Scilab path in SendLog.py
-* Host on Flask and run index.html
+1. First clone following repositories:
+
+	`git clone https://github.com/FOSSEE/xcos-on-web`
+
+	`git clone https://github.com/Hrily/scilab`
+
+2. Then go into `scilab` folder and run following commands:
+
+	`./configure`
+
+	`make`
+
+3. Then run `SendLog.py` from `xcos-on-web` folder to host the xcos on localhost i.e. `127.0.0.1:8001/`
+
+(Note that the directories `scilab` and `xcos-on-web` must be in same directory.)
 
 ## License information
 This project has a Creative Commons Public License.

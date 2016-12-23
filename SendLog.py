@@ -18,6 +18,9 @@ app = Flask(__name__, static_folder='webapp/')
 
 # This is the path to the upload directory
 app.config['UPLOAD_FOLDER'] = 'uploads/'
+# Make the upload directory if not available
+subprocess.Popen('mkdir -p ' + app.config['UPLOAD_FOLDER'], shell = True)
+
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['zcos', 'xcos'])
 
@@ -29,7 +32,7 @@ ENDING = 1
 DATA = 2
 NOLINE = -1
 # Scilab dir, can't run absolute paths
-SCI = "../../../../scilab/scilab_master_old/scilab/"
+SCI = "../scilab/"
 # List to store figure IDs
 figure_list = []
 # List to store filenames of files
