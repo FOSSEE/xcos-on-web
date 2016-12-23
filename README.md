@@ -5,13 +5,13 @@ The main aim of this project will be to port core functionalities of Xcos to a b
 
 ## Installation
 
-	`git clone https://github.com/FOSSEE/xcos-on-web`
+	`git clone https://github.com/FOSSEE/xcos-on-web
 
-	`git clone https://github.com/Hrily/scilab`
+	 git clone https://github.com/Hrily/scilab
 	
-	`cd scilab && ./configure && make`
+	 cd scilab && ./configure && make
 	
-	`cd ../xcos-on-web && python SendLog.py`
+	 cd ../xcos-on-web && python SendLog.py`
 
 (The directories `scilab` and `xcos-on-web` must be within the same folder)
 
