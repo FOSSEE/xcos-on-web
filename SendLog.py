@@ -18,6 +18,9 @@ app = Flask(__name__, static_folder='webapp/')
 
 # This is the path to the upload directory
 app.config['UPLOAD_FOLDER'] = 'uploads/'
+# Make the upload directory if not available
+subprocess.Popen('mkdir -p ' + app.config['UPLOAD_FOLDER'], shell = True)
+
 # These are the extension that we are accepting to be uploaded
 app.config['ALLOWED_EXTENSIONS'] = set(['zcos', 'xcos'])
 
