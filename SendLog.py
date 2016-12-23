@@ -29,7 +29,7 @@ ENDING = 1
 DATA = 2
 NOLINE = -1
 # Scilab dir, can't run absolute paths
-SCI = "../../../../scilab/scilab_master_old/scilab/"
+SCI = "../scilab/"
 # List to store figure IDs
 figure_list = []
 # List to store filenames of files
