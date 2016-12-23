@@ -5,21 +5,15 @@ The main aim of this project will be to port core functionalities of Xcos to a b
 
 ## Installation
 
-1. First clone following repositories:
-
 	`git clone https://github.com/FOSSEE/xcos-on-web`
 
 	`git clone https://github.com/Hrily/scilab`
+	
+	`cd scilab && ./configure && make`
+	
+	`cd ../xcos-on-web && python SendLog.py`
 
-2. Then go into `scilab` folder and run following commands:
-
-	`./configure`
-
-	`make`
-
-3. Then run `SendLog.py` from `xcos-on-web` folder to host the xcos on localhost i.e. `127.0.0.1:8001/`
-
-(Note that the directories `scilab` and `xcos-on-web` must be in same directory.)
+(The directories `scilab` and `xcos-on-web` must be within the same folder)
 
 ## License information
 This project has a Creative Commons Public License.
@@ -28,7 +22,7 @@ This project has a Creative Commons Public License.
 
 An online demo can be found over here:
 
-    https://xcos.fossee.in/
+    http://xcos.fossee.in
 
 ## Developers and Testers
 
