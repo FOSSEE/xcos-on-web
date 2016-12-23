@@ -9,7 +9,7 @@ The main aim of this project will be to port core functionalities of Xcos to a b
 
 	 git clone https://github.com/Hrily/scilab
 	
-	 cd scilab && ./configure && make
+	 cd scilab && chmod +x configure && ./configure && make
 	
 	 cd ../xcos-on-web && python SendLog.py
 
