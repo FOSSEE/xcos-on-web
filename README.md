@@ -1,7 +1,7 @@
 # Xcos on Web
 Xcos is an open source graphic simulator available with Scilab. Scilab can be installed on all major Operating Systems
 
-The main aim of this project will be to port core functionalities of Xcos to a browser-only version that can be used without installing additional plugins or software.
+The main aim of this project will be to port core functionalities of Xcos to a browser-only version that can be used without installing additional plugins or software on the cloud.
 
 ## Installation
 
