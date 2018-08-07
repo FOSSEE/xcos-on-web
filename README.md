@@ -33,6 +33,5 @@ An online demo can be found over here:
 * Kumar Saarang Singh, Manipal Institute of Technology, Manipal
 * Nimish Singhal, Manipal Institute of Technology, Manipal
 * Pooja Soundalgekar, National Institute of Technology Karnataka, Surathkal
-* Supritha Suresh, Visvesvaraya Technological University, Karnataka
 * Vishnu Nair, Indian Institute of Technology, Bombay
 * Adhitya Kamakshidasan, Visvesvaraya National Institute of Technology, Nagpur
