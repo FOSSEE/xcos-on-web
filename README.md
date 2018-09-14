@@ -35,3 +35,6 @@ An online demo can be found over here:
 * Pooja Soundalgekar, National Institute of Technology Karnataka, Surathkal
 * Vishnu Nair, Indian Institute of Technology, Bombay
 * Adhitya Kamakshidasan, Visvesvaraya National Institute of Technology, Nagpur
+
+## News
+Somebody used (or atleast tried to use) our work: https://arxiv.org/pdf/1808.04203.pdf :claps:
